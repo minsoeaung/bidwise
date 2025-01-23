@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Tokens;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,25 +10,57 @@ builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = "Cookies";
     options.DefaultChallengeScheme = "oidc";
-}).AddCookie("Cookies")
+})
+    .AddCookie("Cookies", options =>
+    {
+        options.Cookie.Name = "web";
+
+        // automatically revoke refresh token at signout time
+        options.Events.OnSigningOut = async e =>
+        {
+            await e.HttpContext.RevokeRefreshTokenAsync();
+        };
+    })
     .AddOpenIdConnect("oidc", options =>
     {
         options.Authority = "https://localhost:5001";
 
-        options.ClientId = "web";
+        options.ClientId = "web-mvc";
         options.ClientSecret = "secret";
+
         options.ResponseType = "code";
+        options.ResponseMode = "query";
 
         options.Scope.Clear();
+
+        // OIDC related scopes
         options.Scope.Add("openid");
         options.Scope.Add("profile");
+
+        // API scopes
         options.Scope.Add("api");
+
+        // requests a refresh token
+        options.Scope.Add("offline_access");
+
         options.GetClaimsFromUserInfoEndpoint = true;
+        options.MapInboundClaims = false;
 
-        options.MapInboundClaims = false; // Don't rename claim types
-
+        // important! this store the access and refresh token in the authentication session
+        // this is needed to the standard token store to manage the artefacts
         options.SaveTokens = true;
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            NameClaimType = "name",
+            RoleClaimType = "role"
+        };
     });
+
+builder.Services.AddOpenIdConnectAccessTokenManagement();
+
+builder.Services.AddUserAccessTokenHttpClient("apiClient",
+    configureClient: client => { client.BaseAddress = new Uri("https://localhost:5000/"); });
 
 var app = builder.Build();
 

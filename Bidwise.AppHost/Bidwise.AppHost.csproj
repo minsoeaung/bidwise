@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Bidwise.API\Bidwise.API.csproj" />
     <ProjectReference Include="..\Bidwise.Identity\Bidwise.Identity.csproj" />
+    <ProjectReference Include="..\Bidwise.React.Bff\Bidwise.React.Bff.csproj" />
     <ProjectReference Include="..\Bidwise.WebClient\Bidwise.WebClient.csproj" />
   </ItemGroup>
 

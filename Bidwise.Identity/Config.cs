@@ -23,7 +23,7 @@ public static class Config
         {
             new Client
             {
-                ClientId = "web",
+                ClientId = "web-mvc",
                 ClientSecrets = { new Secret("secret".Sha256()) },
 
                 AllowedGrantTypes = GrantTypes.Code,
@@ -33,6 +33,28 @@ public static class Config
 
                 // where to redirect to after logout
                 PostLogoutRedirectUris = { "https://localhost:3000/signout-callback-oidc" },
+
+                AllowOfflineAccess = true,
+
+                AllowedScopes =
+                {
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    "api"
+                }
+            },
+            new Client
+            {
+                ClientId = "web-spa",
+                ClientSecrets = { new Secret("secret".Sha256()) },
+
+                AllowedGrantTypes = GrantTypes.Code,
+                
+                // where to redirect to after login
+                RedirectUris = { "https://localhost:5173/signin-oidc" },
+
+                // where to redirect to after logout
+                PostLogoutRedirectUris = { "https://localhost:5173/signout-callback-oidc" },
 
                 AllowOfflineAccess = true,
 
