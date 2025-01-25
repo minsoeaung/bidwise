@@ -1,5 +1,4 @@
 using Duende.Bff.Yarp;
-using React.Bff;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +31,7 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Add("openid");
     options.Scope.Add("profile");
     options.Scope.Add("api");
+    options.Scope.Add("catalog");
     options.Scope.Add("offline_access");
 
     options.TokenValidationParameters = new()
@@ -48,23 +48,14 @@ var app = builder.Build();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// Configure the HTTP request pipeline.
-
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseBff();
 app.UseAuthorization();
 app.MapBffManagementEndpoints();
 
-// Comment this out to use the external api
-app.MapGroup("/todos")
-    .ToDoGroup()
-    .RequireAuthorization()
-    .AsBffApiEndpoint();
-
-// Comment this in to use the external api
-//app.MapRemoteBffApiEndpoint("/todos", "https://localhost:7001/todos")
-//    .RequireAccessToken(Duende.Bff.TokenType.User);
+app.MapRemoteBffApiEndpoint("/api", "https://localhost:5000/api")
+.RequireAccessToken(Duende.Bff.TokenType.User);
 
 app.MapFallbackToFile("/index.html");
 

@@ -50,7 +50,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '^/todos': {
+      '^/api': {
         target,
         secure: false
       },
@@ -65,7 +65,8 @@ export default defineConfig({
       '^/signout-callback-oidc': {
         target,
         secure: false
-      }
+      },
+      
     },
     port: 5173,
     https: {

@@ -1,6 +1,0 @@
-@Bidwise.Catalog_HostAddress = http://localhost:5171
-
-GET {{Bidwise.Catalog_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

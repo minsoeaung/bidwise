@@ -16,6 +16,7 @@ public static class Config
         new ApiScope[]
         {
             new ApiScope("api"),
+            new ApiScope("catalog"),
         };
 
     public static IEnumerable<Client> Clients =>
@@ -40,7 +41,8 @@ public static class Config
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
-                    "api"
+                    "api",
+                    "catalog"
                 }
             },
             new Client
@@ -62,7 +64,8 @@ public static class Config
                 {
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
-                    "api"
+                    "api",
+                    "catalog"
                 }
             }
         };

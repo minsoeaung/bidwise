@@ -1,5 +1,3 @@
-using System.Security.Claims;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
@@ -15,7 +13,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("ApiScope", policy =>
     {
         policy.RequireAuthenticatedUser(); // valid access token
-        policy.RequireClaim("scope", "catalog-service"); // which can access this scope
+        policy.RequireClaim("scope", "catalog"); // which can access this scope
     });
 });
 
@@ -38,15 +36,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
-// ---------------------------------------------------------
-app.MapGet("identity", (ClaimsPrincipal user) =>
-{
-    return user.Claims.Select(c => new { c.Type, c.Value });
-}).RequireAuthorization();
-
-app.MapGet("/", () => "Hello World!");
-// ---------------------------------------------------------
 
 app.MapControllers();
 

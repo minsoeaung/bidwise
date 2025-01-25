@@ -39,6 +39,7 @@ builder.Services.AddAuthentication(options =>
 
         // API scopes
         options.Scope.Add("api");
+        options.Scope.Add("catalog");
 
         // requests a refresh token
         options.Scope.Add("offline_access");
@@ -60,7 +61,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddOpenIdConnectAccessTokenManagement();
 
 builder.Services.AddUserAccessTokenHttpClient("apiClient",
-    configureClient: client => { client.BaseAddress = new Uri("https://localhost:5000/"); });
+    configureClient: client => { client.BaseAddress = new Uri("https://localhost:5000/api/"); });
 
 var app = builder.Build();
 

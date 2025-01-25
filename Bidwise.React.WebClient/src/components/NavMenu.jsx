@@ -91,7 +91,16 @@ export class NavMenu extends Component {
                       Show User Session
                     </NavLink>
                   </NavItem>
-                )}
+                            )}
+                            <NavItem>
+                                <NavLink
+                                    tag={Link}
+                                    className="text-dark"
+                                    to="/call-api"
+                                >
+                                    Call API
+                                </NavLink>
+                            </NavItem>
                 <NavItem>
                   <a
                     className="text-dark nav-link"

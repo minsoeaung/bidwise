@@ -1,7 +1,8 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/catalog/{everything}",
+      // Private
+      "DownstreamPathTemplate": "/api/catalog/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -9,8 +10,9 @@
           "Port": 5002
         }
       ],
-      "UpstreamPathTemplate": "/catalog/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      // Public
+      "UpstreamPathTemplate": "/api/catalog/{everything}",
+      "UpstreamHttpMethod": [ "Get", "POST", "CREATE", "DELETE" ]
     }
   ],
   "GlobalConfiguration": {

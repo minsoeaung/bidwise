@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
 
@@ -16,7 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Bidwise.API\Bidwise.API.csproj" />
+    <ProjectReference Include="..\Bidwise.ApiGateway\Bidwise.ApiGateway.csproj" />
+    <ProjectReference Include="..\Bidwise.Catalog\Bidwise.Catalog.csproj" />
     <ProjectReference Include="..\Bidwise.Identity\Bidwise.Identity.csproj" />
     <ProjectReference Include="..\Bidwise.React.Bff\Bidwise.React.Bff.csproj" />
     <ProjectReference Include="..\Bidwise.WebClient\Bidwise.WebClient.csproj" />
