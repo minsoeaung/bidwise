@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.Text.Json.Serialization;
 
 namespace Bidwise.Catalog.Controllers;
 
@@ -25,8 +27,6 @@ public class CatalogController : ControllerBase
     [HttpGet("private")]
     public IActionResult GetPrivate()
     {
-        var userId = User.FindFirst("sub")?.Value;
-
-        return Ok(new { Message = "Hello, Secure World!", UserId = userId });
+        return Ok(User.Claims.Select(c => new { c.Type, c.Value }));
     }
 }

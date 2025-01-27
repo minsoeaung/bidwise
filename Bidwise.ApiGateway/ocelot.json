@@ -1,7 +1,6 @@
 {
   "Routes": [
     {
-      // Private
       "DownstreamPathTemplate": "/api/catalog/{everything}",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
@@ -10,8 +9,43 @@
           "Port": 5002
         }
       ],
-      // Public
       "UpstreamPathTemplate": "/api/catalog/{everything}",
+      "UpstreamHttpMethod": [ "Get", "POST", "CREATE", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/employees/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/api/employees/{everything}",
+      "UpstreamHttpMethod": [ "Get", "POST", "CREATE", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/comments/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/api/comments/{everything}",
+      "UpstreamHttpMethod": [ "Get", "POST", "CREATE", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/bids/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5004
+        }
+      ],
+      "UpstreamPathTemplate": "/api/bids/{everything}",
       "UpstreamHttpMethod": [ "Get", "POST", "CREATE", "DELETE" ]
     }
   ],

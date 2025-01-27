@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bidwise.Catalog", "Bidwise.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bidwise.ApiGateway", "Bidwise.ApiGateway\Bidwise.ApiGateway.csproj", "{A4A16008-9BC5-43F6-A4DF-041F756969E6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bidwise.Bids", "Bidwise.Bids\Bidwise.Bids.csproj", "{69C49817-22DC-4715-9E28-0A5C4A3C1075}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{A4A16008-9BC5-43F6-A4DF-041F756969E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4A16008-9BC5-43F6-A4DF-041F756969E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4A16008-9BC5-43F6-A4DF-041F756969E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69C49817-22DC-4715-9E28-0A5C4A3C1075}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69C49817-22DC-4715-9E28-0A5C4A3C1075}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69C49817-22DC-4715-9E28-0A5C4A3C1075}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69C49817-22DC-4715-9E28-0A5C4A3C1075}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

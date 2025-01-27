@@ -23,7 +23,7 @@ builder.Services.AddAuthentication(options =>
     })
     .AddOpenIdConnect("oidc", options =>
     {
-        options.Authority = "https://localhost:5001";
+        options.Authority = builder.Configuration["IDENTITY_ENDPOINT"];
 
         options.ClientId = "web-mvc";
         options.ClientSecret = "secret";
@@ -38,8 +38,9 @@ builder.Services.AddAuthentication(options =>
         options.Scope.Add("profile");
 
         // API scopes
-        options.Scope.Add("api");
         options.Scope.Add("catalog");
+        options.Scope.Add("comments");
+        options.Scope.Add("bids");
 
         // requests a refresh token
         options.Scope.Add("offline_access");
@@ -61,7 +62,10 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddOpenIdConnectAccessTokenManagement();
 
 builder.Services.AddUserAccessTokenHttpClient("apiClient",
-    configureClient: client => { client.BaseAddress = new Uri("https://localhost:5000/api/"); });
+    configureClient: client =>
+    {
+        client.BaseAddress = new Uri($"{builder.Configuration["API_GATEWAY_ENDPOINT"]}/api/");
+    });
 
 var app = builder.Build();
 

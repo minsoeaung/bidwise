@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bidwise.ApiGateway\Bidwise.ApiGateway.csproj" />
+    <ProjectReference Include="..\Bidwise.Bids\Bidwise.Bids.csproj" />
     <ProjectReference Include="..\Bidwise.Catalog\Bidwise.Catalog.csproj" />
     <ProjectReference Include="..\Bidwise.Identity\Bidwise.Identity.csproj" />
     <ProjectReference Include="..\Bidwise.React.Bff\Bidwise.React.Bff.csproj" />

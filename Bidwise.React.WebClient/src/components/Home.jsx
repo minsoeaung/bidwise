@@ -1,38 +1,20 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 import axios from "axios";
 
-export class Home extends Component {
-    static displayName = Home.name;
+export const Home = () => {
+    const [todos, setTodos] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [todoName, setTodoName] = useState("Do soemthing");
+    const [todoDate, setTodoDate] = useState("2021-03-01");
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            todos: [],
-            loading: true,
-            error: null,
-            todoName: "Do something",
-            todoDate: "2021-03-01",
-        };
+    useEffect(()=> {
+        populateTodos();
+    })
 
-        this.createTodo = this.createTodo.bind(this);
-        this.deleteTodo = this.deleteTodo.bind(this);
-    }
-
-    componentDidMount() {
-        (async () => this.populateTodos())();
-    }
-
-    async populateTodos() {
-        // const response = await fetch("api/catalog", {
-        //     headers: {
-        //         "X-CSRF": 1,
-        //     },
-        // });
-
+    const populateTodos = async () => {
         const res = await axios.get("api/catalog/private", {headers: {"X-CSRF": 1}});
-        console.log(res.data);
-        this.setState({ error: JSON.stringify(response) });
-
+        setError(JSON.stringify(response));
         //  if (response.ok) {
         //  const data = await response.json();
         //  this.setState({ todos: data, loading: false, error: null });
@@ -41,7 +23,7 @@ export class Home extends Component {
         //}
     }
 
-    async createTodo(e) {
+    const createTodo = async (e) => {
         e.preventDefault();
         const response = await fetch("todos", {
             method: "POST",
@@ -50,24 +32,22 @@ export class Home extends Component {
                 "x-csrf": "1",
             },
             body: JSON.stringify({
-                name: this.state.todoName,
-                date: this.state.todoDate,
+                name: todoName,
+                date: todoDate,
             }),
         });
 
         if (response.ok) {
             var item = await response.json();
-            this.setState({
-                todos: [...this.state.todos, item],
-                todoName: "Do something",
-                todoDate: "2021-03-02",
-            });
+            setTodos([...todos, item]);
+            setTodoName("Do something");
+            setTodoDate("2021-03-02");
         } else {
-            this.setState({ error: response.status });
+            setError(response.status);
         }
     }
 
-    async deleteTodo(id) {
+    const deleteTodo = async (id) => {
         const response = await fetch(`todos/${id}`, {
             method: "DELETE",
             headers: {
@@ -75,16 +55,15 @@ export class Home extends Component {
             },
         });
         if (response.ok) {
-            const todos = this.state.todos.filter((x) => x.id !== id);
-            this.setState({ todos });
+            const todos = todos.filter((x) => x.id !== id);
+            setTodos(todos);
         } else {
-            this.setState({ error: response.status });
+            setError(response.status);
         }
     }
 
-    render() {
-        return (
-            <>
+    return (
+        <>
                 <div className="banner">
                     <h1>TODOs</h1>
                 </div>
@@ -101,23 +80,23 @@ export class Home extends Component {
                                 <input
                                     className="form-control"
                                     type="date"
-                                    value={this.state.todoDate}
-                                    onChange={(e) => this.setState({ todoDate: e.target.value })}
+                                    value={todoDate}
+                                    onChange={(e) => setTodoDate(e.target.value)}
                                 />
                             </div>
                             <div className="col-6">
                                 <label htmlFor="name" className="form-label">Todo Name</label>
                                 <input
                                     className="form-control"
-                                    value={this.state.todoName}
-                                    onChange={(e) => this.setState({ todoName: e.target.value })}
+                                    value={todoName}
+                                    onChange={(e) => setTodoName(e.target.value)}
                                 />
                             </div>
 
                             <div className="col-12">
                                 <button
                                     className="btn btn-primary"
-                                    onClick={this.createTodo}
+                                    onClick={createTodo}
                                 >
                                     Create
                                 </button>
@@ -125,12 +104,12 @@ export class Home extends Component {
                         </div>
                     </form>
                 </div>
-                {this.state.error !== null && (
+                {error !== null && (
                     <div className="row">
                         <div className="col">
                             <div className="alert alert-warning hide">
                                 <strong>Error: </strong>
-                                <span>{this.state.error}</span>
+                                <span>{error}</span>
                             </div>
                         </div>
                     </div>
@@ -148,11 +127,11 @@ export class Home extends Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.todos.map((todo) => (
+                            {todos.map((todo) => (
                                 <tr key={todo.id}>
                                     <td>
                                         <button
-                                            onClick={async () => this.deleteTodo(todo.id)}
+                                            onClick={async () => deleteTodo(todo.id)}
                                             className="btn btn-danger"
                                         >
                                             delete
@@ -168,6 +147,5 @@ export class Home extends Component {
                     </table>
                 </div>
             </>
-        );
-    }
+    )
 }

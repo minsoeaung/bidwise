@@ -11,7 +11,8 @@
         "DOTNET_ENVIRONMENT": "Development",
         "DOTNET_DASHBOARD_OTLP_ENDPOINT_URL": "https://localhost:21095",
         "DOTNET_RESOURCE_SERVICE_ENDPOINT_URL": "https://localhost:22213",
-        "IDENTITY_ENDPOINT": "https://localhost:5001"
+        "IDENTITY_ENDPOINT": "https://localhost:5001",
+        "API_GATEWAY_ENDPOINT": "https://localhost:5000"
       }
     },
     "http": {

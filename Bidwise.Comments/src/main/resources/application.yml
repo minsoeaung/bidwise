@@ -1,0 +1,13 @@
+server:
+  port: 5003
+    
+spring:
+  application:
+    name: comments
+  security:
+    oauth2:
+      resourceserver:
+        opaquetoken:
+          introspection-uri: https://localhost:5001/connect/introspect
+          client-id: bidwise
+          client-secret: bidwise_secret

@@ -16,7 +16,7 @@ builder.Services.AddAuthentication(options =>
     options.Cookie.SameSite = SameSiteMode.Strict;
 }).AddOpenIdConnect("oidc", options =>
 {
-    options.Authority = "https://localhost:5001";
+    options.Authority = builder.Configuration["IDENTITY_ENDPOINT"];
     options.ClientId = "web-spa";
     options.ClientSecret = "secret";
     options.ResponseType = "code";
@@ -30,8 +30,8 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Clear();
     options.Scope.Add("openid");
     options.Scope.Add("profile");
-    options.Scope.Add("api");
     options.Scope.Add("catalog");
+    options.Scope.Add("comments");
     options.Scope.Add("offline_access");
 
     options.TokenValidationParameters = new()
@@ -54,8 +54,8 @@ app.UseBff();
 app.UseAuthorization();
 app.MapBffManagementEndpoints();
 
-app.MapRemoteBffApiEndpoint("/api", "https://localhost:5000/api")
-.RequireAccessToken(Duende.Bff.TokenType.User);
+app.MapRemoteBffApiEndpoint("/api", $"{builder.Configuration["API_GATEWAY_ENDPOINT"]}/api")
+.RequireAccessToken(Duende.Bff.TokenType.UserOrClient);
 
 app.MapFallbackToFile("/index.html");
 
