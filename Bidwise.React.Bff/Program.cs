@@ -32,6 +32,7 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Add("profile");
     options.Scope.Add("catalog");
     options.Scope.Add("comments");
+    options.Scope.Add("bids");
     options.Scope.Add("offline_access");
 
     options.TokenValidationParameters = new()
@@ -55,7 +56,7 @@ app.UseAuthorization();
 app.MapBffManagementEndpoints();
 
 app.MapRemoteBffApiEndpoint("/api", $"{builder.Configuration["API_GATEWAY_ENDPOINT"]}/api")
-.RequireAccessToken(Duende.Bff.TokenType.UserOrClient);
+.RequireAccessToken(Duende.Bff.TokenType.User);
 
 app.MapFallbackToFile("/index.html");
 

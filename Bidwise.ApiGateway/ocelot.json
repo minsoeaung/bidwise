@@ -13,20 +13,8 @@
       "UpstreamHttpMethod": [ "Get", "POST", "CREATE", "DELETE" ]
     },
     {
-      "DownstreamPathTemplate": "/api/employees/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5003
-        }
-      ],
-      "UpstreamPathTemplate": "/api/employees/{everything}",
-      "UpstreamHttpMethod": [ "Get", "POST", "CREATE", "DELETE" ]
-    },
-    {
       "DownstreamPathTemplate": "/api/comments/{everything}",
-      "DownstreamScheme": "http",
+      "DownstreamScheme": "http", // <-- No HTTPS for this service
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",

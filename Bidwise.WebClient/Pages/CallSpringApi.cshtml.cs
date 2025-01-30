@@ -8,7 +8,7 @@ public class CallSpringApiModel(IHttpClientFactory httpClientFactory) : PageMode
     public async Task OnGetAsync()
     {
         var client = httpClientFactory.CreateClient("apiClient");
-        var content = await client.GetStringAsync("employees");
+        var content = await client.GetStringAsync("comments");
         //var parsed = JsonDocument.Parse(content);
         //var formatted = JsonSerializer.Serialize(parsed, new JsonSerializerOptions { WriteIndented = true });
         Message = content;

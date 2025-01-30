@@ -1,29 +1,34 @@
 package com.bidwise.comments.controllers;
 
-import java.io.Console;
 import java.util.List;
 
 import com.bidwise.comments.EmployeeNotFoundException;
 import com.bidwise.comments.EmployeeRepository;
 import com.bidwise.comments.model.Employee;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 @RestController
-@RequestMapping("api/employees")
-class EmployeeController {
+@RequestMapping("api/comments")
+class CommentsController {
 
     private final EmployeeRepository repository;
 
-    EmployeeController(EmployeeRepository repository) {
+    CommentsController(EmployeeRepository repository) {
         this.repository = repository;
     }
 
     // Aggregate root
     // tag::get-aggregate-root[]
     @GetMapping()
-    List<Employee> all() {
-        return repository.findAll();
+    String all(@AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        System.out.println("-------------------------------------------");
+        System.out.println(principal.getAttributes().toString());
+        System.out.println("-------------------------------------------");
+
+        return principal.getName() + " is your name.";
     }
     // end::get-aggregate-root[]
 
