@@ -5,9 +5,9 @@ namespace Bidwise.Catalog.Extensions;
 
 public static class Mapping
 {
-    public static IQueryable<ItemListDto> MapItemsToDto(this IQueryable<Item> items)
+    public static IQueryable<ItemDto> MapItemsToDto(this IQueryable<Item> items)
     {
-        return items.Select(i => new ItemListDto
+        return items.Select(i => new ItemDto
         {
             Id = i.Id,
             Name = i.Name,

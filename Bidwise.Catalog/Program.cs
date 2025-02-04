@@ -1,6 +1,15 @@
+using Amazon.S3;
+using Bidwise.Catalog.Data;
+using Bidwise.Catalog.Services;
+using Bidwise.Catalog.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+builder.Services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]));
 
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
@@ -22,6 +31,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.AddScoped<IFileService, FileService>();
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
@@ -38,5 +51,12 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+var dbContext = serviceScope.ServiceProvider.GetRequiredService<CatalogDbContext>();
+
+if (dbContext.Database.GetPendingMigrations().Any())
+    dbContext.Database.Migrate();
 
 app.Run();

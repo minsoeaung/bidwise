@@ -1,6 +1,6 @@
 ﻿namespace Bidwise.Catalog.Models;
 
-public enum OrderByOptions
+public enum ItemsOrderBy
 {
     SimpleOrder,
     EndingSoon,

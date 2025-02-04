@@ -5,27 +5,16 @@ namespace Bidwise.Catalog.Extensions;
 
 public static class Paging
 {
-    public static IQueryable<Item> OrderItemsBy(this IQueryable<Item> items, OrderByOptions orderByOptions)
+    public static IQueryable<Item> OrderItemsBy(this IQueryable<Item> items, ItemsOrderBy orderByOptions)
     {
         return orderByOptions switch
         {
-            OrderByOptions.SimpleOrder => items.OrderByDescending(i => i.Id),
-            OrderByOptions.Name => items.OrderByDescending(i => i.Name),
-            OrderByOptions.EndingSoon => items.OrderByDescending(i => i.EndDate),
-            OrderByOptions.NewlyListed => items.OrderByDescending(i => i.Id),
+            ItemsOrderBy.SimpleOrder => items.OrderByDescending(i => i.Id),
+            ItemsOrderBy.Name => items.OrderByDescending(i => i.Name),
+            ItemsOrderBy.EndingSoon => items.OrderByDescending(i => i.EndDate),
+            ItemsOrderBy.NewlyListed => items.OrderByDescending(i => i.Id),
             _ => throw new ArgumentOutOfRangeException(nameof(orderByOptions), orderByOptions, null),
         };
-    }
-
-    public static IQueryable<T> Page<T>(this IQueryable<T> query, int pageNumZeroStart, int pageSize)
-    {
-        if (pageSize == 0)
-            throw new ArgumentOutOfRangeException(nameof(pageSize), "pageSize cannot be zero.");
-
-        if (pageNumZeroStart != 0)
-            query = query.Skip(pageNumZeroStart * pageSize);
-
-        return query.Take(pageSize);
     }
 
     public static IQueryable<Item> FilterItemsBy(this IQueryable<Item> items, ItemsFilterBy filterBy, string? filterValue)
@@ -38,15 +27,15 @@ public static class Paging
             case ItemsFilterBy.NoFilter:
                 return items;
             case ItemsFilterBy.ByStatus:
-                Status filterStatus;
+                ItemsStatus filterStatus;
 
                 if (Enum.TryParse(filterValue, out filterStatus))
                 {
                     return filterStatus switch
                     {
-                        Status.Available => items.Where(i => i.BuyerId == null && i.EndDate > DateTime.UtcNow),
-                        Status.Expired => items.Where(i => i.BuyerId == null && i.EndDate <= DateTime.UtcNow),
-                        Status.Sold => items.Where(i => i.BuyerId != null),
+                        ItemsStatus.Available => items.Where(i => i.BuyerId == null && i.EndDate > DateTime.UtcNow),
+                        ItemsStatus.Expired => items.Where(i => i.BuyerId == null && i.EndDate <= DateTime.UtcNow),
+                        ItemsStatus.Sold => items.Where(i => i.BuyerId != null),
                         _ => items,
                     };
                 }

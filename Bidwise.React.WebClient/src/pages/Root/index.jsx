@@ -1,10 +1,10 @@
-import { Outlet } from "react-router-dom";
-import Header from "../../components/Header.tsx";
 import { Box, Flex, useColorModeValue } from "@chakra-ui/react";
-import { Footer } from "../../components/Footer.tsx";
+import { AuthContextProvider } from "../../context/AuthContext";
+import Header from "../../components/Header";
 import { Suspense } from "react";
+import { Outlet } from "react-router";
+import { Footer } from "../../components/Footer";
 import { Fallback } from "../../components/Fallback";
-import { AuthContextProvider } from "../../context/AuthContext.tsx";
 
 const Root = () => {
   return (
@@ -30,7 +30,7 @@ const Root = () => {
             </Suspense>
           </Box>
         </Flex>
-        <Footer justifySelf="end" />
+        <Footer />
       </Flex>
     </AuthContextProvider>
   );

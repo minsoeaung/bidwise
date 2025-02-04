@@ -13,7 +13,7 @@ public class CatalogDbContext(DbContextOptions options) : DbContext(options)
 
         modelBuilder.Entity<Item>()
             .HasOne(i => i.Category)
-            .WithMany(c => c.Items)
+            .WithMany()
             .OnDelete(DeleteBehavior.SetNull);
 
         base.OnModelCreating(modelBuilder);

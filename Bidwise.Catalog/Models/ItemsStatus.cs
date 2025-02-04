@@ -1,6 +1,6 @@
 ﻿namespace Bidwise.Catalog.Models;
 
-public enum Status
+public enum ItemsStatus
 {
     Available,
     Sold,

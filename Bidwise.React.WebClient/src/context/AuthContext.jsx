@@ -1,45 +1,58 @@
-import { createContext, useContext, useState } from "react";
-import { useLocalStorage } from "../hooks/useLocalStorage.js";
+import { createContext, useContext, useEffect, useState } from "react";
+import { ApiClient } from "../api/apiClient.js";
 
 const AuthContext = createContext({
-    loggedInUser: null,
-    setLoggedInUser: () => { },
+  loggedInUser: null,
+  logoutUrl: "",
+  refreshAuth: () => {},
+  loading: true,
+  error: null,
 });
 
 export const AuthContextProvider = ({ children }) => {
-    const [logoutUrl, setLogoutUrl] = useState("");
-    const [loggedInUser, setLoggedInUser] = useLocalStorage("currentUser", null);
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [logoutUrl, setLogoutUrl] = useState("/bff/logout");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [refresh, setRefresh] = useState(false);
 
-    const fetchIsUserLoggedIn = async () => {
-        try {
-            const response = await fetch("/bff/user", {
-                headers: {
-                    "X-CSRF": 1,
-                },
-            });
+  useEffect(() => {
+    getUser();
+  }, [refresh]);
 
-            if (response.ok && response.status === 200) {
-                const data = await response.json();
-                const logoutUrl = data.find(
-                    (claim) => claim.type === "bff:logout_url"
-                )?.value;
-                setLogoutUrl(logoutUrl);
-                // set user here
-            }
-        } catch (e) {
-            setLoggedInUser(null);
+  const getUser = () => {
+    setLoading(true);
+    ApiClient.get("/bff/user")
+      .then((res) => {
+        const data = res.data;
+        if (Array.isArray(data)) {
+          const logout_url =
+            data.find((claim) => claim.type === "bff:logout_url")?.value ??
+            logoutUrl;
+          setLogoutUrl(logout_url);
+          setLoggedInUser(data);
         }
-    };
+      })
+      .catch((e) => {
+        setLoggedInUser(null);
+        setError(e.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
-    return (
-        <AuthContext.Provider
-            value={{ loggedInUser: loggedInUser, setLoggedInUser }}
-        >
-            {children}
-        </AuthContext.Provider>
-    );
+  const refreshAuth = () => setRefresh((prev) => !prev);
+
+  return (
+    <AuthContext.Provider
+      value={{ loggedInUser, logoutUrl, refreshAuth, loading, error }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
-    return useContext(AuthContext);
+  return useContext(AuthContext);
 };

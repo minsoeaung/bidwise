@@ -67,5 +67,31 @@ public static class Config
                     "bids"
                 }
             },
-        ];
+            new Client
+                {
+                    ClientId = "swagger-app",
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+                    RequireClientSecret = false,
+                    RequireConsent = false,
+                    AllowAccessTokensViaBrowser = true,
+                    AlwaysSendClientClaims = true,
+                    AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
+                    AccessTokenType = AccessTokenType.Reference,
+                    RedirectUris = new List<string>
+                    {
+                        "https://localhost:5002/swagger/oauth2-redirect.html",
+                        "https://localhost:5003/swagger/oauth2-redirect.html",
+                        "https://localhost:5004/swagger/oauth2-redirect.html"
+                    },
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.LocalApi.ScopeName,
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "catalog",
+                        "comments",
+                        "bids"
+                    }
+                },
+            ];
 }

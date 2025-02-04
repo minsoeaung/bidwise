@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    // tsconfig just to make UMD error go away..
+
     // 👇️ set jsx to react-jsx
     "jsx": "react-jsx",
     "checkJs": true,
@@ -10,7 +12,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",

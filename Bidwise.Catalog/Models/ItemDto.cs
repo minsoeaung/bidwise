@@ -1,6 +1,6 @@
 ﻿namespace Bidwise.Catalog.Models;
 
-public class ItemListDto
+public class ItemDto
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -13,18 +13,18 @@ public class ItemListDto
     public string SellerName { get; set; }
     public int? BuyerId { get; set; }
     public string? BuyerName { get; set; }
-    public Status Status
+    public ItemsStatus Status
     {
         get
         {
             if (BuyerId != null)
-                return Status.Sold;
+                return ItemsStatus.Sold;
 
             var timeSpan = EndDate.ToUniversalTime() - DateTime.UtcNow;
 
-            if (timeSpan.TotalSeconds <= 0) return Status.Expired;
+            if (timeSpan.TotalSeconds <= 0) return ItemsStatus.Expired;
 
-            return Status.Available;
+            return ItemsStatus.Available;
         }
     }
 
@@ -34,7 +34,7 @@ public class ItemListDto
         {
             var timeSpan = EndDate.ToUniversalTime() - DateTime.UtcNow;
 
-            if (timeSpan.TotalSeconds <= 0) return Status.Expired.ToString();
+            if (timeSpan.TotalSeconds <= 0) return ItemsStatus.Expired.ToString();
 
             if (timeSpan.TotalDays >= 1)
                 return $"{(int)timeSpan.TotalDays} day{(timeSpan.TotalDays >= 2 ? "s" : "")} left";

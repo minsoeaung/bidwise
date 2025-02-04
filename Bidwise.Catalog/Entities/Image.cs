@@ -6,5 +6,4 @@ public class Image
     public string Name { get; set; }
     public string? Label { get; set; }
     public int ItemId { get; set; }
-    public Item Item { get; set; }
 }
