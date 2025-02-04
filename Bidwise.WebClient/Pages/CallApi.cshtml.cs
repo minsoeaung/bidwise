@@ -13,7 +13,9 @@ namespace Bidwise.WebClient.Pages
         public async Task OnGetAsync()
         {
             var client = httpClientFactory.CreateClient("apiClient");
-            var content = await client.GetStringAsync("catalog/private");
+            var content = await client.GetStringAsync("catalog?PageNum=0&PageSize=10&OrderByOptions=SimpleOrder&FilterBy=ByStatus&FilterValue=Expired");
+            Console.WriteLine("--> CONTENT");
+            Console.WriteLine(content);
             var parsed = JsonDocument.Parse(content);
             var formatted = JsonSerializer.Serialize(parsed, new JsonSerializerOptions { WriteIndented = true });
             Message = formatted;

@@ -1,4 +1,3 @@
-using Duende.IdentityServer;
 using Bidwise.Identity.Data;
 using Bidwise.Identity.Models;
 using Microsoft.AspNetCore.Identity;
@@ -8,10 +7,7 @@ using System.Security.Claims;
 using System.Reflection;
 using Duende.IdentityModel;
 using Duende.IdentityServer.EntityFramework.DbContexts;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using static System.Formats.Asn1.AsnWriter;
 using Duende.IdentityServer.EntityFramework.Mappers;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Bidwise.Identity;
 
@@ -35,6 +31,7 @@ internal static class HostingExtensions
             // haha
             options.User.AllowedUserNameCharacters = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~ ";
         })
+            .AddDefaultUI()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
@@ -79,7 +76,7 @@ internal static class HostingExtensions
             builder.Services.AddAuthentication()
            .AddGoogle(options =>
            {
-               options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+               //options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
 
                // set the redirect URI to builder.Configuration["IDENTITY_ENDPOINT"]/signin-google in Google console
                options.ClientId = googleClientId;
