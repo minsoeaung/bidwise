@@ -5,13 +5,9 @@ using Bidwise.Catalog.Models;
 using Bidwise.Catalog.Services.Interfaces;
 using Bidwise.Common;
 using Bidwise.Common.Models;
-using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.JsonWebTokens;
-using System.Linq;
-using System.Security.Claims;
 
 namespace Bidwise.Catalog.Controllers;
 
@@ -34,9 +30,6 @@ public class CatalogController : ControllerBase
     [HttpGet]
     public ActionResult<PaginatedResult<ItemDto, ItemsOrderBy, ItemsFilterBy>> GetAll([FromQuery] PageOptions<ItemsOrderBy, ItemsFilterBy> options)
     {
-
-        Console.WriteLine($"--> user id: {User.GetId()}");
-
         var itemsQuery = _context.Items
             .AsNoTracking()
             .OrderItemsBy(options.OrderBy)
@@ -65,16 +58,11 @@ public class CatalogController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Item>> CreateAsync([FromForm] ItemCreateDto dto)
     {
-        var userId = User.GetId();
-        if (userId == null)
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        var user = User.GetProfile();
+        if (user == null)
             return Unauthorized();
-
-        var profile = User.GetProfile();
-        Console.WriteLine($"--> id {profile.Id}");
-        Console.WriteLine($"--> username {profile.UserName}");
-        Console.WriteLine($"--> email {profile.Email}");
-
-        return new Item();
 
         using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -95,40 +83,45 @@ public class CatalogController : ControllerBase
             }
         }
 
-        var usernameOrEmail = User.FindFirstValue(JwtClaimTypes.Name)
-            ?? User.FindFirstValue(JwtClaimTypes.Email)
-            ?? string.Empty;
+        IList<Image> images = [];
+
+        var imageUploadTasks = dto.Images.Select(async image =>
+        {
+            var imageName = Guid.NewGuid().ToString();
+            await _fileService.UploadFileAsync(image, imageName);
+            images.Add(new Image { Name = imageName });
+        });
+
+        IList<string> metaphoneKeys = [];
+        var metaphone = new DoubleMetaphone();
+        foreach (var word in dto.Name.Split(" "))
+        {
+            metaphone.computeKeys(word);
+            if (!string.IsNullOrEmpty(metaphone.PrimaryKey))
+                metaphoneKeys.Add(metaphone.PrimaryKey);
+            if (!string.IsNullOrEmpty(metaphone.AlternateKey))
+                metaphoneKeys.Add(metaphone.AlternateKey);
+        }
 
         var item = new Item
         {
             Name = dto.Name,
             Description = dto.Description,
-            SellerId = (int)userId,
-            SellerName = User.GetProfile()!.UserName ?? string.Empty,
-            CategoryId = category.Id,
-            DoubleMetaphone = string.Empty,
+            SellerId = (int)user.Id,
+            SellerName = user.UserName ?? string.Empty,
+            DoubleMetaphone = string.Join(',', metaphoneKeys),
             StartDate = DateTime.UtcNow,
             EndDate = dto.EndDate,
             StartingBid = dto.StartingBid,
+
+            Category = dto.CategoryName == null ? null : category,
+            Images = images
         };
 
         _context.Items.Add(item);
-        await _context.SaveChangesAsync();
+        _context.SaveChanges();
 
-        var imageTasks = dto.Images.Select(async image =>
-        {
-            var imageName = Guid.NewGuid().ToString();
-            await _context.Images.AddAsync(new Entities.Image
-            {
-                Label = image.Label,
-                Name = imageName,
-                ItemId = item.Id
-            });
-
-            await _fileService.UploadFileAsync(image.File, imageName);
-        });
-
-        await Task.WhenAll(imageTasks);
+        await Task.WhenAll(imageUploadTasks);
         await _context.SaveChangesAsync();
         await transaction.CommitAsync();
 

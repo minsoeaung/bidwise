@@ -1,16 +1,17 @@
-package com.bidwise.comments;
+package com.bidwise.comments.advice;
 
+import com.bidwise.comments.exception.CommentNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-class EmployeeNotFoundAdvice {
+class CommentNotFoundAdvice {
 
-    @ExceptionHandler(EmployeeNotFoundException.class)
+    @ExceptionHandler(CommentNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String employeeNotFoundHandler(EmployeeNotFoundException ex) {
+    String commentNotFoundHandler(CommentNotFoundException ex) {
         return ex.getMessage();
     }
 }

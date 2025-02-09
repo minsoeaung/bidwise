@@ -2,37 +2,22 @@ import {
   Box,
   Button,
   Flex,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightElement,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalOverlay,
   Stack,
   useBreakpointValue,
-  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react";
-import {
-  ArrowRightIcon,
-  MoonIcon,
-  SearchIcon,
-  SunIcon,
-} from "@chakra-ui/icons";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { FaMoon, FaSearch } from "react-icons/fa";
 
 const Header = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchInputValue, setSearchInputValue] = useState(
+  const [filterValue, setFilterValue] = useState(
     searchParams.get("searchTerm") || ""
   );
 
-  const { isOpen, onClose, onOpen } = useDisclosure();
+  const { open, onClose, onOpen } = useDisclosure();
 
   const { loggedInUser, logoutUrl } = useAuth();
 
@@ -46,7 +31,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const search = () => {
-    searchParams.set("searchTerm", searchInputValue);
+    searchParams.set("filterValue", filterValue);
     setSearchParams(searchParams);
     navigate({
       pathname: "/auctions",
@@ -74,31 +59,29 @@ const Header = () => {
         <Flex alignItems="center">
           <Stack
             direction="row"
-            spacing={{ base: 1, md: 2 }}
+            spaceX={{ base: 1, md: 2 }}
+            spaceY={{ base: 1, md: 2 }}
             alignItems="center"
           >
-            <IconButton
+            <Button
               aria-label="Show search"
               variant="ghost"
-              colorScheme={isOpen ? "blue" : "gray"}
-              icon={<SearchIcon />}
+              colorScheme={open ? "blue" : "gray"}
               onClick={onOpen}
-            />
-            <IconButton
-              aria-label="Color mode"
-              variant="ghost"
-              icon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-              onClick={toggleColorMode}
-            />
-
+            >
+              <FaSearch />
+            </Button>
+            <Button aria-label="Color mode" variant="ghost" onClick={() => {}}>
+              <FaMoon />
+            </Button>
             <Button
+              asChild
               as={Link}
-              to="/user-session"
               variant="outline"
               colorScheme="blue"
               size={{ base: "sm", md: "md" }}
             >
-              Session
+              <Link to="/user-session">User Session</Link>
             </Button>
             <Button as="a">
               <a
@@ -111,7 +94,7 @@ const Header = () => {
           </Stack>
         </Flex>
       </Flex>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      {/* <Modal open={open} onClose={onClose}>
         <ModalOverlay />
         <ModalContent mx={3}>
           <ModalBody p={0}>
@@ -119,14 +102,14 @@ const Header = () => {
               <Input
                 placeholder="What are you looking for?"
                 autoComplete="off"
-                value={searchInputValue}
-                onChange={(e) => setSearchInputValue(e.target.value)}
+                value={filterValue}
+                onChange={(e) => setFilterValue(e.target.value)}
                 fontSize="xl"
               />
               <InputRightElement>
                 <IconButton
                   aria-label="Search"
-                  icon={<ArrowRightIcon />}
+                  icon={<ArrowRight />}
                   size="lg"
                   variant="link"
                   colorScheme="blue"
@@ -136,7 +119,7 @@ const Header = () => {
             </InputGroup>
           </ModalBody>
         </ModalContent>
-      </Modal>
+      </Modal> */}
     </Box>
   );
 };

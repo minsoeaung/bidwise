@@ -22,7 +22,7 @@ const UserSessionPage = () => {
   return (
     <div>
       <h1 id="tabelLabel">User Session</h1>
-      <p>This pages shows the current user's session.</p>
+      <p>This pages shows the current user&apos;s session.</p>
       <table className="table table-striped" aria-labelledby="tabelLabel">
         <thead>
           <tr>

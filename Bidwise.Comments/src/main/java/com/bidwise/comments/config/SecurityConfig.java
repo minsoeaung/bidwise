@@ -1,22 +1,39 @@
 package com.bidwise.comments.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.security.oauth2.core.authorization.OAuth2AuthorizationManagers.hasScope;
+
 // SecurityConfig.java
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Value("${spring.security.oauth2.resourceserver.opaque-token.introspection-uri}")
+    private String introspectionUri;
+
+    @Value("${spring.security.oauth2.resourceserver.opaque-token.client-id}")
+    private String clientId;
+
+    @Value("${spring.security.oauth2.resourceserver.opaque-token.client-secret}")
+    private String clientSecret;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/comments/**").access(hasScope("comments"))
+                        .requestMatchers(HttpMethod.POST, "/api/comments/**").access(hasScope("comments"))
+                        .requestMatchers(HttpMethod.DELETE, "/api/comments/**").access(hasScope("comments"))
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -27,13 +44,12 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Custom introspector (optional)
     @Bean
     public OpaqueTokenIntrospector introspector() {
         return new NimbusOpaqueTokenIntrospector(
-                "https://localhost:5001/connect/introspect",
-                "bidwise",
-                "bidwise_secret"
+                introspectionUri,
+                clientId,
+                clientSecret
         );
     }
 }

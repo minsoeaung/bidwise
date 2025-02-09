@@ -13,18 +13,18 @@ public class ItemDto
     public string SellerName { get; set; }
     public int? BuyerId { get; set; }
     public string? BuyerName { get; set; }
-    public ItemsStatus Status
+    public string Status
     {
         get
         {
             if (BuyerId != null)
-                return ItemsStatus.Sold;
+                return ItemsStatus.Sold.ToString();
 
             var timeSpan = EndDate.ToUniversalTime() - DateTime.UtcNow;
 
-            if (timeSpan.TotalSeconds <= 0) return ItemsStatus.Expired;
+            if (timeSpan.TotalSeconds <= 0) return ItemsStatus.Expired.ToString();
 
-            return ItemsStatus.Available;
+            return ItemsStatus.Available.ToString();
         }
     }
 

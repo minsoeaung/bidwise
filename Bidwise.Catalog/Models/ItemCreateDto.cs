@@ -7,12 +7,11 @@ public class ItemCreateDto
     public string? CategoryName { get; set; }
     public double StartingBid { get; set; }
     public DateTime EndDate { get; set; }
-    public IEnumerable<ImageCreateDto> Images { get; set; } = [];
+    public IEnumerable<IFormFile> Images { get; set; } = [];
 }
 
-public class ImageCreateDto
-{
-    public string? Label { get; set; }
-    public IFormFile File { get; set; }
-    public string? Name { get; set; }
-}
+//public class ImageCreateDto
+//{
+    //public string? Label { get; set; }
+    //public IFormFile File { get; set; }
+//}

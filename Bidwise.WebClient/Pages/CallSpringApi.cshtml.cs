@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Text.Json;
 namespace Bidwise.WebClient.Pages;
 
 public class CallSpringApiModel(IHttpClientFactory httpClientFactory) : PageModel
@@ -8,9 +9,9 @@ public class CallSpringApiModel(IHttpClientFactory httpClientFactory) : PageMode
     public async Task OnGetAsync()
     {
         var client = httpClientFactory.CreateClient("apiClient");
-        var content = await client.GetStringAsync("comments");
-        //var parsed = JsonDocument.Parse(content);
-        //var formatted = JsonSerializer.Serialize(parsed, new JsonSerializerOptions { WriteIndented = true });
+        var content = await client.GetStringAsync("comments?itemId=2");
+        var parsed = JsonDocument.Parse(content);
+        var formatted = JsonSerializer.Serialize(parsed, new JsonSerializerOptions { WriteIndented = true });
         Message = content;
 
     }

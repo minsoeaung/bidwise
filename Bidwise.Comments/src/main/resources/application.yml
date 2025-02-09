@@ -1,13 +1,31 @@
 server:
   port: 5003
-    
+
 spring:
   application:
     name: comments
   security:
     oauth2:
       resourceserver:
-        opaquetoken:
+        opaque-token:
           introspection-uri: https://localhost:5001/connect/introspect
           client-id: bidwise
           client-secret: bidwise_secret
+  datasource:
+    url: jdbc:sqlserver://localhost;databaseName=Bidwise.Comments;TrustServerCertificate=true
+    username: msa
+    password: vcrn
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+  jpa:
+    hibernate:
+      dll-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
