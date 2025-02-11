@@ -1,0 +1,11 @@
+CREATE TABLE Bids (
+    Id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    ItemId INT NOT NULL,
+    BidderId INT NOT NULL,
+    BidderName NVARCHAR(255) NOT NULL,
+    Amount DECIMAL(18,2) NOT NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    UpdatedAt DATETIME2 NOT NULL
+);
+
+CREATE INDEX IX_Bids_ItemId_BidderId ON Bids (ItemId, BidderId);

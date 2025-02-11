@@ -5,7 +5,9 @@ builder.AddProject<Projects.Bidwise_ApiGateway>("api-gateway");
 // APIs
 builder.AddProject<Projects.Bidwise_Identity>("identity-service");
 builder.AddProject<Projects.Bidwise_Catalog>("catalog-service");
-builder.AddProject<Projects.Bidwise_Bids>("bids-service");
+
+// bids-service in spring
+// comments-service in spring
 
 // Clients
 builder.AddProject<Projects.Bidwise_WebClient>("web-mvc");

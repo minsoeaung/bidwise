@@ -2,7 +2,6 @@ using Amazon.S3;
 using Bidwise.Catalog.Data;
 using Bidwise.Catalog.Services;
 using Bidwise.Catalog.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,9 +47,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers()
+    .RequireAuthorization("ApiScope");
 
 using var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
 

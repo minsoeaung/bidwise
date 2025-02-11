@@ -1,6 +1,10 @@
 #nprogress .bar {
   background: #e53e3e !important;
   height: 3px !important;
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  z-index: 999;
 }
 
 #nprogress .peg {

@@ -13,6 +13,9 @@ public class ItemDto
     public string SellerName { get; set; }
     public int? BuyerId { get; set; }
     public string? BuyerName { get; set; }
+
+    public IEnumerable<ImageDto> Images { get; set; } = [];
+
     public string Status
     {
         get

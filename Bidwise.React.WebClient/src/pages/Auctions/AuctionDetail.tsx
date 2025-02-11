@@ -1,10 +1,11 @@
 import { useParams } from "react-router-dom";
 import { useAuctionDetail } from "../../hooks/queries/useAuctionDetail";
 import { Field } from "../../components/ui/field";
-import { Box, Button, Input, List, Text } from "@chakra-ui/react";
+import { Box, Button, Input, List, Text, Image } from "@chakra-ui/react";
 import { useState } from "react";
 import { usePaginatedComments } from "../../hooks/queries/usePaginatedComments";
 import { useCreateComment } from "../../hooks/mutations/useCreateComment";
+import { AUCTION_IMAGES } from "../../constants/fileUrls";
 
 type Params = {
   id: string;
@@ -29,12 +30,23 @@ const AuctionDetailPage = () => {
   return (
     <Box maxW="7xl" mx="auto" px={{ base: "2", md: "8", lg: "12" }}>
       <b>Auction Id: {id}</b>
+      <div>
+        {data &&
+          data.images.map((img) => (
+            <Image
+              key={img.name}
+              height="100px"
+              src={AUCTION_IMAGES + img.name}
+              alt={AUCTION_IMAGES + img.name}
+            />
+          ))}
+      </div>
       <p>{data && JSON.stringify(data)}</p>
       <b>Comments</b>
       <List.Root>
         {Array.isArray(comments?.content) &&
           comments.content.map((c) => (
-            <List.Item>
+            <List.Item key={c.id}>
               <Text>{c.commentText}</Text>
             </List.Item>
           ))}

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bidwise.Catalog.Controllers;
 
+[Route("api/[controller]")]
 [ApiController]
-[Route("api/catalog")]
 [Authorize]
 public class CatalogController : ControllerBase
 {
@@ -28,19 +28,26 @@ public class CatalogController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<PaginatedResult<ItemDto, ItemsOrderBy, ItemsFilterBy>> GetAll([FromQuery] PageOptions<ItemsOrderBy, ItemsFilterBy> options)
+    [AllowAnonymous]
+    public ActionResult<PagedResult<ItemDto>> GetAll([FromQuery] ItemsParams itemParams)
     {
         var itemsQuery = _context.Items
             .AsNoTracking()
-            .OrderItemsBy(options.OrderBy)
-            .FilterItemsBy(options.FilterBy, options.FilterValue)
+            .OrderItemsBy(itemParams.OrderBy)
+            .FilterItemsByName(itemParams.SearchTerm)
+            .FilterItemsByStatus(itemParams.Status)
+            .FilterItemsByCategories(itemParams.Categories)
             .MapItemsToDto();
 
-        itemsQuery = itemsQuery.Page(options.PageNum - 1, options.PageSize);
+        var items = PagedList<ItemDto>.ToPagedList(itemsQuery, itemParams.PageNumber, itemParams.PageSize);
 
-        options.SetupRestOfDto(itemsQuery);
-
-        return new PaginatedResult<ItemDto, ItemsOrderBy, ItemsFilterBy>(itemsQuery.ToList(), options);
+        return new PagedResult<ItemDto>
+        {
+            Content = items,
+            Pageable = items.Pageable,
+            Size = items.Size,
+            TotalPages = items.TotalPages
+        };
     }
 
     [HttpGet("{id:int}")]

@@ -1,11 +1,11 @@
 import { Box, Flex } from "@chakra-ui/react";
 import { AuthContextProvider } from "../../context/AuthContext";
-import Header from "../../components/Header";
 import { Suspense } from "react";
 import { Outlet } from "react-router";
 import { Footer } from "../../components/Footer";
 import { Fallback } from "../../components/Fallback";
 import { useColorModeValue } from "../../components/ui/color-mode";
+import Header from "../../components/Header";
 
 const Root = () => {
   return (

@@ -2,16 +2,14 @@ import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import { ApiClient } from "../../api/apiClient";
 import { AuctionDto } from "./useAuctionDetail";
 
-export type PagedResponse<T> = {
-  paging: {
-    orderBy: number;
-    filterBy: number;
-    filterValue: string | null;
-    pageNum: number;
+export type PagedResult<T> = {
+  pageable: {
+    pageNumber: number;
     pageSize: number;
-    numPages: number;
   };
-  data: T[];
+  size: number;
+  totalPages: number;
+  content: T[];
 };
 
 export const AUCTIONS = "Auctions";
@@ -19,11 +17,18 @@ export const AUCTIONS = "Auctions";
 const fetchAuctions = async ({
   queryKey,
 }: QueryFunctionContext<[string, string]>): Promise<
-  PagedResponse<AuctionDto>
+  PagedResult<AuctionDto>
 > => {
   const searchParams = new URLSearchParams(queryKey[1]);
 
-  return await ApiClient.get(`api/catalog?FilterBy=0&FilterValue=`);
+  const serachTerm = searchParams.get("SearchTerm") || "";
+  const categories = searchParams.get("Categories") || "";
+
+  return await ApiClient.get(
+    `api/catalog?SearchTerm=${serachTerm}&Categories=${
+      categories === "All categories" ? "" : categories
+    }`
+  );
 };
 
 export const usePaginatedAuctions = (searchParams) => {

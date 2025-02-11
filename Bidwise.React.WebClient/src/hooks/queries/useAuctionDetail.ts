@@ -17,6 +17,12 @@ export type AuctionDto = {
   buyerName: string | null;
   status: string;
   timeLeft: string;
+  images: ImageDto[];
+};
+
+export type ImageDto = {
+  name: string;
+  label: string | null;
 };
 
 // type of "id" is set as string | undefined bc it is an query param

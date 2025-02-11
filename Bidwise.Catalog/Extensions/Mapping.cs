@@ -19,7 +19,12 @@ public static class Mapping
             BuyerId = i.BuyerId,
             BuyerName = i.BuyerName,
             SellerId = i.SellerId,
-            SellerName = i.SellerName
+            SellerName = i.SellerName,
+            Images = i.Images.Select(img => new ImageDto
+            {
+                Name = img.Name,
+                Label = img.Label
+            })  
         });
     }
 }

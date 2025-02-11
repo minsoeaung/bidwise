@@ -1,3 +1,4 @@
+using Duende.Bff;
 using Duende.Bff.Yarp;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -56,7 +57,7 @@ app.UseAuthorization();
 app.MapBffManagementEndpoints();
 
 app.MapRemoteBffApiEndpoint("/api", $"{builder.Configuration["API_GATEWAY_ENDPOINT"]}/api")
-.RequireAccessToken(Duende.Bff.TokenType.User);
+    .WithOptionalUserAccessToken();
 
 app.MapFallbackToFile("/index.html");
 

@@ -21,14 +21,13 @@ const NotFoundPage = () => {
       </Text>
 
       <Button
-        as={Link}
-        to="/"
+        asChild
         colorScheme="blue"
         bgGradient="linear(to-r, teal.400, teal.500, teal.600)"
         color="white"
         variant="solid"
       >
-        Go to Home
+        <Link to="/">Go to Home</Link>
       </Button>
     </Box>
   );

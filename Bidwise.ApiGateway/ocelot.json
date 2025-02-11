@@ -13,6 +13,18 @@
       "UpstreamHttpMethod": [ "Get", "POST", "CREATE", "DELETE" ]
     },
     {
+      "DownstreamPathTemplate": "/api/categories/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/api/categories/{everything}",
+      "UpstreamHttpMethod": [ "Get", "POST", "CREATE", "DELETE" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/comments/{everything}",
       "DownstreamScheme": "http", // <-- No HTTPS for this service
       "DownstreamHostAndPorts": [

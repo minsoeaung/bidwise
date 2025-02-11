@@ -1,15 +1,6 @@
 import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
 import { ApiClient } from "../../api/apiClient";
-
-export type JpaPagedResponse<T> = {
-  pageable: {
-    pageNumber: number;
-    pageSize: number;
-  };
-  size: number;
-  totalPages: number;
-  content: T[];
-};
+import { PagedResult } from "./usePaginatedAuctions";
 
 export type CommentDto = {
   id: number;
@@ -26,7 +17,7 @@ export const COMMENTS = "Comments";
 const fetchComments = async ({
   queryKey,
 }: QueryFunctionContext<[string, string]>): Promise<
-  JpaPagedResponse<CommentDto>
+  PagedResult<CommentDto>
 > => {
   const [_, itemId] = queryKey;
 

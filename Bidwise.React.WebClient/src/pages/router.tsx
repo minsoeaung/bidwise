@@ -1,9 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import { ForbiddenPage } from "./Forbidden";
-import Root from "./Root";
 import NotFoundPage from "./NotFound";
 import CatalogPage from "./Auctions";
 import { lazy } from "react";
+import Root from "./Root";
 
 const CreateAuctionPage = lazy(() => import("./Auctions/CreateAuction"));
 const AuctionDetailPage = lazy(() => import("./Auctions/AuctionDetail"));

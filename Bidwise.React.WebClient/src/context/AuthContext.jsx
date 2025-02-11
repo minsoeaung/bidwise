@@ -23,8 +23,7 @@ export const AuthContextProvider = ({ children }) => {
   const getUser = () => {
     setLoading(true);
     ApiClient.get("/bff/user")
-      .then((res) => {
-        const data = res.data;
+      .then((data) => {
         if (Array.isArray(data)) {
           const logout_url =
             data.find((claim) => claim.type === "bff:logout_url")?.value ??

@@ -8,6 +8,8 @@ using System.Reflection;
 using Duende.IdentityModel;
 using Duende.IdentityServer.EntityFramework.DbContexts;
 using Duende.IdentityServer.EntityFramework.Mappers;
+using Duende.IdentityServer;
+using Microsoft.AspNetCore.Authentication.OAuth;
 
 namespace Bidwise.Identity;
 
@@ -76,7 +78,8 @@ internal static class HostingExtensions
             builder.Services.AddAuthentication()
            .AddGoogle(options =>
            {
-               //options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+               // If this is enabled and use default identity pages, "Error loading external login information."
+               // options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
 
                // set the redirect URI to builder.Configuration["IDENTITY_ENDPOINT"]/signin-google in Google console
                options.ClientId = googleClientId;
