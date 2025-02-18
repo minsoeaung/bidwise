@@ -8,6 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Aspire.Confluent.Kafka" Version="9.0.0" />
 		<PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="7.0.4" />
 		<PackageReference Include="Duende.IdentityServer.EntityFramework" Version="7.1.0" />
 

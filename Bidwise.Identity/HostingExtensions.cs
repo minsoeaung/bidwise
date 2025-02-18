@@ -10,6 +10,8 @@ using Duende.IdentityServer.EntityFramework.DbContexts;
 using Duende.IdentityServer.EntityFramework.Mappers;
 using Duende.IdentityServer;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using Confluent.Kafka;
+using Bidwise.Identity.Kafka;
 
 namespace Bidwise.Identity;
 
@@ -86,6 +88,15 @@ internal static class HostingExtensions
                options.ClientSecret = googleClientSecret;
            });
         }
+
+        builder.AddKafkaConsumer<string, string>("kafka", options =>
+        {
+            options.Config.GroupId = "auction-group";
+            options.Config.AutoOffsetReset = AutoOffsetReset.Earliest;
+            options.Config.EnableAutoCommit = false;
+        });
+
+        builder.Services.AddHostedService<KafkaConsumer>();
 
         return builder.Build();
     }

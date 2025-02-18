@@ -34,6 +34,8 @@ builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonS3>();
 builder.Services.AddScoped<IFileService, FileService>();
 
+builder.AddKafkaProducer<string, string>("kafka");
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

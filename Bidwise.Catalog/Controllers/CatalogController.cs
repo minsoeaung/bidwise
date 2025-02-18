@@ -1,13 +1,16 @@
 using Bidwise.Catalog.Data;
 using Bidwise.Catalog.Entities;
 using Bidwise.Catalog.Extensions;
+using Bidwise.Catalog.Kafka;
 using Bidwise.Catalog.Models;
 using Bidwise.Catalog.Services.Interfaces;
 using Bidwise.Common;
 using Bidwise.Common.Models;
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace Bidwise.Catalog.Controllers;
 
@@ -19,12 +22,14 @@ public class CatalogController : ControllerBase
     private readonly ILogger<CatalogController> _logger;
     private readonly CatalogDbContext _context;
     private readonly IFileService _fileService;
+    private readonly IProducer<string, string> _kafkaProducer;
 
-    public CatalogController(ILogger<CatalogController> logger, CatalogDbContext context, IFileService fileService)
+    public CatalogController(ILogger<CatalogController> logger, CatalogDbContext context, IFileService fileService, IProducer<string, string> producer)
     {
         _logger = logger;
         _context = context;
         _fileService = fileService;
+        _kafkaProducer = producer;
     }
 
     [HttpGet]
@@ -131,6 +136,12 @@ public class CatalogController : ControllerBase
         await Task.WhenAll(imageUploadTasks);
         await _context.SaveChangesAsync();
         await transaction.CommitAsync();
+
+        await _kafkaProducer.ProduceAsync("AuctionCreated", new Message<string, string>
+        {
+            Key = item.Id.ToString(),
+            Value = JsonSerializer.Serialize(item)
+        });
 
         return CreatedAtAction(nameof(GetOne), new { id = item.Id }, item);
     }
