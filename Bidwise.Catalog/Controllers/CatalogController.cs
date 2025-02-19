@@ -1,7 +1,6 @@
 using Bidwise.Catalog.Data;
 using Bidwise.Catalog.Entities;
 using Bidwise.Catalog.Extensions;
-using Bidwise.Catalog.Kafka;
 using Bidwise.Catalog.Models;
 using Bidwise.Catalog.Services.Interfaces;
 using Bidwise.Common;

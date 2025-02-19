@@ -40,12 +40,12 @@ public class ItemDto
             if (timeSpan.TotalSeconds <= 0) return ItemsStatus.Expired.ToString();
 
             if (timeSpan.TotalDays >= 1)
-                return $"{(int)timeSpan.TotalDays} day{(timeSpan.TotalDays >= 2 ? "s" : "")} left";
+                return $"{(int)timeSpan.TotalDays} Day{(timeSpan.TotalDays >= 2 ? "s" : "")}";
 
             if (timeSpan.TotalHours >= 1)
-                return $"{(int)timeSpan.TotalHours} hour{(timeSpan.TotalHours >= 2 ? "s" : "")} left";
+                return $"{(int)timeSpan.TotalHours} Hour{(timeSpan.TotalHours >= 2 ? "s" : "")}";
 
-            return $"{(int)timeSpan.TotalMinutes} minute{(timeSpan.TotalMinutes >= 2 ? "s" : "")} left";
+            return $"{(int)timeSpan.TotalMinutes} Minute{(timeSpan.TotalMinutes >= 2 ? "s" : "")}";
         }
     }
 }

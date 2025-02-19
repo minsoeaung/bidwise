@@ -99,9 +99,15 @@ const Header = () => {
       }}
     >
       <HStack alignItems={"center"} justifyContent={"space-between"}>
-        <Link to="/" style={{ fontWeight: "bold" }}>
-          Logo
-        </Link>
+        <HStack gap="1rem">
+          <Link to="/" style={{ fontWeight: "bold", color: "teal.600" }}>
+            {"<"}Bidwise Logo{">"}
+          </Link>
+          <Button asChild borderRadius="3xl">
+            <Link to="/auctions/create">Sell an item</Link>
+          </Button>
+        </HStack>
+
         <HStack>
           <InputGroup
             startElement={<LuSearch />}

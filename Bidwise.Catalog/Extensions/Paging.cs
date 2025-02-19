@@ -25,16 +25,17 @@ public static class Paging
         if (string.IsNullOrWhiteSpace(searchTerm))
             return items;
 
-        IEnumerable<string> metaphoneKeys = [];
+        IList<string> metaphoneKeys = [];
         var metaphone = new DoubleMetaphone();
 
         foreach (var word in searchTerm.Split(" "))
         {
             metaphone.computeKeys(word);
+
             if (!string.IsNullOrEmpty(metaphone.PrimaryKey))
-                metaphoneKeys.Append(metaphone.PrimaryKey);
+                metaphoneKeys.Add(metaphone.PrimaryKey);
             if (!string.IsNullOrEmpty(metaphone.AlternateKey))
-                metaphoneKeys.Append(metaphone.AlternateKey);
+                metaphoneKeys.Add(metaphone.AlternateKey);
         }
 
         return items

@@ -23,15 +23,16 @@ const fetchAuctions = async ({
 
   const serachTerm = searchParams.get("SearchTerm") || "";
   const categories = searchParams.get("Categories") || "";
+  const orderBy = searchParams.get("OrderBy") || "";
 
   return await ApiClient.get(
     `api/catalog?SearchTerm=${serachTerm}&Categories=${
       categories === "All categories" ? "" : categories
-    }`
+    }&OrderBy=${orderBy}`
   );
 };
 
-export const usePaginatedAuctions = (searchParams) => {
+export const usePaginatedAuctions = (searchParams: string) => {
   return {
     ...useQuery([AUCTIONS, searchParams], fetchAuctions, {
       keepPreviousData: true,

@@ -1,8 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import router from "./pages/router";
-import { ChakraProvider, createSystem, defaultConfig } from "@chakra-ui/react";
 import { RouterProvider } from "react-router";
-import { ColorModeProvider } from "./components/ui/color-mode";
+import { Provider } from "@/components/ui/provider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,17 +16,6 @@ const queryClient = new QueryClient({
   },
 });
 
-const system = createSystem(defaultConfig, {
-  theme: {
-    tokens: {
-      fonts: {
-        heading: { value: `'Figtree', sans-serif` },
-        body: { value: `'Figtree', sans-serif` },
-      },
-    },
-  },
-});
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -35,14 +23,6 @@ function App() {
         <RouterProvider router={router} />
       </Provider>
     </QueryClientProvider>
-  );
-}
-
-function Provider(props) {
-  return (
-    <ChakraProvider value={system}>
-      <ColorModeProvider {...props} />
-    </ChakraProvider>
   );
 }
 
