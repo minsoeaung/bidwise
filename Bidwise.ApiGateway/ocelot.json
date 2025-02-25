@@ -38,7 +38,7 @@
     },
     {
       "DownstreamPathTemplate": "/api/bids/{everything}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http", // <-- No HTTPS for this service
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",

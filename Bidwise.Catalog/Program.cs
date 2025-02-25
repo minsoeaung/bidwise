@@ -2,13 +2,16 @@ using Amazon.S3;
 using Bidwise.Catalog.Data;
 using Bidwise.Catalog.Services;
 using Bidwise.Catalog.Services.Interfaces;
+using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-builder.Services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]));
+builder.Services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
@@ -36,6 +39,14 @@ builder.Services.AddScoped<IFileService, FileService>();
 
 builder.AddKafkaProducer<string, string>("kafka");
 
+builder.Services.AddHangfire(configuration => configuration
+      .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+      .UseSimpleAssemblyNameTypeSerializer()
+      .UseRecommendedSerializerSettings()
+      .UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection")));
+
+builder.Services.AddHangfireServer();
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
@@ -48,6 +59,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseHangfireDashboard();
 
 app.UseAuthentication();
 app.UseAuthorization();

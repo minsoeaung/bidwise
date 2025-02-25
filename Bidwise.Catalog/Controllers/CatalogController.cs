@@ -6,6 +6,7 @@ using Bidwise.Catalog.Services.Interfaces;
 using Bidwise.Common;
 using Bidwise.Common.Models;
 using Confluent.Kafka;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -134,13 +135,21 @@ public class CatalogController : ControllerBase
 
         await Task.WhenAll(imageUploadTasks);
         await _context.SaveChangesAsync();
-        await transaction.CommitAsync();
 
-        await _kafkaProducer.ProduceAsync("AuctionCreated", new Message<string, string>
+        // Event Emit
+        await _kafkaProducer.ProduceAsync(Topics.AuctionCreated, new Message<string, string>
         {
             Key = item.Id.ToString(),
             Value = JsonSerializer.Serialize(item)
         });
+
+        // Scheduled Job to update BuyerId, BuyerName, CurrentHighestBid
+        BackgroundJob.Schedule(() => Console.WriteLine("Yay"), new DateTimeOffset(dto.EndDate));
+        // Only add when you have time....
+
+
+        await transaction.CommitAsync();
+
 
         return CreatedAtAction(nameof(GetOne), new { id = item.Id }, item);
     }

@@ -5,7 +5,7 @@ import { ApiClient } from "../../api/apiClient";
 export interface ItemCreateDto {
   name: string;
   description: string;
-  categoryName: string | null;
+  categoryName: string;
   startingBid: number;
   endDate: string;
   images: ImageCreateDto[];

@@ -25,8 +25,8 @@ const AUCTION_INITIAL_STATE: Omit<ItemCreateDto, "images"> = {
   name: "",
   description: "",
   categoryName: "",
-  endDate: null,
-  startingBid: null,
+  endDate: "",
+  startingBid: 0,
 };
 
 const CreateAuctionPage = () => {
@@ -49,18 +49,19 @@ const CreateAuctionPage = () => {
 
   const handleImagesInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
+    if (files !== null) {
+      const images: ImageCreateDto[] = [];
 
-    const images: ImageCreateDto[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        images.push({
+          file: file,
+          label: `Label ${i + 1}`,
+        });
+      }
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      images.push({
-        file: file,
-        label: `Label ${i + 1}`,
-      });
+      setImages(images);
     }
-
-    setImages(images);
   };
 
   const handleCreateProduct = () => {
@@ -125,6 +126,7 @@ const CreateAuctionPage = () => {
                     required
                     multiple
                     type="file"
+                    accept="image/*"
                     onChange={handleImagesInputChange}
                   />
                 </Field>

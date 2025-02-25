@@ -18,6 +18,7 @@ export type AuctionDto = {
   status: string;
   timeLeft: string;
   images: ImageDto[];
+  startingBid: number;
 };
 
 export type ImageDto = {

@@ -13,6 +13,7 @@ public class ItemDto
     public string SellerName { get; set; }
     public int? BuyerId { get; set; }
     public string? BuyerName { get; set; }
+    public double StartingBid { get; set; }
 
     public IEnumerable<ImageDto> Images { get; set; } = [];
 
