@@ -1,7 +1,26 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { ApiClient } from "../api/apiClient.js";
 
-const AuthContext = createContext({
+type Claim = {
+  type: string;
+  value: string;
+};
+
+type GlobalAuthContent = {
+  loggedInUser: Claim[] | null;
+  logoutUrl: string;
+  refreshAuth: Function;
+  loading: boolean;
+  error: string | null;
+};
+
+const AuthContext = createContext<GlobalAuthContent>({
   loggedInUser: null,
   logoutUrl: "",
   refreshAuth: () => {},
@@ -9,8 +28,8 @@ const AuthContext = createContext({
   error: null,
 });
 
-export const AuthContextProvider = ({ children }) => {
-  const [loggedInUser, setLoggedInUser] = useState(null);
+export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
+  const [loggedInUser, setLoggedInUser] = useState<Claim[] | null>(null);
   const [logoutUrl, setLogoutUrl] = useState("/bff/logout");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Card,
+  FormatNumber,
   HStack,
   Image,
   SimpleGrid,
@@ -11,12 +12,13 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { useMemo, Children, isValidElement } from "react";
+import { useMemo, Children, isValidElement, memo } from "react";
 import { AuctionDto } from "../../hooks/queries/useAuctionDetail";
 import { AUCTION_IMAGES } from "../../constants/fileUrls";
 import { PiClockLight, PiClockThin } from "react-icons/pi";
+import { TimeLeft } from "../TimeLeft";
 
-export const ItemCard = ({ auction }: { auction: AuctionDto }) => {
+export const ItemCard = memo(({ auction }: { auction: AuctionDto }) => {
   return (
     <Card.Root
       maxW="sm"
@@ -25,29 +27,40 @@ export const ItemCard = ({ auction }: { auction: AuctionDto }) => {
       border="none"
     >
       <Box position="relative">
-        <AspectRatio ratio={15 / 10}>
-          <Image
-            borderRadius="md"
-            overflow="hidden"
-            src={
-              auction.images.length
-                ? AUCTION_IMAGES + auction.images[0].name
-                : "https://media.carsandbids.com/cdn-cgi/image/width=768,quality=70/c7387fa5557775cb743f87fc02d6cb831afb20b2/photos/9nXLv7NX-EM-e9ZBa_8/edit/_X9SP.jpg?t=173912295422"
-            }
-            alt={auction.name}
-          />
-        </AspectRatio>
+        <Image
+          borderRadius="md"
+          aspectRatio={15 / 10}
+          src={
+            auction.images.length
+              ? AUCTION_IMAGES + auction.images[0].name
+              : "https://th.bing.com/th/id/R.b0869d82d142df30dcd9fed1bee3db77?rik=uNDrfM3foy5Bsw&pid=ImgRaw&r=0"
+          }
+          alt={auction.name}
+        />
         <Box position="absolute" bottom="10px" left="10px">
-          <Badge variant="solid" colorPalette="red" size="md">
+          <Badge variant="subtle" size="md">
             <HStack gap="10px">
               <HStack gap="5px">
                 <PiClockLight />
-                <Text>{auction.timeLeft}</Text>
+                <Text>
+                  {auction.status === "Expired" ? (
+                    auction.status
+                  ) : (
+                    <TimeLeft endDate={auction.endDate} />
+                  )}
+                </Text>
               </HStack>
-              <HStack gap="5px">
-                <Text fontWeight="light">Bid</Text>
-                <Text>$2,300</Text>
-              </HStack>
+              {auction.currentHighestBid && (
+                <HStack gap="5px">
+                  <Text fontWeight="light">Bid</Text>
+                  <FormatNumber
+                    value={auction.currentHighestBid}
+                    style="currency"
+                    currency="USD"
+                    maximumFractionDigits={0}
+                  />
+                </HStack>
+              )}
             </HStack>
           </Badge>
         </Box>
@@ -58,7 +71,7 @@ export const ItemCard = ({ auction }: { auction: AuctionDto }) => {
       </Card.Body>
     </Card.Root>
   );
-};
+});
 
 export const ItemGrid = (props: SimpleGridProps) => {
   const columns = useMemo(() => {

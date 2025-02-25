@@ -1,7 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import router from "./pages/router";
 import { RouterProvider } from "react-router";
+import { ColorModeProvider } from "@/components/ui/color-mode";
 import { Provider } from "@/components/ui/provider";
+import "./app.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,6 +23,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Provider>
         <RouterProvider router={router} />
+        <ColorModeProvider></ColorModeProvider>
       </Provider>
     </QueryClientProvider>
   );

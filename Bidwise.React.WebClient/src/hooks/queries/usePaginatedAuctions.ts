@@ -24,11 +24,13 @@ const fetchAuctions = async ({
   const serachTerm = searchParams.get("SearchTerm") || "";
   const categories = searchParams.get("Categories") || "";
   const orderBy = searchParams.get("OrderBy") || "";
+  const status = searchParams.get("Status") || "";
+  const type = searchParams.get("Type") || "";
 
   return await ApiClient.get(
     `api/catalog?SearchTerm=${serachTerm}&Categories=${
       categories === "All categories" ? "" : categories
-    }&OrderBy=${orderBy}`
+    }&OrderBy=${orderBy}&Status=${status}&Type=${type}`
   );
 };
 

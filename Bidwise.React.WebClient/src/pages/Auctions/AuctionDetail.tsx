@@ -17,6 +17,10 @@ import {
   Center,
   Card,
   DialogCloseTrigger,
+  VStack,
+  ButtonGroup,
+  EmptyState,
+  List,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { usePaginatedComments } from "../../hooks/queries/usePaginatedComments";
@@ -31,7 +35,13 @@ import {
   NumberInputField,
   NumberInputRoot,
 } from "@/components/ui/number-input";
-import { FaArrowUp, FaHashtag, FaRegClock, FaRegComment } from "react-icons/fa";
+import {
+  FaArrowUp,
+  FaHashtag,
+  FaRegClock,
+  FaRegComment,
+  FaRegComments,
+} from "react-icons/fa";
 import { Comment, CommentLoading } from "@/components/Comment";
 import { LuArrowDown } from "react-icons/lu";
 import {
@@ -48,6 +58,7 @@ import { useCreateOrUpdateBid } from "@/hooks/mutations/useCreateOrUpdateBid";
 import { useBids } from "@/hooks/queries/useBids";
 import { Bid, BidLoading } from "@/components/Bid";
 import { TimeLeft } from "@/components/TimeLeft";
+import { HiColorSwatch } from "react-icons/hi";
 
 dayjs.extend(relativeTime);
 
@@ -83,6 +94,7 @@ const AuctionDetailPage = () => {
     isError: bidsIsError,
     error: bidsError,
     isLoading: bidsIsLoading,
+    refetch: bidsRefetch,
   } = useBids(data?.id);
 
   const commentCreateMutation = useCreateComment();
@@ -138,20 +150,21 @@ const AuctionDetailPage = () => {
             </Box>
             <Grid mt={3} templateColumns="repeat(4, 1fr)" gap="6">
               <GridItem colSpan={3}>
-                {data.images.length > 0 && (
-                  <Card.Root height="500px">
-                    <Image
-                      rounded="sm"
-                      overflow="hidden"
-                      key={data.images[0].name}
-                      width="100%"
-                      height="100%"
-                      objectFit="cover"
-                      src={AUCTION_IMAGES + data.images[0].name}
-                      alt={AUCTION_IMAGES + data.images[0].name}
-                    />
-                  </Card.Root>
-                )}
+                <Card.Root height="500px">
+                  <Image
+                    rounded="sm"
+                    overflow="hidden"
+                    width="100%"
+                    height="100%"
+                    objectFit="cover"
+                    src={
+                      data.images.length
+                        ? AUCTION_IMAGES + data.images[0].name
+                        : "https://th.bing.com/th/id/R.b0869d82d142df30dcd9fed1bee3db77?rik=uNDrfM3foy5Bsw&pid=ImgRaw&r=0"
+                    }
+                    alt="No alt"
+                  />
+                </Card.Root>
               </GridItem>
               <GridItem colSpan={1}>
                 <Box>
@@ -159,11 +172,7 @@ const AuctionDetailPage = () => {
                     <Card.Header>
                       <Heading size="md">Bids</Heading>
                     </Card.Header>
-                    <Card.Body
-                      color="fg.info"
-                      overflowY="scroll"
-                      overflowX="hidden"
-                    >
+                    <Card.Body overflowY="scroll" overflowX="hidden">
                       {bidsIsLoading ? (
                         <Stack gap="4">
                           {[1, 2, 3, 4, 5].map((_, i) => (
@@ -171,14 +180,46 @@ const AuctionDetailPage = () => {
                           ))}
                         </Stack>
                       ) : bidsIsError ? (
-                        <Center>
-                          <Text>Bids unavailable.</Text>
-                        </Center>
+                        <VStack>
+                          <Text color="fg.muted" textStyle="sm">
+                            Bids unavailable. Please try again later.
+                          </Text>
+                          <Button
+                            mx="auto"
+                            variant="ghost"
+                            onClick={() => bidsRefetch()}
+                          >
+                            Retry
+                          </Button>
+                        </VStack>
                       ) : (
-                        <Stack gap="4">
-                          {Array.isArray(bids) &&
-                            bids.map((bid) => <Bid bid={bid} key={bid.id} />)}
-                        </Stack>
+                        Array.isArray(bids) &&
+                        (bids.length > 0 ? (
+                          <Stack gap="4">
+                            {Array.isArray(bids) &&
+                              bids.map((bid) => <Bid bid={bid} key={bid.id} />)}
+                          </Stack>
+                        ) : (
+                          <EmptyState.Root>
+                            <EmptyState.Content>
+                              <EmptyState.Indicator>
+                                <HiColorSwatch />
+                              </EmptyState.Indicator>
+                              <VStack textAlign="center">
+                                <EmptyState.Title>No bids yet</EmptyState.Title>
+                                <EmptyState.Description>
+                                  Be the first one to bid
+                                </EmptyState.Description>
+                              </VStack>
+                              <Button
+                                variant="subtle"
+                                onClick={() => setBidPlaceDialogOpen(true)}
+                              >
+                                Place Bid
+                              </Button>
+                            </EmptyState.Content>
+                          </EmptyState.Root>
+                        ))
                       )}
                     </Card.Body>
                   </Card.Root>
@@ -204,7 +245,8 @@ const AuctionDetailPage = () => {
                     height="45px"
                     width="70%"
                     px="20px"
-                    color="fg.muted"
+                    color="fg.subtle"
+                    _dark={{ color: "fg.muted" }}
                   >
                     <HStack gap="10px">
                       <FaRegClock />
@@ -244,7 +286,7 @@ const AuctionDetailPage = () => {
                       <Button
                         height="45px"
                         width="120px"
-                        loading={bidsIsLoading}
+                        disabled={bidsIsLoading}
                       >
                         Place Bid
                       </Button>
@@ -277,7 +319,7 @@ const AuctionDetailPage = () => {
                 </HStack>
                 <Flex mt={3} justifyContent="space-between">
                   <Text color="fg.info">Seller: {data.sellerName}</Text>
-                  <Text>
+                  <Text color="fg.muted">
                     Ending {dayjs(data.endDate).format("MMMM D [at] h:mm A")}
                   </Text>
                 </Flex>
@@ -318,22 +360,42 @@ const AuctionDetailPage = () => {
                   </Stack>
                 ) : commentsIsError ? (
                   <Center mt={8} mb={5}>
-                    <Status.Root colorPalette="orange">
-                      <Status.Indicator />
-                      Comments are currently unavailable. Please try again
-                      later.
-                      <Button variant="ghost" onClick={() => commentsRefetch()}>
+                    <VStack>
+                      <Text color="fg.muted" textStyle="sm">
+                        Comments unavailable. Please try again later.
+                      </Text>
+                      <Button
+                        mx="auto"
+                        variant="ghost"
+                        onClick={() => commentsRefetch()}
+                      >
                         Retry
                       </Button>
-                    </Status.Root>
+                    </VStack>
                   </Center>
                 ) : (
-                  <Stack gap="8" mt={8}>
-                    {Array.isArray(comments?.content) &&
-                      comments.content.map((c) => (
-                        <Comment key={c.id} comment={c} />
-                      ))}
-                  </Stack>
+                  Array.isArray(comments?.content) &&
+                  (comments.content.length > 0 ? (
+                    <Stack gap="8" mt={8}>
+                      {Array.isArray(comments?.content) &&
+                        comments.content.map((c) => (
+                          <Comment key={c.id} comment={c} />
+                        ))}
+                    </Stack>
+                  ) : (
+                    <EmptyState.Root>
+                      <EmptyState.Content>
+                        <EmptyState.Indicator>
+                          <FaRegComments />
+                        </EmptyState.Indicator>
+                        <VStack textAlign="center">
+                          <EmptyState.Description>
+                            No comments to display yet
+                          </EmptyState.Description>
+                        </VStack>
+                      </EmptyState.Content>
+                    </EmptyState.Root>
+                  ))
                 )}
               </GridItem>
               <GridItem colSpan={1}></GridItem>

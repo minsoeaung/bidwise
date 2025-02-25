@@ -3,12 +3,14 @@ import { usePaginatedAuctions } from "../../hooks/queries/usePaginatedAuctions";
 import {
   Box,
   Button,
+  EmptyState,
   Flex,
   HStack,
   List,
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { HiColorSwatch } from "react-icons/hi";
 import { Fallback } from "../../components/Fallback";
 import AntdSpin from "../../components/AntdSpin";
 import { ErrorDisplay } from "../../components/ErrorDisplay";
@@ -17,6 +19,7 @@ import { FaSearch } from "react-icons/fa";
 import { ItemCard, ItemGrid } from "../../components/ItemCard";
 import { AuctionPageOrderBy } from "@/types/AuctionPageOrder";
 import { useEffect, useState } from "react";
+import { NoDataYet } from "@/components/NoDataYet";
 
 const AuctionsPage = () => {
   const [params, setParams] = useSearchParams();
@@ -24,9 +27,8 @@ const AuctionsPage = () => {
     (params.get("OrderBy") || "") as AuctionPageOrderBy
   );
 
-  const { data, isLoading, isFetching, isError, error } = usePaginatedAuctions(
-    params.toString()
-  );
+  const { data, isLoading, isFetching, isError, error, refetch } =
+    usePaginatedAuctions(params.toString());
 
   const handlePageOrderChange = (orderBy: AuctionPageOrderBy) => () => {
     const newParams = new URLSearchParams(params);
@@ -36,6 +38,12 @@ const AuctionsPage = () => {
   };
 
   const searchTerm = params.get("SearchTerm") || "";
+  const isVickrey = params.get("Type") === "Vickrey";
+  const isPast = params.get("Status") === "Sold";
+
+  useEffect(() => {
+    refetch();
+  }, [params]);
 
   return (
     <Box maxW="8xl" mx="auto" px={{ base: "2", md: "8", lg: "12" }}>
@@ -59,7 +67,9 @@ const AuctionsPage = () => {
 
             <HStack justifyContent="space-between">
               <Text fontWeight="bold" fontSize="1.2rem">
-                Auctions {!!searchTerm && `(${data.content.length})`}
+                {isVickrey && "Vickrey Auctions"}
+                {isPast && "Past Results"}{" "}
+                {!!searchTerm && `(${data.content.length})`}
               </Text>
               <Flex>
                 <Button
@@ -121,10 +131,14 @@ const AuctionsPage = () => {
 
             {data.content.length === 0 && (
               <Box mt={10}>
-                <VStack>
-                  <FaSearch fontSize="5xl" />
-                  <Text>No Auctions!</Text>
-                </VStack>
+                <NoDataYet
+                  type="results"
+                  suggestions={[
+                    "Try removing filters",
+                    "Try different keywords",
+                    "Try different auction types",
+                  ]}
+                />
               </Box>
             )}
 

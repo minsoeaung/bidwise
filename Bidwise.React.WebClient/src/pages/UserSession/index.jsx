@@ -1,46 +1,41 @@
+import { Alert, Box, Center, Container, DataList } from "@chakra-ui/react";
 import { useAuth } from "../../context/AuthContext";
+import AntdSpin from "@/components/AntdSpin";
 
 const UserSessionPage = () => {
   const { loggedInUser, loading, error } = useAuth();
 
   if (loading) {
     return (
-      <p>
-        <em>Loading...</em>
-      </p>
+      <Box mt={10}>
+        <AntdSpin />
+      </Box>
     );
   }
 
   if (error) {
     return (
-      <p>
-        <em>{error}</em>
-      </p>
+      <Container mt={3}>
+        <Alert.Root status="error">
+          <Alert.Indicator />
+          <Alert.Title>User is not authenticated.</Alert.Title>
+        </Alert.Root>
+      </Container>
     );
   }
 
   return (
-    <div>
-      <h1 id="tabelLabel">User Session</h1>
-      <p>This pages shows the current user&apos;s session.</p>
-      <table className="table table-striped" aria-labelledby="tabelLabel">
-        <thead>
-          <tr>
-            <th>Claim Type</th>
-            <th>Claim Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Array.isArray(loggedInUser) &&
-            loggedInUser.map((claim) => (
-              <tr key={claim.type}>
-                <td>{claim.type}</td>
-                <td>{claim.value}</td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-    </div>
+    <Center mt={3}>
+      <DataList.Root orientation="horizontal">
+        {Array.isArray(loggedInUser) &&
+          loggedInUser.map((claim) => (
+            <DataList.Item key={claim.type}>
+              <DataList.ItemLabel>{claim.type}</DataList.ItemLabel>
+              <DataList.ItemValue>{claim.value}</DataList.ItemValue>
+            </DataList.Item>
+          ))}
+      </DataList.Root>
+    </Center>
   );
 };
 
