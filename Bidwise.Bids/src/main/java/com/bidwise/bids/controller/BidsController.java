@@ -5,7 +5,11 @@ import com.bidwise.bids.model.BidCreateOrUpdateDto;
 import com.bidwise.bids.model.UserProfile;
 import com.bidwise.bids.respository.BidsRepository;
 import com.bidwise.bids.util.UserProfileUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,24 +21,27 @@ import java.util.Optional;
 public class BidsController {
     private final BidsRepository repository;
 
-    BidsController(BidsRepository repository) {
+    @Autowired
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
+    BidsController(BidsRepository repository, KafkaTemplate<String, String> kafkaTemplate) {
         this.repository = repository;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @GetMapping()
     List<Bid> allByItemId(@RequestParam int itemId) {
-        return repository.findByItemIdOrderByAmountDesc(itemId);
+        return repository.findByItemIdOrderByCreatedAtDesc(itemId);
     }
 
     @PostMapping()
-    Bid createOrUpdateBid(@RequestBody BidCreateOrUpdateDto bidDto) {
+    Bid createOrUpdateBid(@RequestBody BidCreateOrUpdateDto bidDto) throws JsonProcessingException {
         UserProfile userProfile = UserProfileUtils.getProfile();
         if (userProfile == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
 
         int bidderId = userProfile.getId();
         int itemId = bidDto.getItemId();
-        double amount = bidDto.getAmount();
 
         Optional<Bid> existingBid = repository.findByItemIdAndBidderId(itemId, bidderId);
 
@@ -51,7 +58,12 @@ public class BidsController {
             bid.setAmount(bidDto.getAmount());
         }
 
-        return repository.save(bid);
+        bid = repository.save(bid);
+
+        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+        kafkaTemplate.send(existingBid.isPresent() ? "BidUpdated" : "BidPlaced", String.valueOf(bidDto.getItemId()), objectMapper.writeValueAsString(bid));
+
+        return bid;
     }
 
     // withdraw from auction

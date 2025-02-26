@@ -59,6 +59,9 @@ import { useBids } from "@/hooks/queries/useBids";
 import { Bid, BidLoading } from "@/components/Bid";
 import { TimeLeft } from "@/components/TimeLeft";
 import { HiColorSwatch } from "react-icons/hi";
+import { toaster } from "@/components/ui/toaster";
+import { useAuth } from "@/context/AuthContext";
+import { ApiClient } from "@/api/apiClient";
 
 dayjs.extend(relativeTime);
 
@@ -77,22 +80,14 @@ const AuctionDetailPage = () => {
 
   const {
     data: comments,
-    isFetching: commentsIsFetching,
+    isLoading: commentsIsLoading,
     isError: commentsIsError,
-    error: commentsError,
     refetch: commentsRefetch,
   } = usePaginatedComments(id);
-
-  useEffect(() => {
-    if (commentsIsError) {
-      console.log(commentsError);
-    }
-  }, [commentsIsError]);
 
   const {
     data: bids,
     isError: bidsIsError,
-    error: bidsError,
     isLoading: bidsIsLoading,
     refetch: bidsRefetch,
   } = useBids(data?.id);
@@ -103,12 +98,14 @@ const AuctionDetailPage = () => {
 
   const handleAddComment = () => {
     if (Boolean(comment.trim())) {
-      commentCreateMutation.mutate({
-        itemId: Number(id),
-        commentText: comment.trim(),
-      });
-
-      setComment("");
+      commentCreateMutation
+        .mutateAsync({
+          itemId: Number(id),
+          commentText: comment.trim(),
+        })
+        .then(() => {
+          setComment("");
+        });
     }
   };
 
@@ -298,7 +295,6 @@ const AuctionDetailPage = () => {
                       <DialogBody pb="4">
                         <NumberInputRoot
                           defaultValue={String(data.startingBid)}
-                          min={data.startingBid}
                           step={data.startingBid}
                         >
                           <NumberInputField
@@ -352,7 +348,7 @@ const AuctionDetailPage = () => {
                     Comment <LuArrowDown />
                   </Button>
                 </HStack>
-                {commentsIsFetching ? (
+                {commentsIsLoading ? (
                   <Stack gap="8" mt={8}>
                     {[1, 2, 3, 4].map((n, i) => (
                       <CommentLoading key={i} />

@@ -96,10 +96,10 @@ public class Comment {
         return Objects.hash(this.id, this.commentText);
     }
 
-    @Override
-    public String toString() {
-        return "Comment{" + "id=" + this.id + ", content='" + this.commentText + '\'' + ", userId='" + this.userId + '\'' + '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Comment{" + "id=" + this.id + ", content='" + this.commentText + '\'' + ", userId='" + this.userId + '\'' + '}';
+//    }
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;

@@ -2,16 +2,21 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 builder.AddProject<Projects.Bidwise_ApiGateway>("api-gateway");
 
-// Event Bus
+// Event bus
 var kafka = builder.AddKafka("kafka")
+                   .WithContainerRuntimeArgs("-p", "9200:9092")
                    .WithKafkaUI(kafkaUI => kafkaUI.WithHostPort(9100))
                    .WithDataVolume(isReadOnly: false);
 
 // APIs
 builder.AddProject<Projects.Bidwise_Identity>("identity-service")
-    .WithReference(kafka);
+    .WithReference(kafka)
+    .WaitFor(kafka);
 builder.AddProject<Projects.Bidwise_Catalog>("catalog-service")
-    .WithReference(kafka);
+    .WithReference(kafka)
+    .WaitFor(kafka);
+// comments api in spring
+// bids api in spring
 
 // Clients
 builder.AddProject<Projects.Bidwise_WebClient>("web-mvc");

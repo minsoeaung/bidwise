@@ -41,6 +41,7 @@ public class SecurityConfig {
                                 .introspector(introspector())
                         )
                 );
+
         return http.build();
     }
 

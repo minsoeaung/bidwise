@@ -3,6 +3,7 @@ import {
   ReactNode,
   useContext,
   useEffect,
+  useId,
   useState,
 } from "react";
 import { ApiClient } from "../api/apiClient.js";
@@ -18,6 +19,7 @@ type GlobalAuthContent = {
   refreshAuth: Function;
   loading: boolean;
   error: string | null;
+  userId: number | null;
 };
 
 const AuthContext = createContext<GlobalAuthContent>({
@@ -26,6 +28,7 @@ const AuthContext = createContext<GlobalAuthContent>({
   refreshAuth: () => {},
   loading: true,
   error: null,
+  userId: null,
 });
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
@@ -34,6 +37,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refresh, setRefresh] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
     getUser();
@@ -47,8 +51,14 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
           const logout_url =
             data.find((claim) => claim.type === "bff:logout_url")?.value ??
             logoutUrl;
+
           setLogoutUrl(logout_url);
           setLoggedInUser(data);
+
+          const userId = Number(
+            data.find((claim) => claim.type === "sub")?.value
+          );
+          setUserId(userId);
         }
       })
       .catch((e) => {
@@ -64,7 +74,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ loggedInUser, logoutUrl, refreshAuth, loading, error }}
+      value={{ loggedInUser, logoutUrl, refreshAuth, loading, error, userId }}
     >
       {children}
     </AuthContext.Provider>

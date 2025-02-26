@@ -33,4 +33,23 @@ public class KafkaConsumer(IConsumer<string, string> consumer) : BackgroundServi
 
         consumer.Close();
     }
+
+    public async Task ConsumeBidPlacedAsync(string topic, CancellationToken cancellationToken)
+    {
+        consumer.Subscribe(topic);
+
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            var consumeResult = consumer.Consume(cancellationToken);
+
+            var item = JsonSerializer.Deserialize<BidModel>(consumeResult.Message.Value);
+            if (item == null)
+                return;
+
+            Console.WriteLine("--> BidPlaced Event");
+            Console.WriteLine($"--> {item.BidderName}");
+        }
+
+        consumer.Close();
+    }
 }

@@ -6,6 +6,7 @@ import { Footer } from "../../components/Footer";
 import { Fallback } from "../../components/Fallback";
 import Header from "../../components/Header";
 import { ErrorBoundary } from "react-error-boundary";
+import { Toaster } from "@/components/ui/toaster";
 
 // @ts-ignore
 function fallbackRender({ error, resetErrorBoundary }) {
@@ -29,6 +30,7 @@ const Root = () => {
       <Theme colorPalette="teal">
         <Flex minH="100vh" direction="column" flex="1">
           <Header />
+          <Toaster />
           <Flex as="main" role="main" direction="column" flex="1">
             <Box role="presentation" py={3} px={3} minH="lg">
               <Suspense fallback={<Fallback />}>

@@ -3,28 +3,29 @@ import { ApiClient } from "../../api/apiClient";
 import { COMMENTS } from "../queries/usePaginatedComments";
 import { toaster } from "@/components/ui/toaster";
 
-export interface CommentCreateDto {
-  itemId: number;
+export interface CommentUpdateDto {
+  id: number;
   commentText: string;
 }
 
-export const useCreateComment = () => {
+export const useUpdateComment = (itemId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async (payload: CommentCreateDto) => {
+    async (payload: CommentUpdateDto) => {
       return await ApiClient.post(`api/comments`, {
-        commentId: 0,
-        ...payload,
+        commentId: payload.id,
+        itemId: 0,
+        commentText: payload.commentText,
       });
     },
     {
-      onSuccess: async (_, payload) => {
-        queryClient.invalidateQueries([COMMENTS, String(payload.itemId)]);
+      onSuccess: async () => {
+        queryClient.invalidateQueries([COMMENTS, String(itemId)]);
       },
-      onError: async (_, payload) => {
+      onError: async () => {
         toaster.create({
-          title: "Failed to create comment!",
+          title: "Failed to edit comment!",
           type: "error",
         });
       },

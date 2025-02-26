@@ -91,7 +91,7 @@ internal static class HostingExtensions
 
         builder.AddKafkaConsumer<string, string>("kafka", options =>
         {
-            options.Config.GroupId = "auction-group";
+            options.Config.GroupId = "identity-group";
             options.Config.AutoOffsetReset = AutoOffsetReset.Earliest;
             options.Config.EnableAutoCommit = false;
         });

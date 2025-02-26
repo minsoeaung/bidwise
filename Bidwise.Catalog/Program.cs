@@ -1,11 +1,11 @@
 using Amazon.S3;
 using Bidwise.Catalog.Data;
+using Bidwise.Catalog.Kafka;
 using Bidwise.Catalog.Services;
 using Bidwise.Catalog.Services.Interfaces;
+using Confluent.Kafka;
 using Hangfire;
-using Hangfire.SqlServer;
 using Microsoft.EntityFrameworkCore;
-using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +38,15 @@ builder.Services.AddAWSService<IAmazonS3>();
 builder.Services.AddScoped<IFileService, FileService>();
 
 builder.AddKafkaProducer<string, string>("kafka");
+
+builder.AddKafkaConsumer<string, string>("kafka", options =>
+{
+    options.Config.GroupId = "catalog-group";
+    options.Config.AutoOffsetReset = AutoOffsetReset.Earliest;
+    options.Config.EnableAutoCommit = false;
+});
+
+builder.Services.AddHostedService<KafkaConsumer>();
 
 builder.Services.AddHangfire(configuration => configuration
       .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)

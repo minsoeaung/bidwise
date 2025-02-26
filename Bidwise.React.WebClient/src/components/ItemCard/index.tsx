@@ -27,16 +27,20 @@ export const ItemCard = memo(({ auction }: { auction: AuctionDto }) => {
       border="none"
     >
       <Box position="relative">
-        <Image
-          borderRadius="md"
-          aspectRatio={15 / 10}
-          src={
-            auction.images.length
-              ? AUCTION_IMAGES + auction.images[0].name
-              : "https://th.bing.com/th/id/R.b0869d82d142df30dcd9fed1bee3db77?rik=uNDrfM3foy5Bsw&pid=ImgRaw&r=0"
-          }
-          alt={auction.name}
-        />
+        <AspectRatio bg="bg.muted" ratio={3 / 2}>
+          <Image
+            borderRadius="md"
+            width="full"
+            height="full"
+            objectFit="cover"
+            src={
+              auction.images.length
+                ? AUCTION_IMAGES + auction.images[0].name
+                : "https://api.algobook.info/v1/randomimage?category=places"
+            }
+            alt={auction.name}
+          />
+        </AspectRatio>
         <Box position="absolute" bottom="10px" left="10px">
           <Badge variant="subtle" size="md">
             <HStack gap="10px">

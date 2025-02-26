@@ -10,5 +10,7 @@ import java.util.Optional;
 public interface BidsRepository extends JpaRepository<Bid, Long> {
     List<Bid> findByItemIdOrderByAmountDesc(int itemId);
 
+    List<Bid> findByItemIdOrderByCreatedAtDesc(int itemId);
+
     Optional<Bid> findByItemIdAndBidderId(int itemId, int bidderId);
 }

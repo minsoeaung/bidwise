@@ -104,8 +104,8 @@ const Header = () => {
       py={{ base: 1, md: 3 }}
       px={{ base: 3, md: 5 }}
       borderBottomStyle="solid"
-      borderBottomWidth={1}
-      borderBottomColor="gray.300"
+      borderBottomWidth="0.5px"
+      borderBottomColor="gray.100"
     >
       <HStack alignItems={"center"} justifyContent={"space-between"}>
         <HStack gap="1rem">

@@ -29,3 +29,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  kafka:
+    bootstrap-servers: localhost:9200
+    consumer:
+      group-id: comments-group
