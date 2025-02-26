@@ -1,3 +1,5 @@
+using Aspire.Hosting;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 builder.AddProject<Projects.Bidwise_ApiGateway>("api-gateway");
@@ -12,9 +14,19 @@ var kafka = builder.AddKafka("kafka")
 builder.AddProject<Projects.Bidwise_Identity>("identity-service")
     .WithReference(kafka)
     .WaitFor(kafka);
+
 builder.AddProject<Projects.Bidwise_Catalog>("catalog-service")
     .WithReference(kafka)
     .WaitFor(kafka);
+
+//var containerapp = builder.AddSpringApp(
+//    "bids-service",
+//    new JavaAppContainerResourceOptions
+//    {
+//        ContainerImageName = "<repository>/<image>",
+//        OtelAgentPath = "../agents"
+//    });
+
 // comments api in spring
 // bids api in spring
 

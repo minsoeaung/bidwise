@@ -7,15 +7,20 @@ public class Item
 
     public string Name { get; set; }
     public string Description { get; set; }
+    public bool Vickrey { get; set; }
 
     public string DoubleMetaphone { get; set; }
 
     public int SellerId { get; set; }
     public string SellerName { get; set; }
 
-    // Update through Kafka
+    // DENORMALIZED
+
+    // Update through Hangfire at EndDate
+    // Actually, should be called WinnerId...
     public int? BuyerId { get; set; }
     public string? BuyerName { get; set; }
+    public double? BuyerPayAmount { get; set; }
 
     public int? CategoryId { get; set; }
     public Category? Category { get; set; }

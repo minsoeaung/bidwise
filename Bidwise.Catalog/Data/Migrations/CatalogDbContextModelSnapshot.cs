@@ -81,6 +81,9 @@ namespace Bidwise.Catalog.Data.Migrations
                     b.Property<string>("BuyerName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double?>("BuyerPayAmount")
+                        .HasColumnType("float");
+
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
@@ -114,6 +117,9 @@ namespace Bidwise.Catalog.Data.Migrations
 
                     b.Property<double>("StartingBid")
                         .HasColumnType("float");
+
+                    b.Property<bool>("Vickrey")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

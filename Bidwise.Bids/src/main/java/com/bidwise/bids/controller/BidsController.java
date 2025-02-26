@@ -34,6 +34,11 @@ public class BidsController {
         return repository.findByItemIdOrderByCreatedAtDesc(itemId);
     }
 
+    @GetMapping("top-2")
+    List<Bid> getTop2(@RequestParam int itemId) {
+        return repository.findTop2ByItemIdOrderByAmountDesc(itemId);
+    }
+
     @PostMapping()
     Bid createOrUpdateBid(@RequestBody BidCreateOrUpdateDto bidDto) throws JsonProcessingException {
         UserProfile userProfile = UserProfileUtils.getProfile();

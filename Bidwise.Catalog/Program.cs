@@ -6,6 +6,7 @@ using Bidwise.Catalog.Services.Interfaces;
 using Confluent.Kafka;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,11 @@ builder.Services.AddHangfire(configuration => configuration
       .UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection")));
 
 builder.Services.AddHangfireServer();
+
+builder.Services.AddHttpClient("BidsService", httpClient =>
+{
+    httpClient.BaseAddress = new Uri("http://localhost:5004");
+});
 
 var app = builder.Build();
 

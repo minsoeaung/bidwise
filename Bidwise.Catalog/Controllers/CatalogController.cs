@@ -5,6 +5,7 @@ using Bidwise.Catalog.Models;
 using Bidwise.Catalog.Services.Interfaces;
 using Bidwise.Common;
 using Bidwise.Common.Models;
+using Bidwise.Common.Models.Spring;
 using Confluent.Kafka;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
@@ -23,13 +24,15 @@ public class CatalogController : ControllerBase
     private readonly CatalogDbContext _context;
     private readonly IFileService _fileService;
     private readonly IProducer<string, string> _kafkaProducer;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public CatalogController(ILogger<CatalogController> logger, CatalogDbContext context, IFileService fileService, IProducer<string, string> producer)
+    public CatalogController(ILogger<CatalogController> logger, CatalogDbContext context, IFileService fileService, IProducer<string, string> producer, IHttpClientFactory httpClientFactory)
     {
         _logger = logger;
         _context = context;
         _fileService = fileService;
         _kafkaProducer = producer;
+        _httpClientFactory = httpClientFactory;
     }
 
     [HttpGet]
@@ -136,21 +139,74 @@ public class CatalogController : ControllerBase
         await Task.WhenAll(imageUploadTasks);
         await _context.SaveChangesAsync();
 
-        // Event Emit
+        // Let the other services know about the new Auction item
         await _kafkaProducer.ProduceAsync(Topics.AuctionCreated, new Message<string, string>
         {
             Key = item.Id.ToString(),
             Value = JsonSerializer.Serialize(item)
         });
 
-        // Scheduled Job to update BuyerId, BuyerName, CurrentHighestBid
-        BackgroundJob.Schedule(() => Console.WriteLine("Yay"), new DateTimeOffset(dto.EndDate));
-        // Only add when you have time....
-
+        // Determine the winner at EndDate
+        BackgroundJob.Schedule(() => DetermineWinner(item.Id), item.EndDate.ToUniversalTime() - DateTime.UtcNow);
 
         await transaction.CommitAsync();
 
-
         return CreatedAtAction(nameof(GetOne), new { id = item.Id }, item);
+    }
+
+    public async Task DetermineWinner(int itemId)
+    {
+        var item = await _context.Items.FindAsync(itemId);
+        if (item == null)
+            throw new ArgumentException($"Item with ID {itemId} not found.");
+
+        // for Idempotency purpose
+        // Winner already determined, no further action needed
+        if (item.BuyerId.HasValue)
+            return;
+
+        // Here, we get the top 2 bids from the Bids service
+        var httpClient = _httpClientFactory.CreateClient("BidsService");
+        var httpResponseMessage = await httpClient.GetAsync($"api/bids/top-2?itemId={itemId}");
+
+        if (!httpResponseMessage.IsSuccessStatusCode)
+            throw new HttpRequestException($"Failed to retrieve bids. Status code: {httpResponseMessage.StatusCode}");
+
+        using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+        var bids = await JsonSerializer.DeserializeAsync<IList<BidModel>>(contentStream, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (bids == null || bids.Count == 0)
+        {
+            // No winner to determine
+            return;
+        }
+
+
+        var highestBid = bids[0];
+        var secondHighestBid = bids.Count > 1 ? bids[1] : null;
+
+        item.BuyerId = highestBid.BidderId;
+        item.BuyerName = highestBid.BidderName;
+        if (item.Vickrey)
+        {
+            item.BuyerPayAmount = secondHighestBid?.Amount ?? highestBid.Amount;
+        }
+        else
+        {
+            item.BuyerPayAmount = highestBid.Amount;
+        }
+
+
+        _context.Items.Update(item);
+        await _context.SaveChangesAsync();
+
+        await _kafkaProducer.ProduceAsync(Topics.AuctionEnded, new Message<string, string>
+        {
+            Key = item.Id.ToString(),
+            Value = JsonSerializer.Serialize(item)
+        });
     }
 }
