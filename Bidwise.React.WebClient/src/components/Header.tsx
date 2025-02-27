@@ -103,9 +103,15 @@ const Header = () => {
       minH={12}
       py={{ base: 1, md: 3 }}
       px={{ base: 3, md: 5 }}
-      borderBottomStyle="solid"
-      borderBottomWidth="0.5px"
-      borderBottomColor="gray.100"
+      style={{
+        borderBottomWidth: "1px",
+        borderBottomColor: "grey.800",
+        position: "sticky",
+        top: 0,
+        zIndex: 5,
+      }}
+      backgroundColor="white"
+      _dark={{ backgroundColor: "black" }}
     >
       <HStack alignItems={"center"} justifyContent={"space-between"}>
         <HStack gap="1rem">
@@ -122,13 +128,13 @@ const Header = () => {
                 </MenuTrigger>
                 <MenuContent position="absolute" left="0px" width="150px">
                   <MenuItem value="all-auctions" asChild>
-                    <Link to="/auctions">All Auctions</Link>
+                    <Link to="/auctions?Status=All">All Auctions</Link>
                   </MenuItem>
                   <MenuItem value="vickrey-auctions" asChild>
                     <Link to="/auctions?Type=Vickrey">Vickrey Auctions</Link>
                   </MenuItem>
                   <MenuItem value="past-results">
-                    <Link to="/auctions?Status=Sold">Past Results</Link>
+                    <Link to="/auctions?Status=Ended">Past Results</Link>
                   </MenuItem>
                 </MenuContent>
               </MenuRoot>
@@ -136,51 +142,53 @@ const Header = () => {
             <Button asChild borderRadius="3xl">
               <Link to="/auctions/create">Sell an item</Link>
             </Button>
-            <Button variant="plain">What's Bidwise?</Button>
+            <Button asChild variant="plain">
+              <Link to="/whatis">What's Bidwise?</Link>
+            </Button>
           </HStack>
         </HStack>
 
-        <HStack>
-          <InputGroup
-            startElement={<LuSearch />}
-            endElement={
-              <SelectRoot
-                collection={categoryList}
-                variant="subtle"
-                width="130px"
-                size="sm"
-                value={[categories]}
-                onValueChange={(e) => {
-                  const cat = e.value[0];
-                  filterByCategory(cat);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValueText placeholder="All categories" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoryList.items.map((cat) => (
-                    <SelectItem item={cat} key={cat.id}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </SelectRoot>
-            }
-          >
-            <Input
-              width="lg"
-              variant="subtle"
-              placeholder="Search for anything"
-              autoComplete="off"
-              fontSize="md"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-          </InputGroup>
-        </HStack>
         <Stack direction="row" alignItems="center">
+          <HStack mr={5}>
+            <InputGroup
+              startElement={<LuSearch />}
+              endElement={
+                <SelectRoot
+                  collection={categoryList}
+                  variant="subtle"
+                  width="130px"
+                  size="sm"
+                  value={[categories]}
+                  onValueChange={(e) => {
+                    const cat = e.value[0];
+                    filterByCategory(cat);
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValueText placeholder="All categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categoryList.items.map((cat) => (
+                      <SelectItem item={cat} key={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </SelectRoot>
+              }
+            >
+              <Input
+                width="lg"
+                variant="subtle"
+                placeholder="Search for anything"
+                autoComplete="off"
+                fontSize="md"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+            </InputGroup>
+          </HStack>
           <ColorModeButton />
           {!loggedInUser ? (
             <Button asChild>

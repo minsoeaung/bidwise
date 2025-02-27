@@ -27,9 +27,4 @@ public class KafkaTopicConfig {
     public NewTopic bidPlacedTopic() {
         return new NewTopic("BidPlaced", 1, (short) 1);
     }
-
-    @Bean
-    public NewTopic bidUpdatedTopic() {
-        return new NewTopic("BidUpdated", 1, (short) 1);
-    }
 }

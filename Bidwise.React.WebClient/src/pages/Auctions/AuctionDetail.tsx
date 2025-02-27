@@ -21,7 +21,12 @@ import {
   ButtonGroup,
   EmptyState,
   List,
+  Alert,
+  DataList,
+  Link,
+  FormatNumber,
 } from "@chakra-ui/react";
+import { RiAuctionLine } from "react-icons/ri";
 import { useEffect, useRef, useState } from "react";
 import { usePaginatedComments } from "../../hooks/queries/usePaginatedComments";
 import { useCreateComment } from "../../hooks/mutations/useCreateComment";
@@ -59,9 +64,7 @@ import { useBids } from "@/hooks/queries/useBids";
 import { Bid, BidLoading } from "@/components/Bid";
 import { TimeLeft } from "@/components/TimeLeft";
 import { HiColorSwatch } from "react-icons/hi";
-import { toaster } from "@/components/ui/toaster";
 import { useAuth } from "@/context/AuthContext";
-import { ApiClient } from "@/api/apiClient";
 
 dayjs.extend(relativeTime);
 
@@ -78,6 +81,8 @@ const AuctionDetailPage = () => {
 
   const { data, isLoading, isError, error } = useAuctionDetail(id);
 
+  const { userId } = useAuth();
+
   const {
     data: comments,
     isLoading: commentsIsLoading,
@@ -91,6 +96,12 @@ const AuctionDetailPage = () => {
     isLoading: bidsIsLoading,
     refetch: bidsRefetch,
   } = useBids(data?.id);
+
+  const myBid = Array.isArray(bids)
+    ? bids.find((b) => b.bidderId === userId)
+    : null;
+
+  const myBidWon = myBid?.bidderId === userId;
 
   const commentCreateMutation = useCreateComment();
 
@@ -284,6 +295,7 @@ const AuctionDetailPage = () => {
                         height="45px"
                         width="120px"
                         disabled={bidsIsLoading}
+                        variant="surface"
                       >
                         Place Bid
                       </Button>
@@ -319,6 +331,60 @@ const AuctionDetailPage = () => {
                     Ending {dayjs(data.endDate).format("MMMM D [at] h:mm A")}
                   </Text>
                 </Flex>
+                {data.buyerId ? (
+                  myBidWon ? (
+                    <Alert.Root title="Success" status="success" mt={6}>
+                      <Alert.Indicator>
+                        <RiAuctionLine />
+                      </Alert.Indicator>
+                      <Alert.Content color="fg">
+                        <Alert.Title>Auction Won!</Alert.Title>
+                        <Alert.Description>
+                          Your bid of{" "}
+                          <FormatNumber
+                            value={data.buyerPayAmount!}
+                            style="currency"
+                            currency="USD"
+                            maximumFractionDigits={0}
+                          />{" "}
+                          won this auction.
+                        </Alert.Description>
+                      </Alert.Content>
+                    </Alert.Root>
+                  ) : (
+                    <Alert.Root status="info" mt={6}>
+                      <Alert.Indicator>
+                        <RiAuctionLine />
+                      </Alert.Indicator>
+                      <Alert.Content color="fg">
+                        <Alert.Title>Winner</Alert.Title>
+                        <Alert.Description>
+                          {data.buyerName} won this auction.
+                        </Alert.Description>
+                      </Alert.Content>
+                    </Alert.Root>
+                  )
+                ) : (
+                  myBid && (
+                    <Alert.Root
+                      size="sm"
+                      mt={6}
+                      borderStartWidth="3px"
+                      borderStartColor="colorPalette.solid"
+                      alignItems="center"
+                      title="Success"
+                      status="success"
+                    >
+                      <Alert.Indicator>
+                        <FaRegClock />
+                      </Alert.Indicator>
+                      <Alert.Title>
+                        You placed a bid of {myBid.amount} on{" "}
+                        {dayjs(myBid.createdAt).format("MMMM D [at] h:mm A")}
+                      </Alert.Title>
+                    </Alert.Root>
+                  )
+                )}
                 <Heading mt={5}>Comments</Heading>
                 <HStack
                   mt={5}

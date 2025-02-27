@@ -26,11 +26,15 @@ const fetchAuctions = async ({
   const orderBy = searchParams.get("OrderBy") || "";
   const status = searchParams.get("Status") || "";
   const type = searchParams.get("Type") || "";
+  const pageNumber = searchParams.get("PageNumber");
+  const pageSize = searchParams.get("PageSize");
 
   return await ApiClient.get(
     `api/catalog?SearchTerm=${serachTerm}&Categories=${
       categories === "All categories" ? "" : categories
-    }&OrderBy=${orderBy}&Status=${status}&Type=${type}`
+    }&OrderBy=${orderBy}&Status=${status}&Type=${type}${
+      pageNumber ? "&PageNumber=" + pageNumber : ""
+    }${pageSize ? "&PageSize=" + pageSize : ""}`
   );
 };
 

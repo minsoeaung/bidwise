@@ -36,36 +36,54 @@ export const ItemCard = memo(({ auction }: { auction: AuctionDto }) => {
             src={
               auction.images.length
                 ? AUCTION_IMAGES + auction.images[0].name
-                : "https://api.algobook.info/v1/randomimage?category=places"
+                : "https://d1tue3i809qwp2.cloudfront.net/bidwisebucket/5afd6c40-58a5-4a36-a539-657042f0dea0"
             }
             alt={auction.name}
           />
         </AspectRatio>
         <Box position="absolute" bottom="10px" left="10px">
-          <Badge variant="subtle" size="md">
-            <HStack gap="10px">
-              <HStack gap="5px">
-                <PiClockLight />
-                <Text>
-                  {auction.status === "Expired" ? (
-                    auction.status
-                  ) : (
-                    <TimeLeft endDate={auction.endDate} />
-                  )}
-                </Text>
-              </HStack>
-              {auction.currentHighestBid && (
+          <Badge
+            variant="surface"
+            colorPalette={auction.status === "Expired" ? "red" : undefined}
+            size="md"
+          >
+            {auction.buyerId ? (
+              <Text>
+                Sold for{" "}
+                <FormatNumber
+                  value={auction.buyerPayAmount!}
+                  style="currency"
+                  currency="USD"
+                  maximumFractionDigits={0}
+                />
+              </Text>
+            ) : auction.status === "Expired" ? (
+              "Expired"
+            ) : (
+              <HStack gap="10px">
                 <HStack gap="5px">
-                  <Text fontWeight="light">Bid</Text>
-                  <FormatNumber
-                    value={auction.currentHighestBid}
-                    style="currency"
-                    currency="USD"
-                    maximumFractionDigits={0}
-                  />
+                  <PiClockLight />
+                  <Text>
+                    {auction.status === "Expired" ? (
+                      auction.status
+                    ) : (
+                      <TimeLeft endDate={auction.endDate} />
+                    )}
+                  </Text>
                 </HStack>
-              )}
-            </HStack>
+                {auction.currentHighestBid && (
+                  <HStack gap="5px">
+                    <Text fontWeight="light">Bid</Text>
+                    <FormatNumber
+                      value={auction.currentHighestBid}
+                      style="currency"
+                      currency="USD"
+                      maximumFractionDigits={0}
+                    />
+                  </HStack>
+                )}
+              </HStack>
+            )}
           </Badge>
         </Box>
       </Box>

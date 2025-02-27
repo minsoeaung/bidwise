@@ -3,11 +3,9 @@
 namespace Bidwise.Catalog.Models;
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum ItemsStatus
+public enum ItemsType
 {
-    All,
-    Available,
-    Sold,
-    Expired,
-    Ended 
+    Vickrey,
+    Normal,
+    All
 }

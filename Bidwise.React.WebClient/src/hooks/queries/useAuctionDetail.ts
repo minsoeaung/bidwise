@@ -15,6 +15,7 @@ export type AuctionDto = {
   sellerName: string;
   buyerId: number | null;
   buyerName: string | null;
+  buyerPayAmount: number | null;
   status: string;
   timeLeft: string;
   images: ImageDto[];

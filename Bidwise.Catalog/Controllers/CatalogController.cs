@@ -45,6 +45,7 @@ public class CatalogController : ControllerBase
             .FilterItemsByName(itemParams.SearchTerm)
             .FilterItemsByStatus(itemParams.Status)
             .FilterItemsByCategories(itemParams.Categories)
+            .FilterItemsByType(itemParams.Type)
             .MapItemsToDto();
 
         var items = PagedList<ItemDto>.ToPagedList(itemsQuery, itemParams.PageNumber, itemParams.PageSize);
@@ -126,7 +127,7 @@ public class CatalogController : ControllerBase
             SellerName = user.UserName ?? string.Empty,
             DoubleMetaphone = string.Join(',', metaphoneKeys),
             StartDate = DateTime.UtcNow,
-            EndDate = dto.EndDate,
+            EndDate = dto.EndDate.ToUniversalTime(),
             StartingBid = dto.StartingBid,
 
             Category = dto.CategoryName == null ? null : category,
@@ -147,7 +148,7 @@ public class CatalogController : ControllerBase
         });
 
         // Determine the winner at EndDate
-        BackgroundJob.Schedule(() => DetermineWinner(item.Id), item.EndDate.ToUniversalTime() - DateTime.UtcNow);
+        BackgroundJob.Schedule(() => DetermineWinner(item.Id), item.EndDate - DateTime.UtcNow);
 
         await transaction.CommitAsync();
 

@@ -9,6 +9,7 @@ const CreateAuctionPage = lazy(() => import("./Auctions/CreateAuction"));
 const AuctionDetailPage = lazy(() => import("./Auctions/AuctionDetail"));
 const AboutPage = lazy(() => import("./About"));
 const UserSessionPage = lazy(() => import("./UserSession"));
+const WhatIsBidwisePage = lazy(() => import("./WhatIsBidwise"));
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
       { path: "about", element: <AboutPage /> },
       { path: "forbidden", element: <ForbiddenPage /> },
       { path: "user-session", element: <UserSessionPage /> },
+      { path: "whatis", element: <WhatIsBidwisePage /> },
 
       { path: "*", element: <NotFoundPage /> },
     ],

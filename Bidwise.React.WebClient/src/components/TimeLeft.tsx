@@ -10,7 +10,7 @@ export const TimeLeft = ({ endDate }: { endDate: string }) => {
   function getTimeLeft() {
     const diffSeconds = dayjs(endDate).diff(dayjs(), "second");
 
-    if (diffSeconds <= 0) return "0";
+    if (diffSeconds <= 0) return "Ended";
 
     if (diffSeconds < 6 * 3600) {
       const d = dayjs.duration(diffSeconds, "seconds");

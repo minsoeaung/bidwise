@@ -30,7 +30,6 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -44,10 +43,9 @@ builder.AddKafkaConsumer<string, string>("kafka", options =>
 {
     options.Config.GroupId = "catalog-group";
     options.Config.AutoOffsetReset = AutoOffsetReset.Earliest;
-    options.Config.EnableAutoCommit = false;
 });
 
-builder.Services.AddHostedService<KafkaConsumer>();
+builder.Services.AddHostedService<BidPlacedListener>();
 
 builder.Services.AddHangfire(configuration => configuration
       .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)

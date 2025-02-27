@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiClient } from "../../api/apiClient";
 import { BIDS } from "../queries/useBids";
+import { AUCTION_DETAIL } from "../queries/useAuctionDetail";
 
 export interface BidCreateOrUpdateDto {
   itemId: number;
@@ -17,7 +18,7 @@ export const useCreateOrUpdateBid = () => {
     {
       onSuccess: async (_, payload) => {
         queryClient.invalidateQueries([BIDS, String(payload.itemId)]);
-        // toast
+        queryClient.invalidateQueries([AUCTION_DETAIL, String(payload.itemId)]);
       },
     }
   );

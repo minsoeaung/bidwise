@@ -3,23 +3,26 @@ import { usePaginatedAuctions } from "../../hooks/queries/usePaginatedAuctions";
 import {
   Box,
   Button,
-  EmptyState,
+  Center,
   Flex,
   HStack,
-  List,
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { HiColorSwatch } from "react-icons/hi";
 import { Fallback } from "../../components/Fallback";
 import AntdSpin from "../../components/AntdSpin";
 import { ErrorDisplay } from "../../components/ErrorDisplay";
 import { ApiError } from "../../types/ApiError";
-import { FaSearch } from "react-icons/fa";
 import { ItemCard, ItemGrid } from "../../components/ItemCard";
 import { AuctionPageOrderBy } from "@/types/AuctionPageOrder";
 import { useEffect, useState } from "react";
 import { NoDataYet } from "@/components/NoDataYet";
+import {
+  PaginationItems,
+  PaginationNextTrigger,
+  PaginationPrevTrigger,
+  PaginationRoot,
+} from "@/components/ui/pagination";
 
 const AuctionsPage = () => {
   const [params, setParams] = useSearchParams();
@@ -37,9 +40,15 @@ const AuctionsPage = () => {
     setOrderBy(orderBy);
   };
 
+  const handlePageNumberChange = (page: number) => {
+    const newParams = new URLSearchParams(params);
+    newParams.set("PageNumber", String(page));
+    setParams(newParams);
+  };
+
   const searchTerm = params.get("SearchTerm") || "";
   const isVickrey = params.get("Type") === "Vickrey";
-  const isPast = params.get("Status") === "Sold";
+  const isPast = params.get("Status") === "Ended";
 
   useEffect(() => {
     refetch();
@@ -69,7 +78,7 @@ const AuctionsPage = () => {
               <Text fontWeight="bold" fontSize="1.2rem">
                 {isVickrey && "Vickrey Auctions"}
                 {isPast && "Past Results"}{" "}
-                {!!searchTerm && `(${data.content.length})`}
+                {!!searchTerm && `Auctions (${data.content.length})`}
               </Text>
               <Flex>
                 <Button
@@ -149,6 +158,20 @@ const AuctionsPage = () => {
                 </Link>
               ))}
             </ItemGrid>
+            <Center mt={10}>
+              <PaginationRoot
+                page={data.pageable.pageNumber}
+                pageSize={data.pageable.pageSize}
+                count={data.size}
+                onPageChange={(e) => handlePageNumberChange(e.page)}
+              >
+                <HStack>
+                  <PaginationPrevTrigger />
+                  <PaginationItems />
+                  <PaginationNextTrigger />
+                </HStack>
+              </PaginationRoot>
+            </Center>
           </>
         )
       )}

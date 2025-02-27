@@ -46,14 +46,30 @@ public static class Paging
     public static IQueryable<Item> FilterItemsByStatus(this IQueryable<Item> items, ItemsStatus? statusOptions)
     {
         if (statusOptions == null)
-            return items;
+            return items.Where(i => i.BuyerId == null && i.EndDate > DateTime.UtcNow);
 
         return statusOptions switch
         {
+            ItemsStatus.All => items,
             ItemsStatus.Available => items.Where(i => i.BuyerId == null && i.EndDate > DateTime.UtcNow),
             ItemsStatus.Expired => items.Where(i => i.BuyerId == null && i.EndDate <= DateTime.UtcNow),
             ItemsStatus.Sold => items.Where(i => i.BuyerId != null),
+            ItemsStatus.Ended => items.Where(i => i.EndDate <= DateTime.UtcNow),
             _ => throw new ArgumentOutOfRangeException(nameof(statusOptions), statusOptions, null),
+        };
+    }
+
+    public static IQueryable<Item> FilterItemsByType(this IQueryable<Item> items, ItemsType? itemType)
+    {
+        if (itemType == null)
+            return items;
+
+        return itemType switch
+        {
+            ItemsType.All => items,
+            ItemsType.Vickrey => items.Where(i => i.Vickrey),
+            ItemsType.Normal => items.Where(i => !i.Vickrey),
+            _ => throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null),
         };
     }
 

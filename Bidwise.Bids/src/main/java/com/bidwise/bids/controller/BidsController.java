@@ -66,7 +66,7 @@ public class BidsController {
         bid = repository.save(bid);
 
         ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
-        kafkaTemplate.send(existingBid.isPresent() ? "BidUpdated" : "BidPlaced", String.valueOf(bidDto.getItemId()), objectMapper.writeValueAsString(bid));
+        kafkaTemplate.send("BidPlaced", String.valueOf(bidDto.getItemId()), objectMapper.writeValueAsString(bid));
 
         return bid;
     }
