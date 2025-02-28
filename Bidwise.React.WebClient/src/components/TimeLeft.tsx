@@ -4,6 +4,8 @@ import duration from "dayjs/plugin/duration";
 
 dayjs.extend(duration);
 
+// Dayjs parses and displays in local time by default...
+
 export const TimeLeft = ({ endDate }: { endDate: string }) => {
   const [timeLeft, setTimeLeft] = useState(getTimeLeft());
 

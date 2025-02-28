@@ -13,13 +13,13 @@ import {
   Flex,
   Input,
   Textarea,
-  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import { ErrorDisplay } from "../../components/ErrorDisplay";
 import { ApiError } from "../../types/ApiError";
 import { FaPlus } from "react-icons/fa";
 import { Field } from "../../components/ui/field";
+import { Checkbox } from "../../components/ui/checkbox";
 
 const AUCTION_INITIAL_STATE: Omit<ItemCreateDto, "images"> = {
   name: "",
@@ -27,14 +27,13 @@ const AUCTION_INITIAL_STATE: Omit<ItemCreateDto, "images"> = {
   categoryName: "",
   endDate: "",
   startingBid: 0,
+  vickrey: false,
 };
 
 const CreateAuctionPage = () => {
   const [values, setValues] = useState(AUCTION_INITIAL_STATE);
   const [images, setImages] = useState<ImageCreateDto[]>([]);
   const mutation = useCreateAuctionItem();
-  const { open, onOpen, onClose } = useDisclosure();
-  const cancelRef = useRef(null);
 
   const handleFormChange =
     (name: keyof ItemCreateDto) =>
@@ -121,6 +120,19 @@ const CreateAuctionPage = () => {
                     onChange={handleFormChange("endDate")}
                   />
                 </Field>
+                <Field label="Vickrey">
+                  <Checkbox
+                    required
+                    name="vickrey"
+                    checked={values.vickrey}
+                    onCheckedChange={(e) => {
+                      setValues((prev) => ({
+                        ...prev,
+                        vickrey: !!e.checked,
+                      }));
+                    }}
+                  />
+                </Field>
                 <Field label="Images">
                   <Input
                     required
@@ -142,7 +154,7 @@ const CreateAuctionPage = () => {
               onClick={handleCreateProduct}
               loading={mutation.isLoading}
             >
-              <FaPlus /> Add
+              <FaPlus /> Create
             </Button>
           </Flex>
           {!!mutation.error && (

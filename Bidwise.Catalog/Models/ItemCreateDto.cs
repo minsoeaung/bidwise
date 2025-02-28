@@ -6,7 +6,8 @@ public class ItemCreateDto
     public string Description { get; set; }
     public string? CategoryName { get; set; }
     public double StartingBid { get; set; }
-    public DateTime EndDate { get; set; }
+    public bool Vickrey { get; set; }
+    public DateTimeOffset EndDate { get; set; } // <-- Frontend must send ISO 8601 format
     public IEnumerable<IFormFile> Images { get; set; } = [];
 }
 

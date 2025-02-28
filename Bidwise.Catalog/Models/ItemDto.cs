@@ -5,8 +5,8 @@ public class ItemDto
     public int Id { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
+    public DateTimeOffset StartDate { get; set; }
+    public DateTimeOffset EndDate { get; set; }
     public double? CurrentHighestBid { get; set; }
     public string DoubleMetaphone { get; set; }
     public int SellerId { get; set; }
@@ -26,7 +26,7 @@ public class ItemDto
             if (BuyerId != null)
                 return ItemsStatus.Sold.ToString();
 
-            var timeSpan = EndDate.ToUniversalTime() - DateTime.UtcNow;
+            var timeSpan = EndDate - DateTimeOffset.UtcNow;
 
             if (timeSpan.TotalSeconds <= 0) return ItemsStatus.Expired.ToString();
 
@@ -38,7 +38,7 @@ public class ItemDto
     {
         get
         {
-            var timeSpan = EndDate.ToUniversalTime() - DateTime.UtcNow;
+            var timeSpan = EndDate - DateTimeOffset.UtcNow;
 
             if (timeSpan.TotalSeconds <= 0) return ItemsStatus.Expired.ToString();
 

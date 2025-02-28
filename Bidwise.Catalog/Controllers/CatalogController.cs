@@ -20,15 +20,13 @@ namespace Bidwise.Catalog.Controllers;
 [Authorize]
 public class CatalogController : ControllerBase
 {
-    private readonly ILogger<CatalogController> _logger;
     private readonly CatalogDbContext _context;
     private readonly IFileService _fileService;
     private readonly IProducer<string, string> _kafkaProducer;
     private readonly IHttpClientFactory _httpClientFactory;
 
-    public CatalogController(ILogger<CatalogController> logger, CatalogDbContext context, IFileService fileService, IProducer<string, string> producer, IHttpClientFactory httpClientFactory)
+    public CatalogController(CatalogDbContext context, IFileService fileService, IProducer<string, string> producer, IHttpClientFactory httpClientFactory)
     {
-        _logger = logger;
         _context = context;
         _fileService = fileService;
         _kafkaProducer = producer;
@@ -126,9 +124,10 @@ public class CatalogController : ControllerBase
             SellerId = (int)user.Id,
             SellerName = user.UserName ?? string.Empty,
             DoubleMetaphone = string.Join(',', metaphoneKeys),
-            StartDate = DateTime.UtcNow,
-            EndDate = dto.EndDate.ToUniversalTime(),
+            StartDate = DateTimeOffset.UtcNow,
+            EndDate = dto.EndDate,
             StartingBid = dto.StartingBid,
+            Vickrey = dto.Vickrey,
 
             Category = dto.CategoryName == null ? null : category,
             Images = images

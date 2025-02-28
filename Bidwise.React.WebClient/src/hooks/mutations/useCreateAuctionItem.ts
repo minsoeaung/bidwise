@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { ApiClient } from "../../api/apiClient";
+import { toaster } from "@/components/ui/toaster";
 
 export interface ItemCreateDto {
   name: string;
@@ -9,6 +10,7 @@ export interface ItemCreateDto {
   startingBid: number;
   endDate: string;
   images: ImageCreateDto[];
+  vickrey: boolean;
 }
 
 export interface ImageCreateDto {
@@ -32,8 +34,8 @@ export const useCreateAuctionItem = () => {
         formData.set("categoryName", payload.categoryName);
 
       formData.set("startingBid", String(payload.startingBid));
-
-      formData.set("endDate", payload.endDate);
+      formData.set("vickrey", String(payload.vickrey));
+      formData.set("endDate", new Date(payload.endDate).toISOString());
 
       if (payload.images.length) {
         payload.images.forEach((image, index) => {
@@ -47,7 +49,10 @@ export const useCreateAuctionItem = () => {
     },
     {
       onSuccess: async () => {
-        // toast
+        toaster.create({
+          title: "Auction Created",
+          type: "success",
+        });
       },
     }
   );
