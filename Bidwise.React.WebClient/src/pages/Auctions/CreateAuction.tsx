@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import {
   ImageCreateDto,
   ItemCreateDto,
@@ -8,18 +8,32 @@ import {
   Box,
   Button,
   Card,
+  Code,
   Container,
   Fieldset,
+  FileUploadHiddenInput,
   Flex,
   Input,
+  Stack,
   Textarea,
+  useFileUpload,
   VStack,
+  Image,
+  CloseButton,
 } from "@chakra-ui/react";
 import { ErrorDisplay } from "../../components/ErrorDisplay";
 import { ApiError } from "../../types/ApiError";
 import { FaPlus } from "react-icons/fa";
 import { Field } from "../../components/ui/field";
 import { Checkbox } from "../../components/ui/checkbox";
+import { useAuth } from "@/context/AuthContext";
+import { Navigate } from "react-router";
+import {
+  FileUploadList,
+  FileUploadRoot,
+  FileUploadTrigger,
+} from "@/components/ui/file-upload";
+import { HiUpload } from "react-icons/hi";
 
 const AUCTION_INITIAL_STATE: Omit<ItemCreateDto, "images"> = {
   name: "",
@@ -30,10 +44,20 @@ const AUCTION_INITIAL_STATE: Omit<ItemCreateDto, "images"> = {
   vickrey: false,
 };
 
+type ImageSelect = {
+  file: File;
+  label: string | null;
+  preview: string;
+};
+
 const CreateAuctionPage = () => {
   const [values, setValues] = useState(AUCTION_INITIAL_STATE);
-  const [images, setImages] = useState<ImageCreateDto[]>([]);
+
+  const [selectedImages, setSelectedImages] = useState<ImageSelect[]>([]);
+
   const mutation = useCreateAuctionItem();
+
+  const { loggedInUser } = useAuth();
 
   const handleFormChange =
     (name: keyof ItemCreateDto) =>
@@ -48,27 +72,49 @@ const CreateAuctionPage = () => {
 
   const handleImagesInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
+
     if (files !== null) {
-      const images: ImageCreateDto[] = [];
+      const images: ImageSelect[] = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         images.push({
           file: file,
-          label: `Label ${i + 1}`,
+          label: "",
+          preview: URL.createObjectURL(file),
         });
       }
 
-      setImages(images);
+      setSelectedImages((prev) => [...prev, ...images]);
     }
   };
 
-  const handleCreateProduct = () => {
-    mutation.mutateAsync({ ...values, images });
+  const handleImageRemove = (index: number) => {
+    const images = [...selectedImages];
+    images.splice(index, 1);
+    setSelectedImages(images);
   };
 
+  useEffect(() => {
+    return () => {
+      if (Array.isArray(selectedImages.length) && selectedImages.length > 0) {
+        for (let i = 0; i < selectedImages.length; i++) {
+          URL.revokeObjectURL(selectedImages[i].preview);
+        }
+      }
+    };
+  }, []);
+
+  const handleCreateProduct = () => {
+    mutation.mutateAsync({ ...values, images: selectedImages });
+  };
+
+  if (!loggedInUser) {
+    return <Navigate to="/need-authentication" />;
+  }
+
   return (
-    <Container maxW="7xl">
+    <Container maxW="7xl" mt={5}>
       <Card.Root>
         <Card.Body>
           <VStack spaceX="8px" spaceY="8px">
@@ -134,13 +180,53 @@ const CreateAuctionPage = () => {
                   />
                 </Field>
                 <Field label="Images">
-                  <Input
-                    required
-                    multiple
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImagesInputChange}
-                  />
+                  {selectedImages.length > 0 && (
+                    <Flex flexWrap="wrap" gap="10px" my={5}>
+                      {selectedImages.map((img, index) => (
+                        <VStack>
+                          <Box
+                            aspectRatio={3 / 2}
+                            h="150px"
+                            rounded="md"
+                            overflow="hidden"
+                            key={index}
+                            position="relative"
+                          >
+                            <CloseButton
+                              position="absolute"
+                              top="0px"
+                              right="0px"
+                              variant="plain"
+                              color="fg.error"
+                              onClick={() => handleImageRemove(index)}
+                            />
+                            <Image
+                              src={img.preview}
+                              w="full"
+                              h="full"
+                              objectFit="cover"
+                            />
+                          </Box>
+                          {/* <Input placeholder="Label" size="sm" /> */}
+                        </VStack>
+                      ))}
+                    </Flex>
+                  )}
+                  <Stack align="flex-start">
+                    <FileUploadRoot
+                      onChange={handleImagesInputChange}
+                      maxFiles={20}
+                      maxFileSize={5000}
+                      accept="image/*"
+                    >
+                      <FileUploadHiddenInput />
+                      <FileUploadTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <HiUpload /> Select images
+                        </Button>
+                      </FileUploadTrigger>
+                    </FileUploadRoot>
+                  </Stack>
                 </Field>
               </Fieldset.Content>
             </Fieldset.Root>
@@ -154,7 +240,7 @@ const CreateAuctionPage = () => {
               onClick={handleCreateProduct}
               loading={mutation.isLoading}
             >
-              <FaPlus /> Create
+              <FaPlus /> Create Auction
             </Button>
           </Flex>
           {!!mutation.error && (
@@ -165,31 +251,6 @@ const CreateAuctionPage = () => {
               </Box>
             </>
           )}
-          {/* <AlertDialog
-            open={open}
-            leastDestructiveRef={cancelRef}
-            onClose={onClose}
-            isCentered
-          >
-            <AlertDialogOverlay>
-              <AlertDialogContent>
-                <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                  Delete product
-                </AlertDialogHeader>
-                <AlertDialogBody>
-                  Are you sure to delete the product?
-                </AlertDialogBody>
-                <AlertDialogFooter>
-                  <Button ref={cancelRef} onClick={onClose}>
-                    Cancel
-                  </Button>
-                  <Button colorScheme="red" ml={3} loading={mutation.isLoading}>
-                    Delete
-                  </Button>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialogOverlay>
-          </AlertDialog> */}
         </Card.Body>
       </Card.Root>
     </Container>

@@ -1,8 +1,8 @@
-﻿using Bidwise.Common.Models.Kafka;
-using Bidwise.Common;
+﻿using Bidwise.Common;
 using Confluent.Kafka;
 using System.Text.Json;
 using Bidwise.Catalog.Data;
+using Bidwise.Common.Models.Spring;
 
 namespace Bidwise.Catalog.Kafka;
 
@@ -27,7 +27,7 @@ public class BidPlacedListener(IConsumer<string, string> consumer, IServiceScope
             try
             {
                 var consumeResult = consumer.Consume(cancellationToken);
-                var bid = JsonSerializer.Deserialize<BidPlacedModel>(consumeResult.Message.Value, new JsonSerializerOptions
+                var bid = JsonSerializer.Deserialize<BidModel>(consumeResult.Message.Value, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
@@ -39,14 +39,14 @@ public class BidPlacedListener(IConsumer<string, string> consumer, IServiceScope
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error processing message from topic {Topics.BidPlaced}: {ex.Message}");
+                Console.WriteLine($"--> Error processing message from topic {Topics.BidPlaced}: {ex.Message}");
             }
         }
 
         consumer.Close();
     }
 
-    private async Task ProcessBidAsync(BidPlacedModel bid, CancellationToken cancellationToken)
+    private async Task ProcessBidAsync(BidModel bid, CancellationToken cancellationToken)
     {
         using var scope = serviceScopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<CatalogDbContext>();
@@ -58,6 +58,7 @@ public class BidPlacedListener(IConsumer<string, string> consumer, IServiceScope
         if (item.CurrentHighestBid == null || item.CurrentHighestBid < bid.Amount)
         {
             item.CurrentHighestBid = bid.Amount;
+            item.CurrentHighestBidderId = bid.BidderId;
             await context.SaveChangesAsync(cancellationToken);
         }
     }

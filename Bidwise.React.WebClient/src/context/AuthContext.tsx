@@ -20,6 +20,7 @@ type GlobalAuthContent = {
   loading: boolean;
   error: string | null;
   userId: number | null;
+  userName: string | null;
 };
 
 const AuthContext = createContext<GlobalAuthContent>({
@@ -29,6 +30,7 @@ const AuthContext = createContext<GlobalAuthContent>({
   loading: true,
   error: null,
   userId: null,
+  userName: null,
 });
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
@@ -38,6 +40,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState(null);
   const [refresh, setRefresh] = useState(false);
   const [userId, setUserId] = useState<number | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     getUser();
@@ -52,13 +55,14 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
             data.find((claim) => claim.type === "bff:logout_url")?.value ??
             logoutUrl;
 
-          setLogoutUrl(logout_url);
+          setLogoutUrl(logout_url + "&returnUrl=https://localhost:5173/");
           setLoggedInUser(data);
 
-          const userId = Number(
-            data.find((claim) => claim.type === "sub")?.value
-          );
-          setUserId(userId);
+          const sub = Number(data.find((claim) => claim.type === "sub")?.value);
+          setUserId(sub);
+
+          const email = data.find((claim) => claim.type === "email")?.value;
+          setUserName(email);
         }
       })
       .catch((e) => {
@@ -74,7 +78,15 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ loggedInUser, logoutUrl, refreshAuth, loading, error, userId }}
+      value={{
+        loggedInUser,
+        logoutUrl,
+        refreshAuth,
+        loading,
+        error,
+        userId,
+        userName,
+      }}
     >
       {children}
     </AuthContext.Provider>

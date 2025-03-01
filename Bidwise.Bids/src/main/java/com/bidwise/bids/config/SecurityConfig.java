@@ -1,30 +1,20 @@
 package com.bidwise.bids.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector;
-import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.oauth2.core.authorization.OAuth2AuthorizationManagers.hasScope;
 
-// SecurityConfig.java
-@Configuration
 @EnableWebSecurity
+@Configuration
 public class SecurityConfig {
 
-    @Value("${spring.security.oauth2.resourceserver.opaque-token.introspection-uri}")
-    private String introspectionUri;
-
-    @Value("${spring.security.oauth2.resourceserver.opaque-token.client-id}")
-    private String clientId;
-
-    @Value("${spring.security.oauth2.resourceserver.opaque-token.client-secret}")
-    private String clientSecret;
+    // OAuth2 Resource Server – Using Opaque Tokens, Not jwt
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,19 +27,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .opaqueToken(opaqueToken -> opaqueToken
-                                .introspector(introspector())
-                        )
+                        .opaqueToken(Customizer.withDefaults())
                 );
         return http.build();
-    }
-
-    @Bean
-    public OpaqueTokenIntrospector introspector() {
-        return new NimbusOpaqueTokenIntrospector(
-                introspectionUri,
-                clientId,
-                clientSecret
-        );
     }
 }

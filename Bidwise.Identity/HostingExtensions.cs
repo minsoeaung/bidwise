@@ -8,10 +8,7 @@ using System.Reflection;
 using Duende.IdentityModel;
 using Duende.IdentityServer.EntityFramework.DbContexts;
 using Duende.IdentityServer.EntityFramework.Mappers;
-using Duende.IdentityServer;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Confluent.Kafka;
-using Bidwise.Identity.Kafka;
 
 namespace Bidwise.Identity;
 
@@ -96,7 +93,7 @@ internal static class HostingExtensions
             options.Config.EnableAutoCommit = false;
         });
 
-        builder.Services.AddHostedService<KafkaConsumer>();
+        //builder.Services.AddHostedService<KafkaConsumer>();
 
         return builder.Build();
     }

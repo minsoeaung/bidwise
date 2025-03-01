@@ -1,10 +1,12 @@
 package com.bidwise.comments.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 @Entity
@@ -32,11 +34,13 @@ public class Comment {
     @Column(name = "CreatedAt",
             nullable = false,
             updatable = false)
-    private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private OffsetDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "UpdatedAt", nullable = false)
-    private LocalDateTime updatedAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private OffsetDateTime updatedAt;
 
     public Comment() {
     }
@@ -73,10 +77,6 @@ public class Comment {
         this.commentText = commentText;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
     @Override
     public boolean equals(Object o) {
 
@@ -96,20 +96,27 @@ public class Comment {
         return Objects.hash(this.id, this.commentText);
     }
 
-//    @Override
-//    public String toString() {
-//        return "Comment{" + "id=" + this.id + ", content='" + this.commentText + '\'' + ", userId='" + this.userId + '\'' + '}';
-//    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
     public String getUserName() {
         return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

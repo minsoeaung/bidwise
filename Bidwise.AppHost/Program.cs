@@ -15,18 +15,19 @@ builder.AddProject<Projects.Bidwise_Catalog>("catalog-service")
     .WithReference(kafka)
     .WaitFor(kafka);
 
-// Spring boot uses introspection endpoint of identity server
+// If spring boot use an https endpoint to communicate to outside
 // keytool -import -alias itentityServer5001 -keystore "C:\Program Files\Java\jdk-23\lib\security\cacerts" -file localhost5001.crt
+
+// Also might need to "./gradlew build" to these two spring app...
 builder.AddSpringApp(
     "bids-service",
-    workingDirectory: "../Bidwise.Bids",
+   workingDirectory: "../Bidwise.Bids",
     new JavaAppExecutableResourceOptions
     {
-        ApplicationName = "build/libs/bids-0.0.1-SNAPSHOT.jar",
+        ApplicationName = "build/libs/bids-0.0.1.jar",
         Port = 5004,
         OtelAgentPath = "../agents"
     })
-    .WithExternalHttpEndpoints()
     .WaitFor(kafka);
 
 builder.AddSpringApp(
@@ -34,11 +35,10 @@ builder.AddSpringApp(
     workingDirectory: "../Bidwise.Comments",
     new JavaAppExecutableResourceOptions
     {
-        ApplicationName = "build/libs/comments-0.0.1-SNAPSHOT.jar",
+        ApplicationName = "build/libs/comments-0.0.1.jar",
         Port = 5003,
         OtelAgentPath = "../agents"
     })
-    .WithExternalHttpEndpoints()
     .WaitFor(kafka);
 
 builder.AddProject<Projects.Bidwise_WebClient>("web-mvc");

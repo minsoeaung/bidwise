@@ -10,6 +10,7 @@ export type AuctionDto = {
   startDate: string;
   endDate: string;
   currentHighestBid: number | null;
+  currentHighestBidderId: number | null;
   doubleMetaphone: string;
   sellerId: number;
   sellerName: string;
@@ -20,6 +21,7 @@ export type AuctionDto = {
   timeLeft: string;
   images: ImageDto[];
   startingBid: number;
+  categoryName: string | null;
 };
 
 export type ImageDto = {

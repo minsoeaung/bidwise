@@ -1,7 +1,7 @@
 import { Box, Button, Heading, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
-const ForbiddenPage = () => {
+const NeedAuthenticationPage = () => {
   return (
     <Box textAlign="center" py={10} px={6}>
       <Heading
@@ -11,13 +11,13 @@ const ForbiddenPage = () => {
         bgGradient="linear(to-r, teal.400, teal.600)"
         backgroundClip="text"
       >
-        403
+        401
       </Heading>
       <Text fontSize="18px" mt={3} mb={2}>
-        Page Forbidden
+        You need to sign in to continue.
       </Text>
       <Text color={"gray.500"} mb={6}>
-        You are not allowed to access this page...
+        Access to this page is only available for signed-in users.
       </Text>
 
       <Button
@@ -33,4 +33,4 @@ const ForbiddenPage = () => {
   );
 };
 
-export default ForbiddenPage;
+export default NeedAuthenticationPage;

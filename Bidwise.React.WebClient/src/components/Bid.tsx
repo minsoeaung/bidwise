@@ -1,25 +1,15 @@
 import { BidDto } from "@/hooks/queries/useBids";
-import { CommentDto } from "@/hooks/queries/usePaginatedComments";
 import {
   Stack,
   HStack,
   Avatar,
   Text,
-  defineStyle,
-  Badge,
   FormatNumber,
   Stat,
   Flex,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { Skeleton, SkeletonCircle } from "@/components/ui/skeleton";
-
-const ringCss = defineStyle({
-  outlineWidth: "2px",
-  outlineColor: "colorPalette.500",
-  outlineOffset: "2px",
-  outlineStyle: "solid",
-});
 
 export const BidLoading = () => {
   return (
@@ -42,7 +32,7 @@ export const Bid = ({
 }) => {
   return (
     <HStack gap="4" alignItems="start">
-      <Avatar.Root size="sm">
+      <Avatar.Root size="sm" colorPalette={pickPalette(bid.bidderName)}>
         <Avatar.Fallback name={bid.bidderName} />
       </Avatar.Root>
       <Stat.Root>
@@ -50,11 +40,14 @@ export const Bid = ({
           <Flex alignItems="baseline" gapX="4px" flexWrap="wrap">
             <Text>{bid.bidderName}</Text>
             <Text color="fg.subtle" textStyle="xs">
-              {dayjs(bid.createdAt).fromNow()}
+              {bid.createdAt !== bid.updatedAt && "edited"}{" "}
+              {dayjs(
+                bid.createdAt !== bid.updatedAt ? bid.updatedAt : bid.createdAt
+              ).fromNow()}
             </Text>
           </Flex>
         </Stat.Label>
-        <Stat.ValueText>
+        <Stat.ValueText fontSize="3xl">
           <FormatNumber
             value={bid.amount}
             style="currency"
@@ -65,4 +58,11 @@ export const Bid = ({
       </Stat.Root>
     </HStack>
   );
+};
+
+const colorPalette = ["red", "blue", "green", "yellow", "purple", "orange"];
+
+const pickPalette = (name: string) => {
+  const index = name.charCodeAt(0) % colorPalette.length;
+  return colorPalette[index];
 };

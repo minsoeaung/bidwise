@@ -1,11 +1,11 @@
 package com.bidwise.bids.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.cglib.core.Local;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "Bids")
@@ -30,12 +30,15 @@ public class Bid {
     @CreationTimestamp
     @Column(name = "CreatedAt",
             nullable = false,
-            updatable = false)
-    private LocalDateTime createdAt;
+            updatable = false,
+            columnDefinition = "datetimeoffset(7)")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private OffsetDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "UpdatedAt", nullable = false)
-    private LocalDateTime updatedAt;
+    @Column(name = "UpdatedAt", nullable = false, columnDefinition = "datetimeoffset(7)")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private OffsetDateTime updatedAt;
 
     public Bid() {
     }
@@ -81,19 +84,19 @@ public class Bid {
         this.amount = amount;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public OffsetDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

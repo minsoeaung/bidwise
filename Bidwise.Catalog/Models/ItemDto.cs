@@ -5,9 +5,11 @@ public class ItemDto
     public int Id { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
+    public string? CategoryName { get; set; }
     public DateTimeOffset StartDate { get; set; }
     public DateTimeOffset EndDate { get; set; }
     public double? CurrentHighestBid { get; set; }
+    public int? CurrentHighestBidderId { get; set; }
     public string DoubleMetaphone { get; set; }
     public int SellerId { get; set; }
     public string SellerName { get; set; }

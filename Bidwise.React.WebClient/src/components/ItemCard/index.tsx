@@ -2,41 +2,43 @@ import {
   AspectRatio,
   Badge,
   Box,
-  Button,
   Card,
   FormatNumber,
   HStack,
   Image,
   SimpleGrid,
   SimpleGridProps,
-  Stack,
   Text,
 } from "@chakra-ui/react";
 import { useMemo, Children, isValidElement, memo } from "react";
 import { AuctionDto } from "../../hooks/queries/useAuctionDetail";
 import { AUCTION_IMAGES } from "../../constants/fileUrls";
-import { PiClockLight, PiClockThin } from "react-icons/pi";
+import { PiClockLight } from "react-icons/pi";
 import { TimeLeft } from "../TimeLeft";
 
 export const ItemCard = memo(({ auction }: { auction: AuctionDto }) => {
   return (
     <Card.Root
-      maxW="sm"
       overflow="hidden"
       backgroundColor="transparent"
       border="none"
+      maxWidth="350px"
     >
       <Box position="relative">
-        <AspectRatio bg="bg.muted" ratio={3 / 2}>
+        <AspectRatio
+          ratio={3 / 2}
+          borderWidth="1px"
+          rounded="md"
+          overflow="hidden"
+        >
           <Image
-            borderRadius="md"
             width="full"
             height="full"
             objectFit="cover"
             src={
               auction.images.length
                 ? AUCTION_IMAGES + auction.images[0].name
-                : "https://d1tue3i809qwp2.cloudfront.net/bidwisebucket/5afd6c40-58a5-4a36-a539-657042f0dea0"
+                : "https://ralfvanveen.com/wp-content/uploads/2021/06/Placeholder-_-Begrippenlijst.svg"
             }
             alt={auction.name}
           />
@@ -100,6 +102,7 @@ export const ItemGrid = (props: SimpleGridProps) => {
     const count = Children.toArray(props.children).filter(
       isValidElement
     ).length;
+
     return {
       base: Math.min(2, count),
       md: Math.min(3, count),

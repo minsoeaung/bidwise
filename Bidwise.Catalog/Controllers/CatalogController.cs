@@ -33,6 +33,68 @@ public class CatalogController : ControllerBase
         _httpClientFactory = httpClientFactory;
     }
 
+    [HttpGet("buy")]
+    public async Task<ActionResult<IEnumerable<BidDto>>> GetAllAsync()
+    {
+        var user = User.GetProfile();
+        if (user == null)
+            return Unauthorized();
+
+        var httpClient = _httpClientFactory.CreateClient("BidsService");
+        var httpResponseMessage = await httpClient.GetAsync($"api/bids?bidderId={user.Id}");
+
+        if (!httpResponseMessage.IsSuccessStatusCode)
+            throw new HttpRequestException($"Failed to retrieve bids. Status code: {httpResponseMessage.StatusCode}");
+
+        using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+        var bids = await JsonSerializer.DeserializeAsync<IList<BidModel>>(contentStream, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (bids == null)
+            throw new HttpRequestException($"Failed to parse bids.");
+
+        if (bids.Count == 0)
+            return new List<BidDto>();
+
+        var itemIds = bids.Select(b => b.ItemId);
+
+        var itemsQuery = _context.Items
+            .AsNoTracking()
+            .OrderItemsBy(ItemsOrderBy.SimpleOrder)
+            .Where(i => itemIds.Contains(i.Id))
+            .MapItemsToDto();
+
+        var items = await itemsQuery.ToListAsync();
+
+        return Ok(bids.Select(b => new BidDto
+        {
+            Id = b.Id,
+            BidderId = b.BidderId,
+            BidderName = b.BidderName,
+            Amount = b.Amount,
+            ItemId = b.ItemId,
+            CreatedAt = b.CreatedAt,
+            UpdatedAt = b.UpdatedAt,
+            Item = items.FirstOrDefault(i => i.Id == b.ItemId)
+                ?? throw new InvalidOperationException($"Item with Id {b.ItemId} not found for Bid with Id {b.Id}.")
+        }));
+    }
+
+    [HttpGet("sell")]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<ItemDto>>> GetSellingItemsAsync(int userId)
+    {
+        var itemsQuery = _context.Items
+            .AsNoTracking()
+            .OrderItemsBy(ItemsOrderBy.SimpleOrder)
+            .Where(i => i.SellerId == userId)
+            .MapItemsToDto();
+
+        return await itemsQuery.ToListAsync();
+    }
+
     [HttpGet]
     [AllowAnonymous]
     public ActionResult<PagedResult<ItemDto>> GetAll([FromQuery] ItemsParams itemParams)

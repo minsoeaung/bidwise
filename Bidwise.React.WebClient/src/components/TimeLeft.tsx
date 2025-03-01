@@ -4,6 +4,7 @@ import duration from "dayjs/plugin/duration";
 
 dayjs.extend(duration);
 
+const secondsIn6Hours = 6 * 3600;
 // Dayjs parses and displays in local time by default...
 
 export const TimeLeft = ({ endDate }: { endDate: string }) => {
@@ -14,7 +15,7 @@ export const TimeLeft = ({ endDate }: { endDate: string }) => {
 
     if (diffSeconds <= 0) return "Ended";
 
-    if (diffSeconds < 6 * 3600) {
+    if (diffSeconds < secondsIn6Hours) {
       const d = dayjs.duration(diffSeconds, "seconds");
       return `${String(d.hours()).padStart(1, "0")}:${String(
         d.minutes()

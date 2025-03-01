@@ -1,6 +1,6 @@
 import Slider from "react-slick";
 import { useState } from "react";
-import { Box, IconButton, Image } from "@chakra-ui/react";
+import { Box, Button, IconButton, Image } from "@chakra-ui/react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const settings = {
@@ -24,7 +24,13 @@ export const ImageSlider = ({ imgHeight, images = [] }: Props) => {
   const [slider, setSlider] = useState<Slider | null>(null);
 
   return (
-    <Box width="full" height="full" position="relative" overflow="hidden">
+    <Box
+      width="full"
+      height="full"
+      position="relative"
+      overflow="hidden"
+      rounded="sm"
+    >
       {/* CSS files for react-slick */}
       <link
         rel="stylesheet"
@@ -38,32 +44,34 @@ export const ImageSlider = ({ imgHeight, images = [] }: Props) => {
       />
       {images.length > 1 && (
         <>
-          <IconButton
-            aria-label="left-arrow"
-            colorScheme="whiteAlpha"
+          <Button
             borderRadius="full"
             position="absolute"
             left="10px"
             top="50%"
             transform={"translate(0%, -50%)"}
+            variant="ghost"
+            color="white"
+            _hover={{ color: "black" }}
             zIndex={2}
             onClick={() => slider?.slickPrev()}
           >
             <FaChevronLeft />
-          </IconButton>
-          <IconButton
-            aria-label="right-arrow"
-            colorScheme="whiteAlpha"
+          </Button>
+          <Button
             borderRadius="full"
             position="absolute"
             right="10px"
             top="50%"
             transform={"translate(0%, -50%)"}
+            variant="ghost"
+            color="white"
+            _hover={{ color: "black" }}
             zIndex={2}
             onClick={() => slider?.slickNext()}
           >
             <FaChevronRight />
-          </IconButton>
+          </Button>
         </>
       )}
       {/* Slider */}

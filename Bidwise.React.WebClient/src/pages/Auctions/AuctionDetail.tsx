@@ -5,29 +5,21 @@ import {
   Button,
   Input,
   Text,
-  Image,
-  Badge,
   HStack,
   Flex,
   Heading,
+  Image,
   Grid,
   GridItem,
   Stack,
-  Status,
   Center,
   Card,
   DialogCloseTrigger,
   VStack,
-  ButtonGroup,
   EmptyState,
-  List,
-  Alert,
   DataList,
-  Link,
-  FormatNumber,
 } from "@chakra-ui/react";
-import { RiAuctionLine } from "react-icons/ri";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { usePaginatedComments } from "../../hooks/queries/usePaginatedComments";
 import { useCreateComment } from "../../hooks/mutations/useCreateComment";
 import { AUCTION_IMAGES } from "../../constants/fileUrls";
@@ -40,14 +32,9 @@ import {
   NumberInputField,
   NumberInputRoot,
 } from "@/components/ui/number-input";
-import {
-  FaArrowUp,
-  FaHashtag,
-  FaRegClock,
-  FaRegComment,
-  FaRegComments,
-} from "react-icons/fa";
+import { FaRegComments } from "react-icons/fa";
 import { Comment, CommentLoading } from "@/components/Comment";
+import { Avatar } from "@/components/ui/avatar";
 import { LuArrowDown } from "react-icons/lu";
 import {
   DialogActionTrigger,
@@ -61,16 +48,27 @@ import {
 } from "@/components/ui/dialog";
 import { useCreateOrUpdateBid } from "@/hooks/mutations/useCreateOrUpdateBid";
 import { useBids } from "@/hooks/queries/useBids";
-import { Bid, BidLoading } from "@/components/Bid";
-import { TimeLeft } from "@/components/TimeLeft";
-import { HiColorSwatch } from "react-icons/hi";
 import { useAuth } from "@/context/AuthContext";
+import { ImageSlider } from "@/components/ImageSlider";
+import { StatBar } from "./StatBar";
+import { BreadcrumbsInfo } from "./BreadcrumbsInfo";
+import { Announcement } from "./Announcement";
+import { BidsCard } from "./BidsCard";
+import { toaster } from "@/components/ui/toaster";
+import { isTheAuctionEnded } from "@/utils/isTheAuctionEnded";
+import { Tooltip } from "@/components/ui/tooltip";
 
 dayjs.extend(relativeTime);
 
 type Params = {
   id: string;
 };
+
+const stats = [
+  { label: "New Users", value: "234", diff: -12, helpText: "Till date" },
+  { label: "Sales", value: "£12,340", diff: 12, helpText: "Last 30 days" },
+  { label: "Revenue", value: "3,450", diff: 4.5, helpText: "Last 30 days" },
+];
 
 const AuctionDetailPage = () => {
   const [comment, setComment] = useState("");
@@ -90,24 +88,26 @@ const AuctionDetailPage = () => {
     refetch: commentsRefetch,
   } = usePaginatedComments(id);
 
-  const {
-    data: bids,
-    isError: bidsIsError,
-    isLoading: bidsIsLoading,
-    refetch: bidsRefetch,
-  } = useBids(data?.id);
+  const { data: bids, isLoading: bidsIsLoading } = useBids(id);
 
   const myBid = Array.isArray(bids)
     ? bids.find((b) => b.bidderId === userId)
     : null;
-
-  const myBidWon = myBid?.bidderId === userId;
 
   const commentCreateMutation = useCreateComment();
 
   const bidCreateOrUpdateMutation = useCreateOrUpdateBid();
 
   const handleAddComment = () => {
+    if (!userId) {
+      toaster.create({
+        type: "info",
+        title: "Please login first",
+      });
+
+      return;
+    }
+
     if (Boolean(comment.trim())) {
       commentCreateMutation
         .mutateAsync({
@@ -140,6 +140,7 @@ const AuctionDetailPage = () => {
     <Box
       maxW="8xl"
       mx="auto"
+      mt={5}
       px={{ base: "2", md: "8", lg: "12" }}
       paddingBottom="30px"
     >
@@ -156,10 +157,18 @@ const AuctionDetailPage = () => {
               <Heading>{data.name}</Heading>
               <Text>{data.description}</Text>
             </Box>
+            <Announcement
+              data={data}
+              openBidPlaceDialog={() => setBidPlaceDialogOpen(true)}
+            />
             <Grid mt={3} templateColumns="repeat(4, 1fr)" gap="6">
               <GridItem colSpan={3}>
                 <Card.Root height="500px">
-                  <Image
+                  <ImageSlider
+                    images={data.images.map((i) => AUCTION_IMAGES + i.name)}
+                    imgHeight="500px"
+                  />
+                  {/* <Image
                     rounded="sm"
                     overflow="hidden"
                     width="100%"
@@ -171,67 +180,14 @@ const AuctionDetailPage = () => {
                         : "https://th.bing.com/th/id/R.b0869d82d142df30dcd9fed1bee3db77?rik=uNDrfM3foy5Bsw&pid=ImgRaw&r=0"
                     }
                     alt="No alt"
-                  />
+                  /> */}
                 </Card.Root>
               </GridItem>
               <GridItem colSpan={1}>
-                <Box>
-                  <Card.Root size="sm" height="500px">
-                    <Card.Header>
-                      <Heading size="md">Bids</Heading>
-                    </Card.Header>
-                    <Card.Body overflowY="scroll" overflowX="hidden">
-                      {bidsIsLoading ? (
-                        <Stack gap="4">
-                          {[1, 2, 3, 4, 5].map((_, i) => (
-                            <BidLoading key={i} />
-                          ))}
-                        </Stack>
-                      ) : bidsIsError ? (
-                        <VStack>
-                          <Text color="fg.muted" textStyle="sm">
-                            Bids unavailable. Please try again later.
-                          </Text>
-                          <Button
-                            mx="auto"
-                            variant="ghost"
-                            onClick={() => bidsRefetch()}
-                          >
-                            Retry
-                          </Button>
-                        </VStack>
-                      ) : (
-                        Array.isArray(bids) &&
-                        (bids.length > 0 ? (
-                          <Stack gap="4">
-                            {Array.isArray(bids) &&
-                              bids.map((bid) => <Bid bid={bid} key={bid.id} />)}
-                          </Stack>
-                        ) : (
-                          <EmptyState.Root>
-                            <EmptyState.Content>
-                              <EmptyState.Indicator>
-                                <HiColorSwatch />
-                              </EmptyState.Indicator>
-                              <VStack textAlign="center">
-                                <EmptyState.Title>No bids yet</EmptyState.Title>
-                                <EmptyState.Description>
-                                  Be the first one to bid
-                                </EmptyState.Description>
-                              </VStack>
-                              <Button
-                                variant="subtle"
-                                onClick={() => setBidPlaceDialogOpen(true)}
-                              >
-                                Place Bid
-                              </Button>
-                            </EmptyState.Content>
-                          </EmptyState.Root>
-                        ))
-                      )}
-                    </Card.Body>
-                  </Card.Root>
-                </Box>
+                <BidsCard
+                  itemId={id}
+                  openBidPlaceDialog={() => setBidPlaceDialogOpen(true)}
+                />
                 {/* {data.images.map((img) => (
                   <Image
                     key={img.name}
@@ -243,70 +199,58 @@ const AuctionDetailPage = () => {
               </GridItem>
             </Grid>
 
-            <Grid mt={4} templateColumns="repeat(4, 1fr)" gap="6">
+            <Grid templateColumns="repeat(4, 1fr)" gap="6">
               <GridItem colSpan={3}>
-                <HStack justifyContent="space-between" gap="20px">
-                  <Flex
-                    justifyContent="space-between"
-                    rounded="sm"
-                    backgroundColor="gray.800"
-                    height="45px"
-                    width="70%"
-                    px="20px"
-                    color="fg.subtle"
-                    _dark={{ color: "fg.muted" }}
-                  >
-                    <HStack gap="10px">
-                      <FaRegClock />
-                      <Text>Time Left</Text>
-                      <Text textStyle="xl" color="white" fontWeight="bold">
-                        <TimeLeft endDate={data.endDate} />
-                      </Text>
-                    </HStack>
-                    <HStack gap="10px">
-                      <FaArrowUp />
-                      <Text>High Bid</Text>
-                      <Text textStyle="xl" color="white" fontWeight="bold">
-                        {data.currentHighestBid || 0}
-                      </Text>
-                    </HStack>
-                    <HStack gap="10px">
-                      <FaHashtag />
-                      <Text>Bids</Text>
-                      <Text textStyle="xl" color="white" fontWeight="bold">
-                        {bids?.length || 0}
-                      </Text>
-                    </HStack>
-                    <HStack gap="10px">
-                      <FaRegComment />
-                      <Text>Comments</Text>
-                      <Text textStyle="xl" color="white" fontWeight="bold">
-                        {comments?.content.length || 0}
-                      </Text>
-                    </HStack>
-                  </Flex>
+                <Box my={2}>
+                  <BreadcrumbsInfo
+                    category={data.categoryName}
+                    name={data.name}
+                  />
+                </Box>
+
+                <Flex justifyContent="space-between">
+                  <StatBar
+                    endDate={data.endDate}
+                    currentHighestBid={data.currentHighestBid || 0}
+                    totalBids={bids?.length || 0}
+                    totalComments={comments?.content?.length || 0}
+                  />
                   <DialogRoot
                     initialFocusEl={() => bidAmountInputRef.current}
                     open={bidPlaceDialogOpen}
                     onOpenChange={(e) => setBidPlaceDialogOpen(e.open)}
                   >
-                    <DialogTrigger asChild>
-                      <Button
-                        height="45px"
-                        width="120px"
-                        disabled={bidsIsLoading}
-                        variant="surface"
-                      >
-                        Place Bid
-                      </Button>
-                    </DialogTrigger>
+                    {!isTheAuctionEnded(data.endDate) && (
+                      <DialogTrigger asChild>
+                        <Button
+                          height="45px"
+                          width="120px"
+                          disabled={bidsIsLoading || !userId}
+                          variant="solid"
+                        >
+                          {data.status === "Available" && myBid
+                            ? "Adjust Bid"
+                            : "Place Bid"}
+                        </Button>
+                      </DialogTrigger>
+                    )}
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Bid Amount</DialogTitle>
+                        <DialogTitle>
+                          {" "}
+                          {data.status === "Available" && myBid
+                            ? "Adjust Bid"
+                            : "Bid"}
+                        </DialogTitle>
                       </DialogHeader>
                       <DialogBody pb="4">
                         <NumberInputRoot
-                          defaultValue={String(data.startingBid)}
+                          w="full"
+                          defaultValue={
+                            myBid
+                              ? String(myBid.amount)
+                              : String(data.startingBid)
+                          }
                           step={data.startingBid}
                         >
                           <NumberInputField
@@ -314,77 +258,67 @@ const AuctionDetailPage = () => {
                             placeholder="Amount"
                           />
                         </NumberInputRoot>
+                        <VStack mt={1} alignItems="start">
+                          <Text color="fg.muted">
+                            Minimum bid is ${data.startingBid}.
+                          </Text>
+                        </VStack>
                       </DialogBody>
                       <DialogFooter>
                         <DialogActionTrigger asChild>
                           <Button variant="outline">Cancel</Button>
                         </DialogActionTrigger>
-                        <Button onClick={handleUpdateOrCreateBid}>Bid</Button>
+                        <Button onClick={handleUpdateOrCreateBid}>
+                          {data.status === "Available" && myBid
+                            ? "Adjust Bid"
+                            : "Bid"}
+                        </Button>
                       </DialogFooter>
                       <DialogCloseTrigger />
                     </DialogContent>
                   </DialogRoot>
-                </HStack>
-                <Flex mt={3} justifyContent="space-between">
-                  <Text color="fg.info">Seller: {data.sellerName}</Text>
+                </Flex>
+                <Flex mt={3} justifyContent="end">
                   <Text color="fg.muted">
                     Ending {dayjs(data.endDate).format("MMMM D [at] h:mm A")}
                   </Text>
                 </Flex>
-                {data.buyerId ? (
-                  myBidWon ? (
-                    <Alert.Root title="Success" status="success" mt={6}>
-                      <Alert.Indicator>
-                        <RiAuctionLine />
-                      </Alert.Indicator>
-                      <Alert.Content color="fg">
-                        <Alert.Title>Auction Won!</Alert.Title>
-                        <Alert.Description>
-                          Your bid of{" "}
-                          <FormatNumber
-                            value={data.buyerPayAmount!}
-                            style="currency"
-                            currency="USD"
-                            maximumFractionDigits={0}
-                          />{" "}
-                          won this auction.
-                        </Alert.Description>
-                      </Alert.Content>
-                    </Alert.Root>
-                  ) : (
-                    <Alert.Root status="info" mt={6}>
-                      <Alert.Indicator>
-                        <RiAuctionLine />
-                      </Alert.Indicator>
-                      <Alert.Content color="fg">
-                        <Alert.Title>Winner</Alert.Title>
-                        <Alert.Description>
-                          {data.buyerName} won this auction.
-                        </Alert.Description>
-                      </Alert.Content>
-                    </Alert.Root>
-                  )
-                ) : (
-                  myBid && (
-                    <Alert.Root
-                      size="sm"
-                      mt={6}
-                      borderStartWidth="3px"
-                      borderStartColor="colorPalette.solid"
-                      alignItems="center"
-                      title="Success"
-                      status="success"
-                    >
-                      <Alert.Indicator>
-                        <FaRegClock />
-                      </Alert.Indicator>
-                      <Alert.Title>
-                        You placed a bid of {myBid.amount} on{" "}
-                        {dayjs(myBid.createdAt).format("MMMM D [at] h:mm A")}
-                      </Alert.Title>
-                    </Alert.Root>
-                  )
-                )}
+
+                <Card.Root mt={5} variant="subtle">
+                  <Card.Body gap="2">
+                    <HStack mb="6" gap="3">
+                      <Avatar name={data.sellerName} />
+                      <Stack gap="0">
+                        <Text fontWeight="semibold" textStyle="sm">
+                          Seller Note
+                        </Text>
+                        <Text color="fg.muted" textStyle="sm">
+                          @{data.sellerName}
+                        </Text>
+                      </Stack>
+                    </HStack>
+                    <Card.Description>
+                      This is the card body. Lorem ipsum dolor sit amet,
+                      consectetur adipiscing elit. Curabitur nec odio vel dui
+                      euismod fermentum. Curabitur nec odio vel dui euismod
+                      fermentum.
+                    </Card.Description>
+                  </Card.Body>
+                  <Card.Footer justifyContent="flex-end">
+                    <Button variant="outline">View</Button>
+                    <Button>Join</Button>
+                  </Card.Footer>
+                </Card.Root>
+
+                <DataList.Root orientation="horizontal" mt={5}>
+                  {stats.map((item) => (
+                    <DataList.Item key={item.label}>
+                      <DataList.ItemLabel>{item.label}</DataList.ItemLabel>
+                      <DataList.ItemValue>{item.value}</DataList.ItemValue>
+                    </DataList.Item>
+                  ))}
+                </DataList.Root>
+
                 <Heading mt={5}>Comments</Heading>
                 <HStack
                   mt={5}

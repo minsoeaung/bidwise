@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/dialog";
 import { useDeleteComment } from "@/hooks/mutations/useDeleteComment";
 import { useUpdateComment } from "@/hooks/mutations/useUpdateComment";
+import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 export const Comment = memo(({ comment }: { comment: CommentDto }) => {
   const { userId } = useAuth();
@@ -34,6 +36,8 @@ export const Comment = memo(({ comment }: { comment: CommentDto }) => {
 
   const updateMutation = useUpdateComment(comment.itemId);
   const deleteMutation = useDeleteComment(comment.itemId);
+
+  const navigate = useNavigate();
 
   const handleUpdate = () => {
     if (!commentValue.trim()) return;
@@ -64,14 +68,25 @@ export const Comment = memo(({ comment }: { comment: CommentDto }) => {
 
   return (
     <HStack gap="4">
-      <Avatar.Root>
+      <Avatar.Root colorPalette={pickPalette(comment.userName)}>
         <Avatar.Fallback name={comment.userName} />
       </Avatar.Root>
       <Stack gap="0">
         <HStack>
-          <Text fontWeight="medium">{comment.userName}</Text>
-          <Text color="fg.subtle" textStyle="sm">
-            {dayjs(comment.createdAt).fromNow()}
+          <Text fontWeight="medium">
+            <Link
+              to={`/users/${comment.userId}/sell?UserName=${comment.userName}`}
+            >
+              {comment.userName}
+            </Link>
+          </Text>
+          <Text color="fg.subtle" textStyle="xs">
+            {comment.createdAt !== comment.updatedAt && "edited"}{" "}
+            {dayjs(
+              comment.createdAt !== comment.updatedAt
+                ? comment.updatedAt
+                : comment.createdAt
+            ).fromNow()}
           </Text>
           {userId === comment.userId && (
             <HStack gap={0}>
@@ -168,4 +183,11 @@ export const CommentLoading = () => {
       </Stack>
     </HStack>
   );
+};
+
+const colorPalette = ["red", "blue", "green", "yellow", "purple", "orange"];
+
+const pickPalette = (name: string) => {
+  const index = name.charCodeAt(0) % colorPalette.length;
+  return colorPalette[index];
 };

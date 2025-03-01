@@ -18,7 +18,12 @@ export const useCreateOrUpdateBid = () => {
     {
       onSuccess: async (_, payload) => {
         queryClient.invalidateQueries([BIDS, String(payload.itemId)]);
-        queryClient.invalidateQueries([AUCTION_DETAIL, String(payload.itemId)]);
+        setTimeout(() => {
+          queryClient.invalidateQueries([
+            AUCTION_DETAIL,
+            String(payload.itemId),
+          ]);
+        }, 2000);
       },
     }
   );

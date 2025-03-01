@@ -31,5 +31,6 @@
 	  <Folder Include="Data\Migrations\" />
 	  <Folder Include="Data\Configuration\" />
 	  <Folder Include="Data\PersistedGrant\" />
+	  <Folder Include="Kafka\" />
 	</ItemGroup>
 </Project>

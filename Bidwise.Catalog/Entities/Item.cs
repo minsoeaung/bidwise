@@ -17,7 +17,6 @@ public class Item
     // DENORMALIZED
 
     // Update through Hangfire at EndDate
-    // Actually, should be called WinnerId...
     public int? BuyerId { get; set; }
     public string? BuyerName { get; set; }
     public double? BuyerPayAmount { get; set; }
@@ -29,6 +28,7 @@ public class Item
 
     // Update through Kafka
     public double? CurrentHighestBid { get; set; }
+    public int? CurrentHighestBidderId { get; set; }
 
     public DateTimeOffset StartDate { get; set; }
     public DateTimeOffset EndDate { get; set; }

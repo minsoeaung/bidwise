@@ -23,6 +23,7 @@ import {
   PaginationPrevTrigger,
   PaginationRoot,
 } from "@/components/ui/pagination";
+import { ItemCardLoading } from "@/components/ItemCard/ItemCardLoading";
 
 const AuctionsPage = () => {
   const [params, setParams] = useSearchParams();
@@ -55,12 +56,16 @@ const AuctionsPage = () => {
   }, [params]);
 
   return (
-    <Box maxW="8xl" mx="auto" px={{ base: "2", md: "8", lg: "12" }}>
+    <Box maxW="8xl" mx="auto" mt={5}>
       {isFetching && !isLoading && <Fallback />}
       {isLoading ? (
-        <Box mt={10}>
-          <AntdSpin />
-        </Box>
+        <ItemGrid mt="75px">
+          {Array(16)
+            .fill(1)
+            .map((_, index) => (
+              <ItemCardLoading key={index} />
+            ))}
+        </ItemGrid>
       ) : isError ? (
         <ErrorDisplay error={error as ApiError} />
       ) : (
@@ -158,7 +163,7 @@ const AuctionsPage = () => {
                 </Link>
               ))}
             </ItemGrid>
-            <Center mt={10}>
+            <Center my={10}>
               <PaginationRoot
                 page={data.pageable.pageNumber}
                 pageSize={data.pageable.pageSize}

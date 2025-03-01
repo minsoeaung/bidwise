@@ -15,6 +15,7 @@ public static class Mapping
             EndDate = i.EndDate,
             DoubleMetaphone = i.DoubleMetaphone,
             CurrentHighestBid = i.CurrentHighestBid,
+            CurrentHighestBidderId = i.CurrentHighestBidderId,
             Description = i.Description,
             BuyerId = i.BuyerId,
             BuyerName = i.BuyerName,
@@ -23,6 +24,7 @@ public static class Mapping
             StartingBid = i.StartingBid,
             BuyerPayAmount = i.BuyerPayAmount,
             Vickrey = i.Vickrey,
+            CategoryName = i.Category != null ? i.Category.Name : null,
             Images = i.Images.Select(img => new ImageDto
             {
                 Name = img.Name,

@@ -13,6 +13,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,8 +31,16 @@ public class BidsController {
     }
 
     @GetMapping()
-    List<Bid> allByItemId(@RequestParam int itemId) {
-        return repository.findByItemIdOrderByCreatedAtDesc(itemId);
+    List<Bid> allByItemIdOrBidderId(
+            @RequestParam(required = false) Integer itemId,
+            @RequestParam(required = false) Integer bidderId) {
+        if (itemId != null)
+            return repository.findByItemIdOrderByCreatedAtDesc(itemId);
+
+        if (bidderId != null)
+            return repository.findByBidderId(bidderId);
+
+        return Collections.emptyList();
     }
 
     @GetMapping("top-2")

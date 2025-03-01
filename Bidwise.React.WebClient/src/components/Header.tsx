@@ -5,7 +5,6 @@ import {
   Heading,
   HStack,
   Input,
-  Kbd,
   MenuContent,
   MenuItem,
   MenuItemGroup,
@@ -13,12 +12,9 @@ import {
   MenuSeparator,
   MenuTrigger,
   Stack,
-  useBreakpointValue,
-  useDisclosure,
-  Highlight,
+  Avatar,
+  defineStyle,
 } from "@chakra-ui/react";
-import { ImMenu3 } from "react-icons/im";
-import { CgMenuGridR } from "react-icons/cg";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { InputGroup } from "./ui/input-group";
@@ -33,11 +29,19 @@ import {
 import { useCategories } from "../hooks/queries/useCategories";
 import { ColorModeButton } from "./ui/color-mode";
 import { useAuth } from "@/context/AuthContext";
-import { FaPersonBooth } from "react-icons/fa";
 
 const BidwiseLogo = "<Bidwise Logo>";
 
+const ringCss = defineStyle({
+  outlineWidth: "2px",
+  outlineColor: "colorPalette.500",
+  outlineOffset: "2px",
+  outlineStyle: "solid",
+});
+
 const Header = () => {
+  const { userName } = useAuth();
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [categories, setCategories] = useState(
@@ -48,7 +52,7 @@ const Header = () => {
     searchParams.get("SearchTerm") || ""
   );
 
-  const { loggedInUser, logoutUrl } = useAuth();
+  const { logoutUrl } = useAuth();
   const { data: categoriesData } = useCategories();
 
   const categoryList = useMemo(() => {
@@ -63,10 +67,10 @@ const Header = () => {
 
   useEffect(() => {
     const searchTerm = searchParams.get("SearchTerm");
-    if (!searchTerm) setSearchTerm("");
+    setSearchTerm(searchTerm || "");
 
     const categories = searchParams.get("Categories");
-    if (!categories) setCategories("");
+    setCategories(categories || "");
   }, [searchParams]);
 
   const filterByName = () => {
@@ -190,7 +194,7 @@ const Header = () => {
             </InputGroup>
           </HStack>
           <ColorModeButton />
-          {!loggedInUser ? (
+          {!userName ? (
             <Button asChild>
               <a href={"/bff/login"}>Login</a>
             </Button>
@@ -198,8 +202,11 @@ const Header = () => {
             <Box position="relative">
               <MenuRoot positioning={{ placement: "left-end" }}>
                 <MenuTrigger asChild>
-                  <Button variant="ghost">
-                    <FaPersonBooth />
+                  <Button variant="plain">
+                    <Avatar.Root>
+                      <Avatar.Fallback />
+                      <Avatar.Image src="https://bit.ly/broken-link" />
+                    </Avatar.Root>
                   </Button>
                 </MenuTrigger>
                 <MenuContent position="absolute" left="-100px" width="150px">
@@ -209,14 +216,17 @@ const Header = () => {
                         to="https://localhost:5001/Identity/Account/Manage"
                         target="_blank"
                       >
-                        Profile
+                        Manage Account
                       </Link>
                     </MenuItem>
                     <MenuItem asChild value="user-session">
-                      <Link to="user-session">My Session</Link>
+                      <Link to={`/me/session`}>My Session</Link>
                     </MenuItem>
-                    <MenuItem value="seller-dashboard">
-                      Seller Dashboard
+                    <MenuItem asChild value="seller-dashboard">
+                      <Link to={`/me/sell`}>Seller Dashboard</Link>
+                    </MenuItem>
+                    <MenuItem asChild value="buyer-dashboard">
+                      <Link to={`/me/buy`}>Buyer Dashboard</Link>
                     </MenuItem>
                   </MenuItemGroup>
                   <MenuSeparator />

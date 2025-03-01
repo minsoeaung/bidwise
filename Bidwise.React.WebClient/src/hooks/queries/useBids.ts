@@ -13,13 +13,13 @@ export type BidDto = {
 
 export const BIDS = "BIDS";
 
-export const useBids = (itemId: number | undefined) => {
+export const useBids = (itemId: string | undefined) => {
   return useQuery(
     [BIDS, String(itemId)],
     async () =>
       await ApiClient.get<never, BidDto[]>(`api/bids?itemId=${itemId}`),
     {
-      enabled: typeof itemId === "number" && itemId > 0,
+      enabled: !!itemId && Number(itemId) > 0,
     }
   );
 };
