@@ -28,6 +28,7 @@ import { useUpdateComment } from "@/hooks/mutations/useUpdateComment";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import { pickAvatarColorPalette } from "@/utils/pickAvatarColorPalette";
+import { UserLink } from "./UserLink";
 
 export const Comment = memo(({ comment }: { comment: CommentDto }) => {
   const { userId } = useAuth();
@@ -69,18 +70,16 @@ export const Comment = memo(({ comment }: { comment: CommentDto }) => {
 
   return (
     <HStack gap="4">
-      <Avatar.Root colorPalette={pickAvatarColorPalette(comment.userName)}>
-        <Avatar.Fallback name={comment.userName} />
-      </Avatar.Root>
+      <UserLink id={comment.userId} userName={comment.userName}>
+        <Avatar.Root colorPalette={pickAvatarColorPalette(comment.userName)}>
+          <Avatar.Fallback name={comment.userName} />
+        </Avatar.Root>
+      </UserLink>
       <Stack gap="0">
         <HStack>
-          <Text fontWeight="medium">
-            <Link
-              to={`/users/${comment.userId}/listings?UserName=${comment.userName}`}
-            >
-              {comment.userName}
-            </Link>
-          </Text>
+          <UserLink id={comment.userId} userName={comment.userName}>
+            <Text fontWeight="medium">{comment.userName}</Text>
+          </UserLink>
           <Text color="fg.subtle" textStyle="xs">
             {comment.createdAt !== comment.updatedAt && "edited"}{" "}
             {dayjs(

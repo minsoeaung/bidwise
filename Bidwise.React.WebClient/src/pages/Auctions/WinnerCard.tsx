@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 import { useBids } from "@/hooks/queries/useBids";
 import { usePaginatedComments } from "@/hooks/queries/usePaginatedComments";
 import { pickAvatarColorPalette } from "@/utils/pickAvatarColorPalette";
+import { UserLink } from "@/components/UserLink";
 
 type Props = {
   auction: AuctionDto;
@@ -40,9 +41,7 @@ export const WinnerCard = ({ auction }: Props) => {
             <VStack alignItems="start" gap={0}>
               <HStack gap={3}>
                 <Text>Sold to</Text>
-                <Link
-                  to={`/users/${auction.buyerId}/listings?UserName=${auction.buyerName}`}
-                >
+                <UserLink id={auction.buyerId} userName={auction.buyerName}>
                   <HStack gap={2}>
                     <Avatar.Root
                       size="xs"
@@ -52,7 +51,7 @@ export const WinnerCard = ({ auction }: Props) => {
                     </Avatar.Root>
                     <Text>{auction.buyerName}</Text>
                   </HStack>
-                </Link>
+                </UserLink>
               </HStack>
               <Text fontSize="6xl" fontWeight="bold">
                 <FormatNumber
@@ -69,9 +68,7 @@ export const WinnerCard = ({ auction }: Props) => {
               <DataList.Item>
                 <DataList.ItemLabel>Seller</DataList.ItemLabel>
                 <DataList.ItemValue>
-                  <Link
-                    to={`/users/${auction.sellerId}/listings?UserName=${auction.sellerName}`}
-                  >
+                  <UserLink id={auction.sellerId} userName={auction.sellerName}>
                     <HStack gap={2}>
                       <Avatar.Root
                         size="2xs"
@@ -83,7 +80,7 @@ export const WinnerCard = ({ auction }: Props) => {
                       </Avatar.Root>
                       <Text>{auction.sellerName}</Text>
                     </HStack>
-                  </Link>
+                  </UserLink>
                 </DataList.ItemValue>
               </DataList.Item>
               <DataList.Item>

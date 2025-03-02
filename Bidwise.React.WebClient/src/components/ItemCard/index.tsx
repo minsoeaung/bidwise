@@ -36,6 +36,7 @@ export const ItemCard = memo(({ auction }: { auction: AuctionDto }) => {
             width="full"
             height="full"
             objectFit="cover"
+            loading="lazy"
             src={
               auction.images.length
                 ? AUCTION_IMAGES + auction.images[0].name
@@ -129,8 +130,8 @@ export const ItemGrid = (props: SimpleGridProps) => {
     return {
       base: Math.min(2, count),
       md: Math.min(3, count),
-      lg: Math.min(4, count),
-      xl: Math.min(4, count),
+      lg: 4,
+      xl: 4,
     };
   }, [props.children]);
 

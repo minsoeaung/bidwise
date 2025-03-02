@@ -45,9 +45,12 @@ export const useCreateAuctionItem = () => {
       if (payload.images.length) {
         payload.images.forEach((image, index) => {
           // if (image.label) formData.append(`images.label`, image.label);
-
           formData.append(`images`, image.file);
         });
+      }
+
+      if (payload.attributes.length) {
+        formData.append("attributes", JSON.stringify(payload.attributes));
       }
 
       return await ApiClient.post(`api/catalog`, formData);

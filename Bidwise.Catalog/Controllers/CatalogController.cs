@@ -194,13 +194,25 @@ public class CatalogController : ControllerBase
 
             Category = dto.CategoryName == null ? null : category,
             Images = images,
-
-            Attributes = dto.Attributes.Select(a => new Entities.Attribute
-            {
-                Label = a.Label,
-                Value = a.Value
-            })
         };
+
+        if (!string.IsNullOrEmpty(dto.Attributes))
+        {
+            var attributes = JsonSerializer.Deserialize<IList<AttributeCreateDto>>(dto.Attributes, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (attributes != null && attributes.Count > 0)
+            {
+                item.Attributes = attributes.Select(a => new Entities.Attribute
+                {
+                    Label = a.Label,
+                    Value = a.Value
+
+                }).ToList();
+            }
+        }
 
         _context.Items.Add(item);
         _context.SaveChanges();

@@ -41,7 +41,7 @@ const ringCss = defineStyle({
 });
 
 const Header = () => {
-  const { userName } = useAuth();
+  const { userName, userId } = useAuth();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -201,7 +201,7 @@ const Header = () => {
             </Button>
           ) : (
             <Box position="relative">
-              <MenuRoot positioning={{ placement: "left-end" }}>
+              <MenuRoot>
                 <MenuTrigger asChild>
                   <Button variant="plain">
                     <HStack>
@@ -213,18 +213,23 @@ const Header = () => {
                     </HStack>
                   </Button>
                 </MenuTrigger>
-                <MenuContent position="absolute" left="-100px" width="150px">
+                <MenuContent position="absolute" left="0" width="150px">
                   <MenuItemGroup>
                     <MenuItem asChild value="profile">
+                      <Link to={`/users/${userId}?UserName=${userName}`}>
+                        Profile
+                      </Link>
+                    </MenuItem>
+                    <MenuItem asChild value="manage-account">
                       <Link
                         to="https://localhost:5001/Identity/Account/Manage"
                         target="_blank"
                       >
-                        Manage Account
+                        Settings
                       </Link>
                     </MenuItem>
                     <MenuItem asChild value="my-session">
-                      <Link to={`/account/session`}>My Session</Link>
+                      <Link to={`/account/session`}>Session</Link>
                     </MenuItem>
                     <MenuItem asChild value="my-listings">
                       <Link to={`/account/listings`}>My Listings</Link>

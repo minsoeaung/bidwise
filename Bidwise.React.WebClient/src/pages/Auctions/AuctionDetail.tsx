@@ -8,15 +8,11 @@ import {
   HStack,
   Flex,
   Heading,
-  Image,
   Grid,
   GridItem,
-  Stack,
-  Center,
   Card,
   DialogCloseTrigger,
   VStack,
-  EmptyState,
   DataList,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
@@ -32,9 +28,6 @@ import {
   NumberInputField,
   NumberInputRoot,
 } from "@/components/ui/number-input";
-import { FaRegComments } from "react-icons/fa";
-import { Comment, CommentLoading } from "@/components/Comment";
-import { Avatar } from "@/components/ui/avatar";
 import { LuArrowDown } from "react-icons/lu";
 import {
   DialogActionTrigger,
@@ -52,25 +45,21 @@ import { useAuth } from "@/context/AuthContext";
 import { ImageSlider } from "@/components/ImageSlider";
 import { StatBar } from "./StatBar";
 import { BreadcrumbsInfo } from "./BreadcrumbsInfo";
-import { Announcement } from "./Announcement";
+import { Announcement } from "./AuctionAnnouncement";
 import { BidsCard } from "./BidsCard";
 import { toaster } from "@/components/ui/toaster";
 import { isTheAuctionEnded } from "@/utils/isTheAuctionEnded";
 import { WinnerCard } from "./WinnerCard";
 import { SellerNote } from "./SellerNote";
 import { SealedBadge } from "@/components/SealedBadge";
+import { AuctionsEndingSoon } from "./AuctionsEndingSoon";
+import { Comments } from "./Comments";
 
 dayjs.extend(relativeTime);
 
 type Params = {
   id: string;
 };
-
-const stats = [
-  { label: "New Users", value: "234", diff: -12, helpText: "Till date" },
-  { label: "Sales", value: "£12,340", diff: 12, helpText: "Last 30 days" },
-  { label: "Revenue", value: "3,450", diff: 4.5, helpText: "Last 30 days" },
-];
 
 const AuctionDetailPage = () => {
   const [comment, setComment] = useState("");
@@ -308,14 +297,16 @@ const AuctionDetailPage = () => {
                   <WinnerCard auction={data} />
                 </Box>
 
-                <DataList.Root orientation="horizontal" mt={8}>
-                  {stats.map((item) => (
-                    <DataList.Item key={item.label}>
-                      <DataList.ItemLabel>{item.label}</DataList.ItemLabel>
-                      <DataList.ItemValue>{item.value}</DataList.ItemValue>
-                    </DataList.Item>
-                  ))}
-                </DataList.Root>
+                {!!data.attributes.length && (
+                  <DataList.Root orientation="horizontal" mt={8}>
+                    {data.attributes.map((attr) => (
+                      <DataList.Item key={attr.label}>
+                        <DataList.ItemLabel>{attr.label}</DataList.ItemLabel>
+                        <DataList.ItemValue>{attr.value}</DataList.ItemValue>
+                      </DataList.Item>
+                    ))}
+                  </DataList.Root>
+                )}
 
                 <Heading mt={5}>Comments</Heading>
                 <HStack
@@ -352,53 +343,14 @@ const AuctionDetailPage = () => {
                     </Button>
                   )}
                 </HStack>
-                {commentsIsLoading ? (
-                  <Stack gap="8" mt={8}>
-                    {[1, 2, 3, 4].map((n, i) => (
-                      <CommentLoading key={i} />
-                    ))}
-                  </Stack>
-                ) : commentsIsError ? (
-                  <Center mt={8} mb={5}>
-                    <VStack>
-                      <Text color="fg.muted" textStyle="sm">
-                        Comments unavailable. Please try again later.
-                      </Text>
-                      <Button
-                        mx="auto"
-                        variant="ghost"
-                        onClick={() => commentsRefetch()}
-                      >
-                        Retry
-                      </Button>
-                    </VStack>
-                  </Center>
-                ) : (
-                  Array.isArray(comments?.content) &&
-                  (comments.content.length > 0 ? (
-                    <Stack gap="8" mt={8}>
-                      {Array.isArray(comments?.content) &&
-                        comments.content.map((c) => (
-                          <Comment key={c.id} comment={c} />
-                        ))}
-                    </Stack>
-                  ) : (
-                    <EmptyState.Root>
-                      <EmptyState.Content>
-                        <EmptyState.Indicator>
-                          <FaRegComments />
-                        </EmptyState.Indicator>
-                        <VStack textAlign="center">
-                          <EmptyState.Description>
-                            No comments to display yet
-                          </EmptyState.Description>
-                        </VStack>
-                      </EmptyState.Content>
-                    </EmptyState.Root>
-                  ))
-                )}
+                <Comments itemId={id} />
               </GridItem>
-              <GridItem colSpan={2}></GridItem>
+              <GridItem colSpan={2}>
+                <Heading mt={10}>Auctions ending soon</Heading>
+                <Box mt="20px">
+                  <AuctionsEndingSoon />
+                </Box>
+              </GridItem>
             </Grid>
           </Box>
         )

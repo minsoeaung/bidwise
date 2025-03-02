@@ -17,6 +17,7 @@ import {
   VStack,
   Image,
   CloseButton,
+  HStack,
 } from "@chakra-ui/react";
 import { ErrorDisplay } from "../../components/ErrorDisplay";
 import { ApiError } from "../../types/ApiError";
@@ -26,6 +27,10 @@ import { Checkbox } from "../../components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
 import { Navigate } from "react-router";
 import { FileUploadRoot, FileUploadTrigger } from "@/components/ui/file-upload";
+import {
+  IoIosAddCircleOutline,
+  IoIosRemoveCircleOutline,
+} from "react-icons/io";
 import { HiUpload } from "react-icons/hi";
 
 const AUCTION_INITIAL_STATE: Omit<ItemCreateDto, "images"> = {
@@ -47,7 +52,7 @@ type ImageSelect = {
 
 const CreateAuctionPage = () => {
   const [values, setValues] = useState(AUCTION_INITIAL_STATE);
-
+  const [attributes, setAttributes] = useState([{ label: "", value: "" }]);
   const [selectedImages, setSelectedImages] = useState<ImageSelect[]>([]);
 
   const mutation = useCreateAuctionItem();
@@ -90,6 +95,25 @@ const CreateAuctionPage = () => {
     setSelectedImages(images);
   };
 
+  const handleAttributeChange = (
+    index: number,
+    newLabel: string,
+    newValue: string
+  ) => {
+    const updated = [...attributes];
+    updated[index] = { label: newLabel, value: newValue };
+    setAttributes(updated);
+    console.log(updated);
+  };
+
+  const handleAttributeRemove = (index: number) => {
+    setAttributes((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAttributeAdd = () => {
+    setAttributes((prev) => [...prev, { label: "", value: "" }]);
+  };
+
   useEffect(() => {
     return () => {
       if (Array.isArray(selectedImages.length) && selectedImages.length > 0) {
@@ -101,7 +125,11 @@ const CreateAuctionPage = () => {
   }, []);
 
   const handleCreateProduct = () => {
-    mutation.mutateAsync({ ...values, images: selectedImages });
+    mutation.mutateAsync({
+      ...values,
+      images: selectedImages,
+      attributes: attributes.filter((a) => a.label && a.value),
+    });
   };
 
   if (!loggedInUser) {
@@ -109,7 +137,7 @@ const CreateAuctionPage = () => {
   }
 
   return (
-    <Container maxW="7xl" mt={5}>
+    <Container maxW="5xl" mt={5}>
       <Card.Root>
         <Card.Body>
           <VStack spaceX="8px" spaceY="8px">
@@ -169,6 +197,53 @@ const CreateAuctionPage = () => {
                     value={values.note}
                     onChange={handleFormChange("note")}
                   />
+                </Field>
+                <Field label="Attributes">
+                  <VStack alignItems="start" w="full" gap="10px">
+                    {attributes.map((attr, index) => (
+                      <HStack w="full">
+                        <Input
+                          placeholder="Label"
+                          w="30%"
+                          value={attr.label}
+                          onChange={(e) =>
+                            handleAttributeChange(
+                              index,
+                              e.target.value,
+                              attr.value
+                            )
+                          }
+                        />
+                        <Input
+                          placeholder="Value"
+                          w="30%"
+                          value={attr.value}
+                          onChange={(e) =>
+                            handleAttributeChange(
+                              index,
+                              attr.label,
+                              e.target.value
+                            )
+                          }
+                        />
+                        <Button
+                          variant="ghost"
+                          onClick={() => handleAttributeRemove(index)}
+                        >
+                          <IoIosRemoveCircleOutline />
+                        </Button>
+                      </HStack>
+                    ))}
+
+                    <Button
+                      variant="outline"
+                      borderStyle="dashed"
+                      w="calc(60% + 8px)"
+                      onClick={handleAttributeAdd}
+                    >
+                      <IoIosAddCircleOutline />
+                    </Button>
+                  </VStack>
                 </Field>
                 <Field label="Vickrey">
                   <Checkbox

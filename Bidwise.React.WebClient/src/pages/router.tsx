@@ -12,6 +12,7 @@ const WhatIsBidwisePage = lazy(() => import("./WhatIsBidwise"));
 const MyListingsPage = lazy(() => import("./MyListings"));
 const MyBidsPage = lazy(() => import("./MyBids"));
 const ForbiddenPage = lazy(() => import("./NeedAuthentication"));
+const UserProfilePage = lazy(() => import("./UserProfile"));
 
 const AuthenticatedPage = () => {
   const { loggedInUser, loading } = useAuth();
@@ -42,7 +43,7 @@ const router = createBrowserRouter([
           { path: "bids", element: <MyBidsPage /> },
         ],
       },
-      { path: "users/:id/listings", element: <MyListingsPage /> },
+      { path: "users/:id", element: <UserProfilePage /> },
       { path: "need-authentication", element: <ForbiddenPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],

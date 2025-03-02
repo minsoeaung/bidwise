@@ -3,11 +3,15 @@ import { SomethingWentWrongAlert } from "@/components/SomethingWentWrongAlert";
 import { TimeLeft } from "@/components/TimeLeft";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { SkeletonText } from "@/components/ui/skeleton";
+import { AUCTION_IMAGES } from "@/constants/fileUrls";
 import { useAuth } from "@/context/AuthContext";
 import { useBuyAuctions } from "@/hooks/queries/useBuyAuctions";
 import {
+  Avatar,
+  AvatarGroup,
   Badge,
   Box,
+  Button,
   Flex,
   FormatNumber,
   Heading,
@@ -21,8 +25,8 @@ import {
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { FaRegClock } from "react-icons/fa";
-import { RiAuctionLine } from "react-icons/ri";
-import { useNavigate } from "react-router-dom";
+import { RiArrowRightLine, RiAuctionLine } from "react-icons/ri";
+import { Link, useNavigate } from "react-router-dom";
 
 const MyBids = () => {
   const [filterValue, setFilterValue] = useState("All");
@@ -52,34 +56,41 @@ const MyBids = () => {
     <Box maxW="8xl" mx="auto">
       <Flex justifyContent="space-between" alignItems="center" py={5}>
         <Heading>My Bids</Heading>
-        <SegmentedControl
-          defaultValue="All"
-          onValueChange={(e) => setFilterValue(e.value)}
-          items={[
-            {
-              value: "All",
-              label: "All",
-            },
-            {
-              value: "Running",
-              label: (
-                <HStack>
-                  <FaRegClock />
-                  Running
-                </HStack>
-              ),
-            },
-            {
-              value: "Ended",
-              label: (
-                <HStack>
-                  <RiAuctionLine />
-                  Ended
-                </HStack>
-              ),
-            },
-          ]}
-        />
+        <HStack>
+          <SegmentedControl
+            defaultValue="All"
+            onValueChange={(e) => setFilterValue(e.value)}
+            items={[
+              {
+                value: "All",
+                label: "All",
+              },
+              {
+                value: "Running",
+                label: (
+                  <HStack>
+                    <FaRegClock />
+                    Running
+                  </HStack>
+                ),
+              },
+              {
+                value: "Ended",
+                label: (
+                  <HStack>
+                    <RiAuctionLine />
+                    Ended
+                  </HStack>
+                ),
+              },
+            ]}
+          />
+          <Button variant="outline" asChild>
+            <Link to="/account/listings">
+              View listings <RiArrowRightLine />
+            </Link>
+          </Button>
+        </HStack>
       </Flex>
       <Separator />
       <Box py={5}>
@@ -117,7 +128,32 @@ const MyBids = () => {
                         cursor="pointer"
                         onClick={() => navigate(`/auctions/${myBid.item.id}`)}
                       >
-                        <Table.Cell>{myBid.item.name}</Table.Cell>
+                        <Table.Cell>
+                          <HStack>
+                            {!!myBid.item.images.length && (
+                              <AvatarGroup gap="0" spaceX="-3" size="xs">
+                                <Avatar.Root>
+                                  <Avatar.Fallback
+                                    name={myBid.item.images[0].label || "item"}
+                                  />
+                                  <Avatar.Image
+                                    src={
+                                      AUCTION_IMAGES + myBid.item.images[0].name
+                                    }
+                                  />
+                                </Avatar.Root>
+                                {myBid.item.images.length - 1 > 0 && (
+                                  <Avatar.Root variant="solid">
+                                    <Avatar.Fallback>
+                                      +{myBid.item.images.length - 1}
+                                    </Avatar.Fallback>
+                                  </Avatar.Root>
+                                )}
+                              </AvatarGroup>
+                            )}
+                            <Text>{myBid.item.name}</Text>
+                          </HStack>
+                        </Table.Cell>
                         <Table.Cell>
                           {!!myBid.item.buyerId ? (
                             myBid.item.buyerId === userId ? (

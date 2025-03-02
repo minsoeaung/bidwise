@@ -31,10 +31,7 @@ export const usePaginatedComments = (itemId: string | undefined) => {
       enabled: typeof Number(itemId) === "number" && Number(itemId) > 0,
       select: (res) => {
         // @ts-ignore
-        if (res.totalElements) {
-          // @ts-ignore
-          res.size = res.totalElements;
-        }
+        res.size = res.totalElements;
 
         return res;
       },

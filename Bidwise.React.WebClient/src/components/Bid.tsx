@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 import { Skeleton, SkeletonCircle } from "@/components/ui/skeleton";
 import { pickAvatarColorPalette } from "@/utils/pickAvatarColorPalette";
 import { memo } from "react";
+import { UserLink } from "./UserLink";
 
 export const BidLoading = () => {
   return (
@@ -34,17 +35,21 @@ type Props = {
 export const Bid = memo(({ bid, winnerBid, vickrey }: Props) => {
   return (
     <HStack gap="4" alignItems="start">
-      <Avatar.Root
-        size="sm"
-        colorPalette={pickAvatarColorPalette(bid.bidderName)}
-      >
-        <Avatar.Fallback name={bid.bidderName} />
-      </Avatar.Root>
+      <UserLink id={bid.bidderId} userName={bid.bidderName}>
+        <Avatar.Root
+          size="sm"
+          colorPalette={pickAvatarColorPalette(bid.bidderName)}
+        >
+          <Avatar.Fallback name={bid.bidderName} />
+        </Avatar.Root>
+      </UserLink>
       {vickrey ? (
         <Stat.Root>
           <Stat.Label>
             <Flex alignItems="baseline" gapX="4px" flexWrap="wrap">
-              <Text>{bid.bidderName}</Text>
+              <UserLink id={bid.bidderId} userName={bid.bidderName}>
+                <Text>{bid.bidderName}</Text>
+              </UserLink>
               <Text color="fg.subtle" textStyle="xs">
                 {dayjs(bid.createdAt).fromNow()}
               </Text>
@@ -58,7 +63,9 @@ export const Bid = memo(({ bid, winnerBid, vickrey }: Props) => {
         <Stat.Root>
           <Stat.Label>
             <Flex alignItems="baseline" gapX="4px" flexWrap="wrap">
-              <Text>{bid.bidderName}</Text>
+              <UserLink id={bid.bidderId} userName={bid.bidderName}>
+                <Text>{bid.bidderName}</Text>
+              </UserLink>
               <Text color="fg.subtle" textStyle="xs">
                 {bid.createdAt !== bid.updatedAt && "edited"}{" "}
                 {dayjs(

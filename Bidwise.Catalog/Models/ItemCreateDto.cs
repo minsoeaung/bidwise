@@ -11,7 +11,7 @@ public class ItemCreateDto
     public DateTimeOffset EndDate { get; set; } // <-- Frontend must send ISO 8601 format
     public IEnumerable<IFormFile> Images { get; set; } = [];
     public IEnumerable<string> ImageLabels { get; set; } = []; // <-- for later
-    public IEnumerable<AttributeCreateDto> Attributes { get; set; } = []; // <-- for later
+    public string? Attributes { get; set; }
 }
 
 public class AttributeCreateDto

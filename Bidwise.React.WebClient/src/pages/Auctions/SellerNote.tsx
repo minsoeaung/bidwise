@@ -1,3 +1,4 @@
+import { UserLink } from "@/components/UserLink";
 import { pickAvatarColorPalette } from "@/utils/pickAvatarColorPalette";
 import { Card, HStack, Avatar, Text } from "@chakra-ui/react";
 import { memo } from "react";
@@ -15,7 +16,7 @@ export const SellerNote = memo(({ note, sellerId, sellerName }: Props) => {
       <Card.Header>
         <Card.Title>
           <Text>Seller Note</Text>
-          <Link to={`/users/${sellerId}/listings?UserName=${sellerName}`}>
+          <UserLink id={sellerId} userName={sellerName}>
             <HStack gap={2}>
               <Avatar.Root
                 size="2xs"
@@ -27,7 +28,7 @@ export const SellerNote = memo(({ note, sellerId, sellerName }: Props) => {
                 {sellerName}
               </Text>
             </HStack>
-          </Link>
+          </UserLink>
         </Card.Title>
       </Card.Header>
       <Card.Body gap="2">
@@ -36,13 +37,3 @@ export const SellerNote = memo(({ note, sellerId, sellerName }: Props) => {
     </Card.Root>
   );
 });
-
-// SellerNote
-// IList<Attribute>
-// Email sending
-// Public buy sell page, win 2, lose 0 etc
-
-// item update, fields, images etc
-//  no delete if there is bid
-//  no update min bid if there is bid
-// vickrey mode
