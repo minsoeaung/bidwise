@@ -56,7 +56,9 @@ import { Announcement } from "./Announcement";
 import { BidsCard } from "./BidsCard";
 import { toaster } from "@/components/ui/toaster";
 import { isTheAuctionEnded } from "@/utils/isTheAuctionEnded";
-import { Tooltip } from "@/components/ui/tooltip";
+import { WinnerCard } from "./WinnerCard";
+import { SellerNote } from "./SellerNote";
+import { SealedBadge } from "@/components/SealedBadge";
 
 dayjs.extend(relativeTime);
 
@@ -140,7 +142,7 @@ const AuctionDetailPage = () => {
     <Box
       maxW="8xl"
       mx="auto"
-      mt={5}
+      mt={2}
       px={{ base: "2", md: "8", lg: "12" }}
       paddingBottom="30px"
     >
@@ -155,14 +157,17 @@ const AuctionDetailPage = () => {
           <Box>
             <Box>
               <Heading>{data.name}</Heading>
-              <Text>{data.description}</Text>
+              <HStack>
+                {data.vickrey && <SealedBadge />}
+                <Text>{data.description}</Text>
+              </HStack>
             </Box>
             <Announcement
               data={data}
               openBidPlaceDialog={() => setBidPlaceDialogOpen(true)}
             />
-            <Grid mt={3} templateColumns="repeat(4, 1fr)" gap="6">
-              <GridItem colSpan={3}>
+            <Grid mt={3} templateColumns="repeat(6, 1fr)" gap="6">
+              <GridItem colSpan={4}>
                 <Card.Root height="500px">
                   <ImageSlider
                     images={data.images.map((i) => AUCTION_IMAGES + i.name)}
@@ -183,9 +188,12 @@ const AuctionDetailPage = () => {
                   /> */}
                 </Card.Root>
               </GridItem>
-              <GridItem colSpan={1}>
+              <GridItem colSpan={2}>
                 <BidsCard
                   itemId={id}
+                  itemEndDate={data.endDate}
+                  itemVickrey={data.vickrey}
+                  winningBidderId={data.buyerId}
                   openBidPlaceDialog={() => setBidPlaceDialogOpen(true)}
                 />
                 {/* {data.images.map((img) => (
@@ -199,8 +207,8 @@ const AuctionDetailPage = () => {
               </GridItem>
             </Grid>
 
-            <Grid templateColumns="repeat(4, 1fr)" gap="6">
-              <GridItem colSpan={3}>
+            <Grid templateColumns="repeat(6, 1fr)" gap="6">
+              <GridItem colSpan={4}>
                 <Box my={2}>
                   <BreadcrumbsInfo
                     category={data.categoryName}
@@ -211,29 +219,31 @@ const AuctionDetailPage = () => {
                 <Flex justifyContent="space-between">
                   <StatBar
                     endDate={data.endDate}
+                    vickrey={data.vickrey}
                     currentHighestBid={data.currentHighestBid || 0}
                     totalBids={bids?.length || 0}
-                    totalComments={comments?.content?.length || 0}
+                    totalComments={comments?.size || 0}
                   />
                   <DialogRoot
                     initialFocusEl={() => bidAmountInputRef.current}
                     open={bidPlaceDialogOpen}
                     onOpenChange={(e) => setBidPlaceDialogOpen(e.open)}
                   >
-                    {!isTheAuctionEnded(data.endDate) && (
-                      <DialogTrigger asChild>
-                        <Button
-                          height="45px"
-                          width="120px"
-                          disabled={bidsIsLoading || !userId}
-                          variant="solid"
-                        >
-                          {data.status === "Available" && myBid
-                            ? "Adjust Bid"
-                            : "Place Bid"}
-                        </Button>
-                      </DialogTrigger>
-                    )}
+                    {!isTheAuctionEnded(data.endDate) &&
+                      (!data.vickrey || !myBid) && (
+                        <DialogTrigger asChild>
+                          <Button
+                            height="45px"
+                            width="120px"
+                            disabled={bidsIsLoading || !userId}
+                            variant="solid"
+                          >
+                            {data.status === "Available" && myBid
+                              ? "Adjust Bid"
+                              : "Place Bid"}
+                          </Button>
+                        </DialogTrigger>
+                      )}
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>
@@ -284,33 +294,21 @@ const AuctionDetailPage = () => {
                   </Text>
                 </Flex>
 
-                <Card.Root mt={5} variant="subtle">
-                  <Card.Body gap="2">
-                    <HStack mb="6" gap="3">
-                      <Avatar name={data.sellerName} />
-                      <Stack gap="0">
-                        <Text fontWeight="semibold" textStyle="sm">
-                          Seller Note
-                        </Text>
-                        <Text color="fg.muted" textStyle="sm">
-                          @{data.sellerName}
-                        </Text>
-                      </Stack>
-                    </HStack>
-                    <Card.Description>
-                      This is the card body. Lorem ipsum dolor sit amet,
-                      consectetur adipiscing elit. Curabitur nec odio vel dui
-                      euismod fermentum. Curabitur nec odio vel dui euismod
-                      fermentum.
-                    </Card.Description>
-                  </Card.Body>
-                  <Card.Footer justifyContent="flex-end">
-                    <Button variant="outline">View</Button>
-                    <Button>Join</Button>
-                  </Card.Footer>
-                </Card.Root>
+                {data.note && (
+                  <Box mt={5}>
+                    <SellerNote
+                      note={data.note}
+                      sellerId={data.sellerId}
+                      sellerName={data.sellerName}
+                    />
+                  </Box>
+                )}
 
-                <DataList.Root orientation="horizontal" mt={5}>
+                <Box mt={5}>
+                  <WinnerCard auction={data} />
+                </Box>
+
+                <DataList.Root orientation="horizontal" mt={8}>
                   {stats.map((item) => (
                     <DataList.Item key={item.label}>
                       <DataList.ItemLabel>{item.label}</DataList.ItemLabel>
@@ -338,15 +336,21 @@ const AuctionDetailPage = () => {
                       }
                     }}
                   />
-                  <Button
-                    variant="outline"
-                    width="140px"
-                    onClick={handleAddComment}
-                    disabled={commentsIsError}
-                    loading={commentCreateMutation.isLoading}
-                  >
-                    Comment <LuArrowDown />
-                  </Button>
+                  {!!userId ? (
+                    <Button
+                      variant="outline"
+                      width="140px"
+                      onClick={handleAddComment}
+                      disabled={commentsIsError}
+                      loading={commentCreateMutation.isLoading}
+                    >
+                      Comment <LuArrowDown />
+                    </Button>
+                  ) : (
+                    <Button variant="outline" width="140px" asChild>
+                      <a href={"/bff/login"}>Login to comment</a>
+                    </Button>
+                  )}
                 </HStack>
                 {commentsIsLoading ? (
                   <Stack gap="8" mt={8}>
@@ -394,7 +398,7 @@ const AuctionDetailPage = () => {
                   ))
                 )}
               </GridItem>
-              <GridItem colSpan={1}></GridItem>
+              <GridItem colSpan={2}></GridItem>
             </Grid>
           </Box>
         )

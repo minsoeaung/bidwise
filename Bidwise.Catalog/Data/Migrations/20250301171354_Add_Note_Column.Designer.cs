@@ -4,6 +4,7 @@ using Bidwise.Catalog.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bidwise.Catalog.Data.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    partial class CatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250301171354_Add_Note_Column")]
+    partial class Add_Note_Column
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,32 +24,6 @@ namespace Bidwise.Catalog.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Bidwise.Catalog.Entities.Attribute", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ItemId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemId");
-
-                    b.ToTable("Attribute");
-                });
 
             modelBuilder.Entity("Bidwise.Catalog.Entities.Category", b =>
                 {
@@ -160,15 +137,6 @@ namespace Bidwise.Catalog.Data.Migrations
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("Bidwise.Catalog.Entities.Attribute", b =>
-                {
-                    b.HasOne("Bidwise.Catalog.Entities.Item", null)
-                        .WithMany("Attributes")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Bidwise.Catalog.Entities.Image", b =>
                 {
                     b.HasOne("Bidwise.Catalog.Entities.Item", null)
@@ -190,8 +158,6 @@ namespace Bidwise.Catalog.Data.Migrations
 
             modelBuilder.Entity("Bidwise.Catalog.Entities.Item", b =>
                 {
-                    b.Navigation("Attributes");
-
                     b.Navigation("Images");
                 });
 #pragma warning restore 612, 618

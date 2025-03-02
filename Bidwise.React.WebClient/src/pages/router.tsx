@@ -9,8 +9,8 @@ const CreateAuctionPage = lazy(() => import("./Auctions/CreateAuction"));
 const AuctionDetailPage = lazy(() => import("./Auctions/AuctionDetail"));
 const UserSessionPage = lazy(() => import("./UserSession"));
 const WhatIsBidwisePage = lazy(() => import("./WhatIsBidwise"));
-const SellerDashboardPage = lazy(() => import("./SellerDashboard"));
-const BuyerDashboardPage = lazy(() => import("./BuyerDashboard"));
+const MyListingsPage = lazy(() => import("./MyListings"));
+const MyBidsPage = lazy(() => import("./MyBids"));
 const ForbiddenPage = lazy(() => import("./NeedAuthentication"));
 
 const AuthenticatedPage = () => {
@@ -34,15 +34,15 @@ const router = createBrowserRouter([
       { path: "forbidden", element: <ForbiddenPage /> },
       { path: "whatis", element: <WhatIsBidwisePage /> },
       {
-        path: "me",
+        path: "account",
         element: <AuthenticatedPage />,
         children: [
           { path: "session", element: <UserSessionPage /> },
-          { path: "sell", element: <SellerDashboardPage /> },
-          { path: "buy", element: <BuyerDashboardPage /> },
+          { path: "listings", element: <MyListingsPage /> },
+          { path: "bids", element: <MyBidsPage /> },
         ],
       },
-      { path: "users/:id/sell", element: <SellerDashboardPage /> },
+      { path: "users/:id/listings", element: <MyListingsPage /> },
       { path: "need-authentication", element: <ForbiddenPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],

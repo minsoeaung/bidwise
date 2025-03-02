@@ -27,7 +27,7 @@ type Params = {
   id: string;
 };
 
-const SellerDashboardPage = () => {
+const MyListings = () => {
   const [filterValue, setFilterValue] = useState("All");
 
   const { userId } = useAuth();
@@ -208,4 +208,4 @@ const SellerDashboardPage = () => {
   );
 };
 
-export default SellerDashboardPage;
+export default MyListings;

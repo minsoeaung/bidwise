@@ -6,10 +6,12 @@ import { toaster } from "@/components/ui/toaster";
 export interface ItemCreateDto {
   name: string;
   description: string;
+  note: string | null;
   categoryName: string;
   startingBid: number;
   endDate: string;
   images: ImageCreateDto[];
+  attributes: AttributeCreateDto[];
   vickrey: boolean;
 }
 
@@ -18,10 +20,12 @@ export interface ImageCreateDto {
   file: File;
 }
 
-export const useCreateAuctionItem = () => {
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
+export interface AttributeCreateDto {
+  label: string;
+  value: string;
+}
 
+export const useCreateAuctionItem = () => {
   return useMutation(
     async (payload: ItemCreateDto) => {
       const formData = new FormData();
@@ -29,6 +33,7 @@ export const useCreateAuctionItem = () => {
       formData.set("name", payload.name);
 
       formData.set("description", payload.description);
+      if (payload.note) formData.set("note", payload.note);
 
       if (payload.categoryName)
         formData.set("categoryName", payload.categoryName);

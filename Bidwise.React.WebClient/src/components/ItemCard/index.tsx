@@ -15,6 +15,7 @@ import { AuctionDto } from "../../hooks/queries/useAuctionDetail";
 import { AUCTION_IMAGES } from "../../constants/fileUrls";
 import { PiClockLight } from "react-icons/pi";
 import { TimeLeft } from "../TimeLeft";
+import { SealedBadge } from "../SealedBadge";
 
 export const ItemCard = memo(({ auction }: { auction: AuctionDto }) => {
   return (
@@ -44,25 +45,13 @@ export const ItemCard = memo(({ auction }: { auction: AuctionDto }) => {
           />
         </AspectRatio>
         <Box position="absolute" bottom="10px" left="10px">
-          <Badge
-            variant="surface"
-            colorPalette={auction.status === "Expired" ? "red" : undefined}
-            size="md"
-          >
-            {auction.buyerId ? (
-              <Text>
-                Sold for{" "}
-                <FormatNumber
-                  value={auction.buyerPayAmount!}
-                  style="currency"
-                  currency="USD"
-                  maximumFractionDigits={0}
-                />
-              </Text>
-            ) : auction.status === "Expired" ? (
-              "Expired"
-            ) : (
-              <HStack gap="10px">
+          {auction.vickrey ? (
+            <HStack>
+              <Badge
+                variant="surface"
+                colorPalette={auction.status === "Expired" ? "red" : undefined}
+                size="md"
+              >
                 <HStack gap="5px">
                   <PiClockLight />
                   <Text>
@@ -73,20 +62,54 @@ export const ItemCard = memo(({ auction }: { auction: AuctionDto }) => {
                     )}
                   </Text>
                 </HStack>
-                {auction.currentHighestBid && (
+              </Badge>
+              {auction.vickrey && <SealedBadge />}
+            </HStack>
+          ) : (
+            <Badge
+              variant="surface"
+              colorPalette={auction.status === "Expired" ? "red" : undefined}
+              size="md"
+            >
+              {auction.buyerId ? (
+                <Text>
+                  Sold for{" "}
+                  <FormatNumber
+                    value={auction.buyerPayAmount!}
+                    style="currency"
+                    currency="USD"
+                    maximumFractionDigits={0}
+                  />
+                </Text>
+              ) : auction.status === "Expired" ? (
+                "Expired"
+              ) : (
+                <HStack gap="10px">
                   <HStack gap="5px">
-                    <Text fontWeight="light">Bid</Text>
-                    <FormatNumber
-                      value={auction.currentHighestBid}
-                      style="currency"
-                      currency="USD"
-                      maximumFractionDigits={0}
-                    />
+                    <PiClockLight />
+                    <Text>
+                      {auction.status === "Expired" ? (
+                        auction.status
+                      ) : (
+                        <TimeLeft endDate={auction.endDate} />
+                      )}
+                    </Text>
                   </HStack>
-                )}
-              </HStack>
-            )}
-          </Badge>
+                  {auction.currentHighestBid && (
+                    <HStack gap="5px">
+                      <Text fontWeight="light">Bid</Text>
+                      <FormatNumber
+                        value={auction.currentHighestBid}
+                        style="currency"
+                        currency="USD"
+                        maximumFractionDigits={0}
+                      />
+                    </HStack>
+                  )}
+                </HStack>
+              )}
+            </Badge>
+          )}
         </Box>
       </Box>
       <Card.Body gap="2" backgroundColor="transparent" padding={0}>

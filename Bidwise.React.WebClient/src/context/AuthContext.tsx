@@ -55,7 +55,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
             data.find((claim) => claim.type === "bff:logout_url")?.value ??
             logoutUrl;
 
-          setLogoutUrl(logout_url + "&returnUrl=https://localhost:5173/");
+          setLogoutUrl(logout_url);
           setLoggedInUser(data);
 
           const sub = Number(data.find((claim) => claim.type === "sub")?.value);

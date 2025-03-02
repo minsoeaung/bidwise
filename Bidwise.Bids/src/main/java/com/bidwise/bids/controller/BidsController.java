@@ -45,7 +45,7 @@ public class BidsController {
 
     @GetMapping("top-2")
     List<Bid> getTop2(@RequestParam int itemId) {
-        return repository.findTop2ByItemIdOrderByAmountDesc(itemId);
+        return repository.findTop2ByItemIdOrderByAmountDescIdAsc(itemId);
     }
 
     @PostMapping()

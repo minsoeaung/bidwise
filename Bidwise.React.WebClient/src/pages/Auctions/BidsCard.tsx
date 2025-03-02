@@ -1,5 +1,7 @@
 import { BidLoading, Bid } from "@/components/Bid";
+import { useAuth } from "@/context/AuthContext";
 import { useBids } from "@/hooks/queries/useBids";
+import { isTheAuctionEnded } from "@/utils/isTheAuctionEnded";
 import {
   Card,
   Heading,
@@ -11,14 +13,33 @@ import {
 } from "@chakra-ui/react";
 import { HiColorSwatch } from "react-icons/hi";
 
+type Props = {
+  itemId: string | undefined;
+  itemEndDate: string;
+  itemVickrey: boolean;
+  winningBidderId: number | null;
+  openBidPlaceDialog: () => void;
+};
+
 export const BidsCard = ({
   itemId,
+  itemEndDate,
+  itemVickrey,
   openBidPlaceDialog,
-}: {
-  itemId: string | undefined;
-  openBidPlaceDialog: () => void;
-}) => {
+  winningBidderId,
+}: Props) => {
+  const { userId } = useAuth();
+
   const { data, isLoading, isError, refetch } = useBids(itemId);
+
+  const ended = isTheAuctionEnded(itemEndDate);
+
+  // loading state
+  // bids-service unavailable state
+  // bids listing state
+  // no bids to list state
+  //    - still can bid?
+  //    - ended?
 
   return (
     <Card.Root size="sm" height="500px" variant="subtle">
@@ -46,9 +67,25 @@ export const BidsCard = ({
           (data.length > 0 ? (
             <Stack gap="4">
               {data.map((bid) => (
-                <Bid bid={bid} key={bid.id} />
+                <Bid
+                  bid={bid}
+                  key={bid.id}
+                  vickrey={itemVickrey}
+                  winnerBid={bid.bidderId === winningBidderId}
+                />
               ))}
             </Stack>
+          ) : ended ? (
+            <EmptyState.Root>
+              <EmptyState.Content>
+                <EmptyState.Indicator>
+                  <HiColorSwatch />
+                </EmptyState.Indicator>
+                <EmptyState.Title>
+                  No bids placed. Auction ended.
+                </EmptyState.Title>
+              </EmptyState.Content>
+            </EmptyState.Root>
           ) : (
             <EmptyState.Root>
               <EmptyState.Content>
@@ -61,9 +98,15 @@ export const BidsCard = ({
                     Be the first one to bid
                   </EmptyState.Description>
                 </VStack>
-                <Button variant="subtle" onClick={openBidPlaceDialog}>
-                  Place Bid
-                </Button>
+                {!!userId ? (
+                  <Button variant="subtle" onClick={openBidPlaceDialog}>
+                    Place Bid
+                  </Button>
+                ) : (
+                  <Button variant="subtle" asChild>
+                    <a href={"/bff/login"}>Login to bid</a>
+                  </Button>
+                )}
               </EmptyState.Content>
             </EmptyState.Root>
           ))

@@ -7,6 +7,7 @@ public class Item
 
     public string Name { get; set; }
     public string Description { get; set; }
+    public string? Note { get; set; }
     public bool Vickrey { get; set; }
 
     public string DoubleMetaphone { get; set; }
@@ -34,4 +35,5 @@ public class Item
     public DateTimeOffset EndDate { get; set; }
 
     public IEnumerable<Image> Images { get; set; } = [];
+    public IEnumerable<Attribute> Attributes { get; set; } = [];
 }

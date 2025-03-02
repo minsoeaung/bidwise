@@ -1,12 +1,15 @@
+import { ApiClient } from "@/api/apiClient";
 import { TimeLeft } from "@/components/TimeLeft";
 import { AuctionDto } from "@/hooks/queries/useAuctionDetail";
 import { isTheAuctionEnded } from "@/utils/isTheAuctionEnded";
 import { Flex, HStack, Text } from "@chakra-ui/react";
 import dayjs from "dayjs";
+import { useEffect } from "react";
 import { FaRegClock, FaArrowUp, FaHashtag, FaRegComment } from "react-icons/fa";
 
 type Props = {
   endDate: string;
+  vickrey: boolean;
   currentHighestBid: number;
   totalBids: number;
   totalComments: number;
@@ -16,6 +19,7 @@ export const StatBar = ({
   endDate,
   currentHighestBid,
   totalBids,
+  vickrey,
   totalComments,
 }: Props) => {
   const auctionEnded = isTheAuctionEnded(endDate);
@@ -23,22 +27,32 @@ export const StatBar = ({
   const diffSeconds = dayjs(endDate).diff(dayjs(), "second");
   const secondsIn6Hours = 6 * 3600;
 
+  useEffect(() => {
+    ApiClient.get("/api/bids/top-2?itemId=42");
+  }, []);
+
   return (
     <Flex
       justifyContent="space-between"
       rounded="sm"
       backgroundColor={
-        diffSeconds > 0
+        !auctionEnded
           ? diffSeconds < secondsIn6Hours
-            ? "red.800"
+            ? "red"
             : "gray.800"
-          : "black"
+          : "gray.600"
       }
-      height="45px"
-      width={auctionEnded ? "100%" : "70%"}
+      height={auctionEnded ? "60px" : "45px"}
+      width={auctionEnded ? "100%" : "80%"}
       px="20px"
-      color="fg.subtle"
-      _dark={{ color: "fg.muted" }}
+      color="white"
+      _dark={{
+        backgroundColor: auctionEnded
+          ? "gray.800"
+          : diffSeconds < secondsIn6Hours
+          ? "red.700"
+          : "gray.800",
+      }}
     >
       <HStack gap="10px">
         <FaRegClock />
@@ -50,9 +64,20 @@ export const StatBar = ({
       <HStack gap="10px">
         <FaArrowUp />
         <Text>High Bid</Text>
-        <Text textStyle="xl" color="white" fontWeight="bold">
-          {currentHighestBid}
-        </Text>
+        {auctionEnded || !vickrey ? (
+          <Text textStyle="xl" color="white" fontWeight="bold">
+            {currentHighestBid}
+          </Text>
+        ) : (
+          <Text
+            textStyle="xl"
+            fontStyle="italic"
+            color="white"
+            fontWeight="bold"
+          >
+            ****
+          </Text>
+        )}
       </HStack>
       <HStack gap="10px">
         <FaHashtag />

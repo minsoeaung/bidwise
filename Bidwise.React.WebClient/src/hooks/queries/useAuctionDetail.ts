@@ -7,8 +7,10 @@ export type AuctionDto = {
   id: number;
   name: string;
   description: string;
+  note: string | null;
   startDate: string;
   endDate: string;
+  vickrey: boolean;
   currentHighestBid: number | null;
   currentHighestBidderId: number | null;
   doubleMetaphone: string;
@@ -20,6 +22,7 @@ export type AuctionDto = {
   status: string;
   timeLeft: string;
   images: ImageDto[];
+  attributes: AttributeDto[];
   startingBid: number;
   categoryName: string | null;
 };
@@ -27,6 +30,12 @@ export type AuctionDto = {
 export type ImageDto = {
   name: string;
   label: string | null;
+};
+
+export type AttributeDto = {
+  id: number;
+  label: string;
+  value: string;
 };
 
 // type of "id" is set as string | undefined bc it is an query param

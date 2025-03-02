@@ -5,6 +5,7 @@ public class ItemDto
     public int Id { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
+    public string? Note { get; set; }
     public string? CategoryName { get; set; }
     public DateTimeOffset StartDate { get; set; }
     public DateTimeOffset EndDate { get; set; }
@@ -20,6 +21,7 @@ public class ItemDto
     public bool Vickrey { get; set; }
 
     public IEnumerable<ImageDto> Images { get; set; } = [];
+    public IEnumerable<AttributeDto> Attributes { get; set; } = [];
 
     public string Status
     {

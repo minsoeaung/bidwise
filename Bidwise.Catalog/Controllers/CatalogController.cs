@@ -183,6 +183,7 @@ public class CatalogController : ControllerBase
         {
             Name = dto.Name,
             Description = dto.Description,
+            Note = dto.Note,
             SellerId = (int)user.Id,
             SellerName = user.UserName ?? string.Empty,
             DoubleMetaphone = string.Join(',', metaphoneKeys),
@@ -192,7 +193,13 @@ public class CatalogController : ControllerBase
             Vickrey = dto.Vickrey,
 
             Category = dto.CategoryName == null ? null : category,
-            Images = images
+            Images = images,
+
+            Attributes = dto.Attributes.Select(a => new Entities.Attribute
+            {
+                Label = a.Label,
+                Value = a.Value
+            })
         };
 
         _context.Items.Add(item);

@@ -53,6 +53,7 @@ export const ImageSlider = ({ imgHeight, images = [] }: Props) => {
             variant="ghost"
             color="white"
             _hover={{ color: "black" }}
+            _dark={{ color: "white" }}
             zIndex={2}
             onClick={() => slider?.slickPrev()}
           >
@@ -67,6 +68,7 @@ export const ImageSlider = ({ imgHeight, images = [] }: Props) => {
             variant="ghost"
             color="white"
             _hover={{ color: "black" }}
+            _dark={{ color: "white" }}
             zIndex={2}
             onClick={() => slider?.slickNext()}
           >

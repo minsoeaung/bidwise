@@ -17,6 +17,7 @@ public static class Mapping
             CurrentHighestBid = i.CurrentHighestBid,
             CurrentHighestBidderId = i.CurrentHighestBidderId,
             Description = i.Description,
+            Note = i.Note,
             BuyerId = i.BuyerId,
             BuyerName = i.BuyerName,
             SellerId = i.SellerId,
@@ -29,7 +30,13 @@ public static class Mapping
             {
                 Name = img.Name,
                 Label = img.Label
-            })  
+            }) ,
+            Attributes = i.Attributes.Select(i => new AttributeDto
+            {
+                Id = i.Id,
+                Label = i.Label,
+                Value = i.Value
+            })
         });
     }
 }

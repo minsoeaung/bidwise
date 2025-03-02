@@ -21,11 +21,10 @@ import {
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { FaRegClock } from "react-icons/fa";
-import { LuTable, LuList } from "react-icons/lu";
 import { RiAuctionLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 
-const BuyerDashboardPage = () => {
+const MyBids = () => {
   const [filterValue, setFilterValue] = useState("All");
 
   const { userId } = useAuth();
@@ -146,10 +145,9 @@ const BuyerDashboardPage = () => {
                               <Status.Root colorPalette="blue">
                                 <Status.Indicator />
                                 Running -{" "}
-                                {(myBid.item.currentHighestBid || 0) >
-                                myBid.amount
-                                  ? "Outbidded"
-                                  : "Leading"}
+                                {myBid.item.currentHighestBidderId === userId
+                                  ? "Leading"
+                                  : "Outbidded"}
                               </Status.Root>
                               <Text color="fg.muted">
                                 Ends in{" "}
@@ -160,15 +158,7 @@ const BuyerDashboardPage = () => {
                             "-"
                           )}
                         </Table.Cell>
-                        <Table.Cell
-                          textAlign="end"
-                          pr={8}
-                          color={
-                            (myBid.item.currentHighestBid || 0) > myBid.amount
-                              ? "fg.error"
-                              : ""
-                          }
-                        >
+                        <Table.Cell textAlign="end" pr={8}>
                           <FormatNumber
                             value={myBid.amount}
                             style="currency"
@@ -206,4 +196,4 @@ const BuyerDashboardPage = () => {
   );
 };
 
-export default BuyerDashboardPage;
+export default MyBids;

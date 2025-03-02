@@ -27,6 +27,7 @@ import { useDeleteComment } from "@/hooks/mutations/useDeleteComment";
 import { useUpdateComment } from "@/hooks/mutations/useUpdateComment";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import { pickAvatarColorPalette } from "@/utils/pickAvatarColorPalette";
 
 export const Comment = memo(({ comment }: { comment: CommentDto }) => {
   const { userId } = useAuth();
@@ -68,14 +69,14 @@ export const Comment = memo(({ comment }: { comment: CommentDto }) => {
 
   return (
     <HStack gap="4">
-      <Avatar.Root colorPalette={pickPalette(comment.userName)}>
+      <Avatar.Root colorPalette={pickAvatarColorPalette(comment.userName)}>
         <Avatar.Fallback name={comment.userName} />
       </Avatar.Root>
       <Stack gap="0">
         <HStack>
           <Text fontWeight="medium">
             <Link
-              to={`/users/${comment.userId}/sell?UserName=${comment.userName}`}
+              to={`/users/${comment.userId}/listings?UserName=${comment.userName}`}
             >
               {comment.userName}
             </Link>
@@ -183,11 +184,4 @@ export const CommentLoading = () => {
       </Stack>
     </HStack>
   );
-};
-
-const colorPalette = ["red", "blue", "green", "yellow", "purple", "orange"];
-
-const pickPalette = (name: string) => {
-  const index = name.charCodeAt(0) % colorPalette.length;
-  return colorPalette[index];
 };

@@ -1,6 +1,5 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import {
-  ImageCreateDto,
   ItemCreateDto,
   useCreateAuctionItem,
 } from "../../hooks/mutations/useCreateAuctionItem";
@@ -8,7 +7,6 @@ import {
   Box,
   Button,
   Card,
-  Code,
   Container,
   Fieldset,
   FileUploadHiddenInput,
@@ -16,7 +14,6 @@ import {
   Input,
   Stack,
   Textarea,
-  useFileUpload,
   VStack,
   Image,
   CloseButton,
@@ -28,11 +25,7 @@ import { Field } from "../../components/ui/field";
 import { Checkbox } from "../../components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
 import { Navigate } from "react-router";
-import {
-  FileUploadList,
-  FileUploadRoot,
-  FileUploadTrigger,
-} from "@/components/ui/file-upload";
+import { FileUploadRoot, FileUploadTrigger } from "@/components/ui/file-upload";
 import { HiUpload } from "react-icons/hi";
 
 const AUCTION_INITIAL_STATE: Omit<ItemCreateDto, "images"> = {
@@ -42,6 +35,8 @@ const AUCTION_INITIAL_STATE: Omit<ItemCreateDto, "images"> = {
   endDate: "",
   startingBid: 0,
   vickrey: false,
+  attributes: [],
+  note: "",
 };
 
 type ImageSelect = {
@@ -164,6 +159,15 @@ const CreateAuctionPage = () => {
                     name="endDate"
                     value={values.endDate}
                     onChange={handleFormChange("endDate")}
+                  />
+                </Field>
+                <Field label="Note">
+                  <Textarea
+                    autoresize
+                    name="note"
+                    // @ts-ignore
+                    value={values.note}
+                    onChange={handleFormChange("note")}
                   />
                 </Field>
                 <Field label="Vickrey">

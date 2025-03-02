@@ -1,6 +1,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { AuctionDto } from "@/hooks/queries/useAuctionDetail";
 import { useBids } from "@/hooks/queries/useBids";
+import { isTheAuctionEnded } from "@/utils/isTheAuctionEnded";
 import { Alert, Button, FormatNumber, Text } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { FaRegClock } from "react-icons/fa";
@@ -38,7 +39,7 @@ export const Announcement = ({
           <Alert.Description>
             Your bid of{" "}
             <FormatNumber
-              value={data.buyerPayAmount!}
+              value={myBid?.amount!}
               style="currency"
               currency="USD"
               maximumFractionDigits={0}
@@ -50,71 +51,17 @@ export const Announcement = ({
     );
   }
 
-  if (data.buyerId) {
-    return (
-      <Alert.Root title="Auction ended" status="info" mt={6}>
-        <Alert.Indicator>
-          <RiAuctionLine />
-        </Alert.Indicator>
-        <Alert.Content color="fg">
-          <Alert.Title>Auction Ended</Alert.Title>
-          <Alert.Description>
-            {myBid ? (
-              <>
-                You placed{" "}
-                <Text fontWeight="bold" display="inline">
-                  <FormatNumber
-                    value={myBid.amount!}
-                    style="currency"
-                    currency="USD"
-                    maximumFractionDigits={0}
-                  />
-                </Text>
-                , but a higher bid of{" "}
-                <Text fontWeight="bold" display="inline">
-                  <FormatNumber
-                    value={data.buyerPayAmount!}
-                    style="currency"
-                    currency="USD"
-                    maximumFractionDigits={0}
-                  />
-                </Text>{" "}
-                from{" "}
-                <Text fontWeight="bold" display="inline">
-                  {data.buyerName}
-                </Text>{" "}
-                won the auction. Better luck next time!
-              </>
-            ) : (
-              <>
-                Winner:{" "}
-                <Text fontWeight="bold" display="inline">
-                  {data.buyerName}
-                </Text>
-                , Bid:{" "}
-                <Text fontWeight="bold" display="inline">
-                  <FormatNumber
-                    value={data.buyerPayAmount!}
-                    style="currency"
-                    currency="USD"
-                    maximumFractionDigits={0}
-                  />
-                </Text>
-              </>
-            )}
-          </Alert.Description>
-        </Alert.Content>
-      </Alert.Root>
-    );
-  }
+  const biddedAndNotEndedYet = myBid && !isTheAuctionEnded(data.endDate);
 
-  if (myBid) {
+  if (biddedAndNotEndedYet) {
     return (
       <Alert.Root
-        mt={6}
+        mt={3}
         borderStartWidth="3px"
         borderStartColor="colorPalette.solid"
-        status="neutral"
+        status={
+          data.vickrey ? "neutral" : myBidIsTheHighest ? "neutral" : "warning"
+        }
       >
         <Alert.Indicator>
           <FaRegClock />
@@ -130,16 +77,18 @@ export const Announcement = ({
                 maximumFractionDigits={0}
               />
             </Text>{" "}
-            — last updated on{" "}
+            — {data.vickrey ? "submitted" : "last updated"} on{" "}
             {dayjs(myBid.updatedAt).format("MMMM D [at] h:mm A")}.
           </Alert.Title>
-          <Alert.Description>
-            {myBidIsTheHighest
-              ? "You're currently the highest bidder."
-              : "Your bid is no longer the highest. Please adjust to regain the lead."}
-          </Alert.Description>
+          {!data.vickrey && (
+            <Alert.Description>
+              {myBidIsTheHighest
+                ? "You're currently the highest bidder."
+                : "Your bid is no longer the highest. Please adjust to regain the lead."}
+            </Alert.Description>
+          )}
         </Alert.Content>
-        {!myBidIsTheHighest && (
+        {!myBidIsTheHighest && !data.vickrey && (
           <Button variant="ghost" onClick={openBidPlaceDialog}>
             Adjust
           </Button>

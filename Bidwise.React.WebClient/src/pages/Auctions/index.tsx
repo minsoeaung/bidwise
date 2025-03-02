@@ -60,7 +60,7 @@ const AuctionsPage = () => {
       {isFetching && !isLoading && <Fallback />}
       {isLoading ? (
         <ItemGrid mt="75px">
-          {Array(16)
+          {Array(12)
             .fill(1)
             .map((_, index) => (
               <ItemCardLoading key={index} />

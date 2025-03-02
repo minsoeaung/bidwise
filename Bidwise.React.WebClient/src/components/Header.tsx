@@ -13,6 +13,7 @@ import {
   MenuTrigger,
   Stack,
   Avatar,
+  Text,
   defineStyle,
 } from "@chakra-ui/react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -203,10 +204,13 @@ const Header = () => {
               <MenuRoot positioning={{ placement: "left-end" }}>
                 <MenuTrigger asChild>
                   <Button variant="plain">
-                    <Avatar.Root>
-                      <Avatar.Fallback />
-                      <Avatar.Image src="https://bit.ly/broken-link" />
-                    </Avatar.Root>
+                    <HStack>
+                      <Text>{userName}</Text>
+                      <Avatar.Root>
+                        <Avatar.Fallback />
+                        <Avatar.Image src="https://bit.ly/broken-link" />
+                      </Avatar.Root>
+                    </HStack>
                   </Button>
                 </MenuTrigger>
                 <MenuContent position="absolute" left="-100px" width="150px">
@@ -219,14 +223,14 @@ const Header = () => {
                         Manage Account
                       </Link>
                     </MenuItem>
-                    <MenuItem asChild value="user-session">
-                      <Link to={`/me/session`}>My Session</Link>
+                    <MenuItem asChild value="my-session">
+                      <Link to={`/account/session`}>My Session</Link>
                     </MenuItem>
-                    <MenuItem asChild value="seller-dashboard">
-                      <Link to={`/me/sell`}>Seller Dashboard</Link>
+                    <MenuItem asChild value="my-listings">
+                      <Link to={`/account/listings`}>My Listings</Link>
                     </MenuItem>
                     <MenuItem asChild value="buyer-dashboard">
-                      <Link to={`/me/buy`}>Buyer Dashboard</Link>
+                      <Link to={`/account/bids`}>My Bids</Link>
                     </MenuItem>
                   </MenuItemGroup>
                   <MenuSeparator />
