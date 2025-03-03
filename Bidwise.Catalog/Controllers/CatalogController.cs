@@ -131,6 +131,129 @@ public class CatalogController : ControllerBase
         return item == null ? NotFound() : item;
     }
 
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<Item>> UpdateAsync(int id, [FromForm] ItemUpdateDto dto)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        var user = User.GetProfile();
+        if (user == null)
+            return Unauthorized();
+
+        var item = await _context.Items
+            .Include(i => i.Category)
+            .Include(i => i.Images)
+            .Include(i => i.Attributes)
+            .FirstOrDefaultAsync(i => i.Id == id);
+
+        if (item == null)
+            return NotFound();
+
+        using var transaction = await _context.Database.BeginTransactionAsync();
+
+
+        if (dto.CategoryName != null)
+        {
+            var categoryChanged = dto.CategoryName != item.Category?.Name;
+            if (categoryChanged)
+            {
+                var category = new Category();
+                var existingCategory = await _context.Categories.FirstOrDefaultAsync(c => c.Name == dto.CategoryName.Trim());
+                if (existingCategory == null)
+                {
+                    category.Name = dto.CategoryName.Trim();
+                    _context.Categories.Add(category);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    category = existingCategory;
+                }
+
+                // Category
+                item.Category = category;
+                item.CategoryId = category.Id;
+            }
+        }
+        else
+        {
+            // Category
+            item.CategoryId = null;
+        }
+
+        var nameChanged = dto.Name != item.Name;
+        if (nameChanged)
+        {
+            IList<string> metaphoneKeys = [];
+            var metaphone = new DoubleMetaphone();
+            foreach (var word in dto.Name.Split(" "))
+            {
+                metaphone.computeKeys(word);
+                if (!string.IsNullOrEmpty(metaphone.PrimaryKey))
+                    metaphoneKeys.Add(metaphone.PrimaryKey);
+                if (!string.IsNullOrEmpty(metaphone.AlternateKey))
+                    metaphoneKeys.Add(metaphone.AlternateKey);
+            }
+
+            // Name
+            item.Name = dto.Name;
+            item.DoubleMetaphone = string.Join(',', metaphoneKeys);
+        }
+
+
+
+
+        _context.Images.RemoveRange(item.Images);
+        // item.Images is null because of missing .Include
+        var removeImageTasks = item.Images.Select(async image =>
+        {
+            await _fileService.DeleteFileAsync(image.Name);
+        });
+        await Task.WhenAll(removeImageTasks);
+        if (dto.Images.Any())
+        {
+            IList<Image> images = [];
+            var imageUploadTasks = dto.Images.Select(async image =>
+            {
+                var imageName = Guid.NewGuid().ToString();
+                await _fileService.UploadFileAsync(image, imageName);
+                images.Add(new Image { Name = imageName });
+            });
+            await Task.WhenAll(imageUploadTasks);
+            item.Images = images;
+        }
+
+
+
+        _context.Attributes.RemoveRange(item.Attributes);
+        if (!string.IsNullOrEmpty(dto.Attributes))
+        {
+            var attributes = JsonSerializer.Deserialize<IList<AttributeCreateDto>>(dto.Attributes, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (attributes != null && attributes.Count > 0)
+            {
+                item.Attributes = attributes.Select(a => new Entities.Attribute
+                {
+                    Label = a.Label,
+                    Value = a.Value
+                }).ToList();
+            }
+        }
+
+        item.Description = dto.Description;
+        item.Note = dto.Note;
+
+        _context.Items.Update(item);
+
+        await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
+
+        return item;
+    }
+
     [HttpPost]
     public async Task<ActionResult<Item>> CreateAsync([FromForm] ItemCreateDto dto)
     {

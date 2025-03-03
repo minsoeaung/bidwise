@@ -31,23 +31,6 @@ class CommentsController {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    @GetMapping("not/not/not")
-    String callThis() {
-        return "I can call this??????";
-    }
-
-    // Calling PUT endpoint always returns 404 not found.
-    // The exact same endpoints of GET, POST, DELETE work.
-    // Also, if requests header is too big, it shows a page saying 400 bad request, instead of returning the STATUS,...
-    // This thing is "@RestController", there is no reason to return an HTML page. REST API should do REST API stuffs.
-    // The above problem might also be 405 method not allowed. It's saying 404 not found. I don't know.
-    // I will use POST for PUT stuff, if id is 0 do PUT job, if > 0, do POST job.
-    // .NET is so much better in every way.
-    @PutMapping("not/not/not")
-    String callThisPost() {
-        return "Why I cannot call this??????";
-    }
-
     @GetMapping()
     Page<Comment> allByItemId(
             @RequestParam int itemId,

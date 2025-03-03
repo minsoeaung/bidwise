@@ -16,10 +16,23 @@ public class CatalogDbContext(DbContextOptions options) : DbContext(options)
             .WithMany()
             .OnDelete(DeleteBehavior.SetNull);
 
+        modelBuilder.Entity<Item>()
+           .HasMany(i => i.Images)
+           .WithOne()
+           .HasForeignKey(i => i.ItemId)
+           .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Item>()
+          .HasMany(i => i.Attributes)
+          .WithOne()
+          .HasForeignKey(i => i.ItemId)
+          .OnDelete(DeleteBehavior.Cascade);
+
         base.OnModelCreating(modelBuilder);
     }
 
     public DbSet<Item> Items { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<Entities.Attribute> Attributes { get; set; }
 }

@@ -56,7 +56,7 @@ const AuctionsPage = () => {
   }, [params]);
 
   return (
-    <Box maxW="8xl" mx="auto" mt={5}>
+    <Box maxW="7xl" mx="auto" mt={5}>
       {isFetching && !isLoading && <Fallback />}
       {isLoading ? (
         <ItemGrid mt="75px">

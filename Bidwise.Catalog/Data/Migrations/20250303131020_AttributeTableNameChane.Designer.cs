@@ -4,6 +4,7 @@ using Bidwise.Catalog.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bidwise.Catalog.Data.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    partial class CatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250303131020_AttributeTableNameChane")]
+    partial class AttributeTableNameChane
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,7 +48,7 @@ namespace Bidwise.Catalog.Data.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("Attributes", (string)null);
+                    b.ToTable("Attributes");
                 });
 
             modelBuilder.Entity("Bidwise.Catalog.Entities.Category", b =>
@@ -65,7 +68,7 @@ namespace Bidwise.Catalog.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Bidwise.Catalog.Entities.Image", b =>
@@ -90,7 +93,7 @@ namespace Bidwise.Catalog.Data.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("Images", (string)null);
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("Bidwise.Catalog.Entities.Item", b =>
@@ -157,7 +160,7 @@ namespace Bidwise.Catalog.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("Bidwise.Catalog.Entities.Attribute", b =>

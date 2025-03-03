@@ -26,6 +26,8 @@ import { useMemo, useState } from "react";
 import { FaRegClock } from "react-icons/fa";
 import { RiArrowRightLine, RiAuctionLine } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
+import { TbEdit } from "react-icons/tb";
+import { CgEye } from "react-icons/cg";
 
 const MyListings = () => {
   const [filterValue, setFilterValue] = useState("All");
@@ -106,7 +108,7 @@ const MyListings = () => {
               rounded="md"
               maxHeight="calc(100vh - (65px + 120px + 48px + 16px))"
             >
-              <Table.Root stickyHeader interactive>
+              <Table.Root stickyHeader>
                 <Table.Header>
                   <Table.Row bg="bg.subtle">
                     <Table.ColumnHeader>Item</Table.ColumnHeader>
@@ -120,16 +122,15 @@ const MyListings = () => {
                     <Table.ColumnHeader textAlign="end">
                       Winner
                     </Table.ColumnHeader>
+                    <Table.ColumnHeader textAlign="end">
+                      Actions
+                    </Table.ColumnHeader>
                   </Table.Row>
                 </Table.Header>
 
                 <Table.Body>
                   {filteredData.map((auction) => (
-                    <Table.Row
-                      key={auction.id}
-                      cursor="pointer"
-                      onClick={() => navigate(`/auctions/${auction.id}`)}
-                    >
+                    <Table.Row key={auction.id}>
                       <Table.Cell>
                         <HStack>
                           {!!auction.images.length && (
@@ -211,6 +212,30 @@ const MyListings = () => {
                         ) : (
                           "-"
                         )}
+                      </Table.Cell>
+                      <Table.Cell textAlign="end">
+                        <HStack justifyContent="end">
+                          <Button
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              navigate(`/auctions/${auction.id}`);
+                            }}
+                          >
+                            <CgEye />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              navigate(`/auctions/${auction.id}/edit`);
+                            }}
+                          >
+                            <TbEdit />
+                          </Button>
+                        </HStack>
                       </Table.Cell>
                     </Table.Row>
                   ))}

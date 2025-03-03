@@ -29,7 +29,7 @@ export const ItemCard = memo(({ auction }: { auction: AuctionDto }) => {
         <AspectRatio
           ratio={3 / 2}
           borderWidth="1px"
-          rounded="md"
+          rounded="lg"
           overflow="hidden"
         >
           <Image

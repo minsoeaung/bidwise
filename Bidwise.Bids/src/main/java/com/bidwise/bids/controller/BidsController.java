@@ -79,12 +79,5 @@ public class BidsController {
 
         return bid;
     }
-
-    // withdraw from auction
-    // TODO: only allow if not expired
-    @DeleteMapping("{id}")
-    void deleteBid(@PathVariable Long id) {
-        repository.deleteById(id);
-    }
 }
 

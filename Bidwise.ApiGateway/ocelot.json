@@ -10,7 +10,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/catalog/{everything}",
-      "UpstreamHttpMethod": [ "Get", "POST", "CREATE", "DELETE" ]
+      "UpstreamHttpMethod": [ "Get", "POST", "PUT", "DELETE" ]
     },
     {
       "DownstreamPathTemplate": "/api/categories/{everything}",
@@ -22,7 +22,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/categories/{everything}",
-      "UpstreamHttpMethod": [ "Get", "POST", "CREATE", "DELETE" ]
+      "UpstreamHttpMethod": [ "Get", "POST", "PUT", "DELETE" ]
     },
     {
       "DownstreamPathTemplate": "/api/comments/{everything}",
@@ -34,7 +34,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/comments/{everything}",
-      "UpstreamHttpMethod": [ "Get", "POST", "CREATE", "DELETE" ]
+      "UpstreamHttpMethod": [ "Get", "POST", "PUT", "DELETE" ]
     },
     {
       "DownstreamPathTemplate": "/api/bids/{everything}",
@@ -46,7 +46,7 @@
         }
       ],
       "UpstreamPathTemplate": "/api/bids/{everything}",
-      "UpstreamHttpMethod": [ "Get", "POST", "CREATE", "DELETE" ]
+      "UpstreamHttpMethod": [ "Get", "POST", "PUT", "DELETE" ]
     }
   ],
   "GlobalConfiguration": {

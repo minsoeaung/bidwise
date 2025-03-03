@@ -44,7 +44,7 @@ const AUCTION_INITIAL_STATE: Omit<ItemCreateDto, "images"> = {
   note: "",
 };
 
-type ImageSelect = {
+export type ImageSelect = {
   file: File;
   label: string | null;
   preview: string;

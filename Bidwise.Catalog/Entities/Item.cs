@@ -34,6 +34,9 @@ public class Item
     public DateTimeOffset StartDate { get; set; }
     public DateTimeOffset EndDate { get; set; }
 
-    public IEnumerable<Image> Images { get; set; } = [];
-    public IEnumerable<Attribute> Attributes { get; set; } = [];
+    //public IEnumerable<Image> Images { get; set; } = [];
+    //public IEnumerable<Attribute> Attributes { get; set; } = [];
+
+    public ICollection<Image> Images { get; set; } = new List<Image>(); 
+    public ICollection<Attribute> Attributes { get; set; } = new List<Attribute>();
 }

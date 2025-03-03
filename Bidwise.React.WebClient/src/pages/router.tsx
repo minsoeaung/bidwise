@@ -7,11 +7,13 @@ import { useAuth } from "@/context/AuthContext";
 
 const CreateAuctionPage = lazy(() => import("./Auctions/CreateAuction"));
 const AuctionDetailPage = lazy(() => import("./Auctions/AuctionDetail"));
+const AuctionUpdatePage = lazy(() => import("./Auctions/AuctionUpdate"));
 const UserSessionPage = lazy(() => import("./UserSession"));
 const WhatIsBidwisePage = lazy(() => import("./WhatIsBidwise"));
 const MyListingsPage = lazy(() => import("./MyListings"));
 const MyBidsPage = lazy(() => import("./MyBids"));
-const ForbiddenPage = lazy(() => import("./NeedAuthentication"));
+const NeedAuthenticationPage = lazy(() => import("./NeedAuthentication"));
+const ForbiddenPage = lazy(() => import("./Forbidden"));
 const UserProfilePage = lazy(() => import("./UserProfile"));
 
 const AuthenticatedPage = () => {
@@ -32,7 +34,7 @@ const router = createBrowserRouter([
       { path: "auctions", element: <CatalogPage /> },
       { path: "auctions/create", element: <CreateAuctionPage /> },
       { path: "auctions/:id", element: <AuctionDetailPage /> },
-      { path: "forbidden", element: <ForbiddenPage /> },
+      { path: "auctions/:id/edit", element: <AuctionUpdatePage /> },
       { path: "whatis", element: <WhatIsBidwisePage /> },
       {
         path: "account",
@@ -44,7 +46,8 @@ const router = createBrowserRouter([
         ],
       },
       { path: "users/:id", element: <UserProfilePage /> },
-      { path: "need-authentication", element: <ForbiddenPage /> },
+      { path: "need-authentication", element: <NeedAuthenticationPage /> },
+      { path: "forbidden", element: <ForbiddenPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },

@@ -18,6 +18,7 @@ type Props = {
   itemEndDate: string;
   itemVickrey: boolean;
   winningBidderId: number | null;
+  itemSellerId: number;
   openBidPlaceDialog: () => void;
 };
 
@@ -25,6 +26,7 @@ export const BidsCard = ({
   itemId,
   itemEndDate,
   itemVickrey,
+  itemSellerId,
   openBidPlaceDialog,
   winningBidderId,
 }: Props) => {
@@ -98,15 +100,16 @@ export const BidsCard = ({
                     Be the first one to bid
                   </EmptyState.Description>
                 </VStack>
-                {!!userId ? (
-                  <Button variant="subtle" onClick={openBidPlaceDialog}>
-                    Place Bid
-                  </Button>
-                ) : (
-                  <Button variant="subtle" asChild>
-                    <a href={"/bff/login"}>Login to bid</a>
-                  </Button>
-                )}
+                {itemSellerId != userId &&
+                  (!!userId ? (
+                    <Button variant="subtle" onClick={openBidPlaceDialog}>
+                      Place Bid
+                    </Button>
+                  ) : (
+                    <Button variant="subtle" asChild>
+                      <a href={"/bff/login"}>Login to bid</a>
+                    </Button>
+                  ))}
               </EmptyState.Content>
             </EmptyState.Root>
           ))

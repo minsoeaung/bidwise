@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useAuctionDetail } from "../../hooks/queries/useAuctionDetail";
 import {
   Box,
@@ -54,6 +54,8 @@ import { SellerNote } from "./SellerNote";
 import { SealedBadge } from "@/components/SealedBadge";
 import { AuctionsEndingSoon } from "./AuctionsEndingSoon";
 import { Comments } from "./Comments";
+import { TbEdit } from "react-icons/tb";
+import { RiArrowRightLine } from "react-icons/ri";
 
 dayjs.extend(relativeTime);
 
@@ -131,7 +133,7 @@ const AuctionDetailPage = () => {
     <Box
       maxW="8xl"
       mx="auto"
-      mt={2}
+      mt={8}
       px={{ base: "2", md: "8", lg: "12" }}
       paddingBottom="30px"
     >
@@ -144,18 +146,27 @@ const AuctionDetailPage = () => {
       ) : (
         data && (
           <Box>
-            <Box>
-              <Heading>{data.name}</Heading>
-              <HStack>
-                {data.vickrey && <SealedBadge />}
-                <Text>{data.description}</Text>
-              </HStack>
-            </Box>
+            <Flex justifyContent="space-between" alignItems="center">
+              <Box>
+                <Heading>{data.name}</Heading>
+                <HStack>
+                  {data.vickrey && <SealedBadge />}
+                  <Text>{data.description}</Text>
+                </HStack>
+              </Box>
+              {!!userId && data.sellerId === userId && (
+                <Button variant="outline" asChild>
+                  <Link to={`/auctions/${data.id}/edit`}>
+                    Edit <RiArrowRightLine />
+                  </Link>
+                </Button>
+              )}
+            </Flex>
             <Announcement
               data={data}
               openBidPlaceDialog={() => setBidPlaceDialogOpen(true)}
             />
-            <Grid mt={3} templateColumns="repeat(6, 1fr)" gap="6">
+            <Grid mt={6} templateColumns="repeat(6, 1fr)" gap={10}>
               <GridItem colSpan={4}>
                 <Card.Root height="500px">
                   <ImageSlider
@@ -182,6 +193,7 @@ const AuctionDetailPage = () => {
                   itemId={id}
                   itemEndDate={data.endDate}
                   itemVickrey={data.vickrey}
+                  itemSellerId={data.sellerId}
                   winningBidderId={data.buyerId}
                   openBidPlaceDialog={() => setBidPlaceDialogOpen(true)}
                 />
@@ -196,16 +208,16 @@ const AuctionDetailPage = () => {
               </GridItem>
             </Grid>
 
-            <Grid templateColumns="repeat(6, 1fr)" gap="6">
+            <Grid templateColumns="repeat(6, 1fr)" gap={10}>
               <GridItem colSpan={4}>
-                <Box my={2}>
+                <Box my={3}>
                   <BreadcrumbsInfo
                     category={data.categoryName}
                     name={data.name}
                   />
                 </Box>
 
-                <Flex justifyContent="space-between">
+                <Flex justifyContent="space-between" gap="10px">
                   <StatBar
                     endDate={data.endDate}
                     vickrey={data.vickrey}
@@ -213,69 +225,71 @@ const AuctionDetailPage = () => {
                     totalBids={bids?.length || 0}
                     totalComments={comments?.size || 0}
                   />
-                  <DialogRoot
-                    initialFocusEl={() => bidAmountInputRef.current}
-                    open={bidPlaceDialogOpen}
-                    onOpenChange={(e) => setBidPlaceDialogOpen(e.open)}
-                  >
-                    {!isTheAuctionEnded(data.endDate) &&
-                      (!data.vickrey || !myBid) && (
-                        <DialogTrigger asChild>
-                          <Button
-                            height="45px"
-                            width="120px"
-                            disabled={bidsIsLoading || !userId}
-                            variant="solid"
-                          >
+                  {data.sellerId !== userId && (
+                    <DialogRoot
+                      initialFocusEl={() => bidAmountInputRef.current}
+                      open={bidPlaceDialogOpen}
+                      onOpenChange={(e) => setBidPlaceDialogOpen(e.open)}
+                    >
+                      {!isTheAuctionEnded(data.endDate) &&
+                        (!data.vickrey || !myBid) && (
+                          <DialogTrigger asChild>
+                            <Button
+                              height="45px"
+                              width="120px"
+                              disabled={bidsIsLoading || !userId}
+                              variant="solid"
+                            >
+                              {data.status === "Available" && myBid
+                                ? "Adjust Bid"
+                                : "Place Bid"}
+                            </Button>
+                          </DialogTrigger>
+                        )}
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>
+                            {" "}
                             {data.status === "Available" && myBid
                               ? "Adjust Bid"
-                              : "Place Bid"}
+                              : "Bid"}
+                          </DialogTitle>
+                        </DialogHeader>
+                        <DialogBody pb="4">
+                          <NumberInputRoot
+                            w="full"
+                            defaultValue={
+                              myBid
+                                ? String(myBid.amount)
+                                : String(data.startingBid)
+                            }
+                            step={data.startingBid}
+                          >
+                            <NumberInputField
+                              ref={bidAmountInputRef}
+                              placeholder="Amount"
+                            />
+                          </NumberInputRoot>
+                          <VStack mt={1} alignItems="start">
+                            <Text color="fg.muted">
+                              Minimum bid is ${data.startingBid}.
+                            </Text>
+                          </VStack>
+                        </DialogBody>
+                        <DialogFooter>
+                          <DialogActionTrigger asChild>
+                            <Button variant="outline">Cancel</Button>
+                          </DialogActionTrigger>
+                          <Button onClick={handleUpdateOrCreateBid}>
+                            {data.status === "Available" && myBid
+                              ? "Adjust Bid"
+                              : "Bid"}
                           </Button>
-                        </DialogTrigger>
-                      )}
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>
-                          {" "}
-                          {data.status === "Available" && myBid
-                            ? "Adjust Bid"
-                            : "Bid"}
-                        </DialogTitle>
-                      </DialogHeader>
-                      <DialogBody pb="4">
-                        <NumberInputRoot
-                          w="full"
-                          defaultValue={
-                            myBid
-                              ? String(myBid.amount)
-                              : String(data.startingBid)
-                          }
-                          step={data.startingBid}
-                        >
-                          <NumberInputField
-                            ref={bidAmountInputRef}
-                            placeholder="Amount"
-                          />
-                        </NumberInputRoot>
-                        <VStack mt={1} alignItems="start">
-                          <Text color="fg.muted">
-                            Minimum bid is ${data.startingBid}.
-                          </Text>
-                        </VStack>
-                      </DialogBody>
-                      <DialogFooter>
-                        <DialogActionTrigger asChild>
-                          <Button variant="outline">Cancel</Button>
-                        </DialogActionTrigger>
-                        <Button onClick={handleUpdateOrCreateBid}>
-                          {data.status === "Available" && myBid
-                            ? "Adjust Bid"
-                            : "Bid"}
-                        </Button>
-                      </DialogFooter>
-                      <DialogCloseTrigger />
-                    </DialogContent>
-                  </DialogRoot>
+                        </DialogFooter>
+                        <DialogCloseTrigger />
+                      </DialogContent>
+                    </DialogRoot>
+                  )}
                 </Flex>
                 <Flex mt={3} justifyContent="end">
                   <Text color="fg.muted">

@@ -24,8 +24,10 @@ import {
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
+import { CgEye } from "react-icons/cg";
 import { FaRegClock } from "react-icons/fa";
 import { RiArrowRightLine, RiAuctionLine } from "react-icons/ri";
+import { TbEdit } from "react-icons/tb";
 import { Link, useNavigate } from "react-router-dom";
 
 const MyBids = () => {
@@ -107,7 +109,7 @@ const MyBids = () => {
                 rounded="md"
                 maxHeight="calc(100vh - (65px + 120px + 48px + 16px))"
               >
-                <Table.Root stickyHeader interactive>
+                <Table.Root stickyHeader>
                   <Table.Header>
                     <Table.Row bg="bg.subtle">
                       <Table.ColumnHeader>Item</Table.ColumnHeader>
@@ -118,16 +120,15 @@ const MyBids = () => {
                       <Table.ColumnHeader textAlign="end">
                         Current Highest Bid
                       </Table.ColumnHeader>
+                      <Table.ColumnHeader textAlign="end">
+                        Actions
+                      </Table.ColumnHeader>
                     </Table.Row>
                   </Table.Header>
 
                   <Table.Body>
                     {filteredData.map((myBid) => (
-                      <Table.Row
-                        key={myBid.id}
-                        cursor="pointer"
-                        onClick={() => navigate(`/auctions/${myBid.item.id}`)}
-                      >
+                      <Table.Row key={myBid.id}>
                         <Table.Cell>
                           <HStack>
                             {!!myBid.item.images.length && (
@@ -209,6 +210,18 @@ const MyBids = () => {
                             currency="USD"
                             maximumFractionDigits={0}
                           />
+                        </Table.Cell>
+                        <Table.Cell textAlign="end">
+                          <Button
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              navigate(`/auctions/${myBid.item.id}`);
+                            }}
+                          >
+                            <CgEye />
+                          </Button>
                         </Table.Cell>
                       </Table.Row>
                     ))}
