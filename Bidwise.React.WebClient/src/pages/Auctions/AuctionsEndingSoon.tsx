@@ -2,6 +2,7 @@ import { ItemCard } from "@/components/ItemCard";
 import { ItemCardLoading } from "@/components/ItemCard/ItemCardLoading";
 import { usePaginatedAuctions } from "@/hooks/queries/usePaginatedAuctions";
 import { SimpleGrid } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 export const AuctionsEndingSoon = () => {
   const { data, isLoading } = usePaginatedAuctions(
@@ -25,7 +26,9 @@ export const AuctionsEndingSoon = () => {
       return (
         <SimpleGrid columns={2} gap="40px">
           {data.content.map((auction) => (
-            <ItemCard auction={auction} key={auction.id} />
+            <Link to={`/auctions/${auction.id}`} key={auction.id}>
+              <ItemCard auction={auction} badgeSize="sm" />
+            </Link>
           ))}
         </SimpleGrid>
       );

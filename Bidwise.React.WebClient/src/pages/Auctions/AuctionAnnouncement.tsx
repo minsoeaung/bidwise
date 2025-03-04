@@ -56,7 +56,7 @@ export const Announcement = ({
   if (biddedAndNotEndedYet) {
     return (
       <Alert.Root
-        mt={3}
+        mt={6}
         borderStartWidth="3px"
         borderStartColor="colorPalette.solid"
         status={
@@ -88,7 +88,7 @@ export const Announcement = ({
             </Alert.Description>
           )}
         </Alert.Content>
-        {!myBidIsTheHighest && !data.vickrey && (
+        {!myBidIsTheHighest && !data.vickrey && myBid.bidderId !== userId && (
           <Button variant="ghost" onClick={openBidPlaceDialog}>
             Adjust
           </Button>

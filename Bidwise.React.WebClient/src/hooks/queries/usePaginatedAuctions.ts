@@ -27,7 +27,7 @@ const fetchAuctions = async ({
   const status = searchParams.get("Status") || "";
   const type = searchParams.get("Type") || "";
   const pageNumber = searchParams.get("PageNumber");
-  const pageSize = searchParams.get("PageSize");
+  const pageSize = searchParams.get("PageSize") || 16;
 
   return await ApiClient.get(
     `api/catalog?SearchTerm=${serachTerm}&Categories=${

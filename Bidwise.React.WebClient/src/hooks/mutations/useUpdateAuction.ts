@@ -1,7 +1,8 @@
 import { ApiClient } from "@/api/apiClient";
 import { toaster } from "@/components/ui/toaster";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AttributeCreateDto, ImageCreateDto } from "./useCreateAuctionItem";
+import { AUCTION_DETAIL } from "../queries/useAuctionDetail";
 
 export type ItemUpdateDto = {
   name: string;
@@ -13,6 +14,8 @@ export type ItemUpdateDto = {
 };
 
 export const useUpdateAuction = (id: number) => {
+  const queryClient = useQueryClient();
+
   return useMutation(
     async (payload: ItemUpdateDto) => {
       const formData = new FormData();
@@ -40,6 +43,8 @@ export const useUpdateAuction = (id: number) => {
           title: "Auction Updated",
           type: "success",
         });
+
+        queryClient.invalidateQueries([AUCTION_DETAIL, String(id)]);
       },
     }
   );

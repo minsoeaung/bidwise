@@ -32,7 +32,7 @@ const Root = () => {
           <Header />
           <Toaster />
           <Flex as="main" role="main" direction="column" flex="1">
-            <Box role="presentation" px={3} minH="lg">
+            <Box role="presentation" m={5} minH="lg">
               <Suspense fallback={<Fallback />}>
                 <ErrorBoundary fallbackRender={fallbackRender}>
                   <Outlet />

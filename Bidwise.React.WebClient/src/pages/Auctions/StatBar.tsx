@@ -27,10 +27,6 @@ export const StatBar = ({
   const diffSeconds = dayjs(endDate).diff(dayjs(), "second");
   const secondsIn6Hours = 6 * 3600;
 
-  useEffect(() => {
-    ApiClient.get("/api/bids/top-2?itemId=42");
-  }, []);
-
   return (
     <Flex
       justifyContent="space-between"

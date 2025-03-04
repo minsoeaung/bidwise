@@ -27,7 +27,7 @@ export const BreadcrumbsInfo = ({ category, name }: Props) => {
         )}
         <Breadcrumb.Separator />
         <Breadcrumb.Item>
-          <Breadcrumb.CurrentLink>Props</Breadcrumb.CurrentLink>
+          <Breadcrumb.CurrentLink>{name}</Breadcrumb.CurrentLink>
         </Breadcrumb.Item>
       </Breadcrumb.List>
     </Breadcrumb.Root>

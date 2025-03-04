@@ -25,8 +25,6 @@ import {
 } from "@/components/ui/dialog";
 import { useDeleteComment } from "@/hooks/mutations/useDeleteComment";
 import { useUpdateComment } from "@/hooks/mutations/useUpdateComment";
-import { useNavigate } from "react-router";
-import { Link } from "react-router-dom";
 import { pickAvatarColorPalette } from "@/utils/pickAvatarColorPalette";
 import { UserLink } from "./UserLink";
 
@@ -38,8 +36,6 @@ export const Comment = memo(({ comment }: { comment: CommentDto }) => {
 
   const updateMutation = useUpdateComment(comment.itemId);
   const deleteMutation = useDeleteComment(comment.itemId);
-
-  const navigate = useNavigate();
 
   const handleUpdate = () => {
     if (!commentValue.trim()) return;
@@ -69,7 +65,7 @@ export const Comment = memo(({ comment }: { comment: CommentDto }) => {
   }, [updateDialogOpen]);
 
   return (
-    <HStack gap="4">
+    <HStack gap="4" alignItems="start">
       <UserLink id={comment.userId} userName={comment.userName}>
         <Avatar.Root colorPalette={pickAvatarColorPalette(comment.userName)}>
           <Avatar.Fallback name={comment.userName} />

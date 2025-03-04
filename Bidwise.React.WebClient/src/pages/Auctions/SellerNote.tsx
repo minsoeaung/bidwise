@@ -32,7 +32,7 @@ export const SellerNote = memo(({ note, sellerId, sellerName }: Props) => {
         </Card.Title>
       </Card.Header>
       <Card.Body gap="2">
-        <Card.Description>{note}</Card.Description>
+        <Card.Description whiteSpace="pre-wrap">{note}</Card.Description>
       </Card.Body>
     </Card.Root>
   );

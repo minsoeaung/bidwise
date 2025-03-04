@@ -15,12 +15,18 @@ import {
   List,
   VStack,
   FormatNumber,
+  Card,
 } from "@chakra-ui/react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { pickAvatarColorPalette } from "@/utils/pickAvatarColorPalette";
 import { SkeletonText } from "@/components/ui/skeleton";
 import { ItemCard } from "@/components/ItemCard";
 import { HiColorSwatch } from "react-icons/hi";
+import { getBidHistorySummary } from "@/utils/getBidHistorySummary";
+import { getItemAuctionedSummary } from "@/utils/getItemAuctionedSummary";
+import { PiClockLight } from "react-icons/pi";
+import { FaClock } from "react-icons/fa";
+import { isTheAuctionEnded } from "@/utils/isTheAuctionEnded";
 
 type Params = {
   id: string | undefined;
@@ -32,13 +38,15 @@ const UserProfilePage = () => {
   const userName = searchParams.get("UserName") || "User";
 
   return (
-    <Box maxW="5xl" mx="auto" mt={8}>
-      <HStack gap="4" my={8}>
-        <Avatar.Root size="xl" colorPalette={pickAvatarColorPalette(userName)}>
+    <Box maxW="5xl" mx="auto">
+      <HStack gap="4" my={8} alignItems="center">
+        <Avatar.Root size="2xl" colorPalette={pickAvatarColorPalette(userName)}>
           <Avatar.Fallback name={userName} />
         </Avatar.Root>
         <Stack gap="0">
-          <Text fontWeight="medium">{userName}</Text>
+          <Heading fontWeight="bolder" fontSize="2xl">
+            {userName}
+          </Heading>
           <Text color="fg.muted" textStyle="sm">
             @{userName}
           </Text>
@@ -75,16 +83,13 @@ const ItemsAuctioned = ({ userId }: Props) => {
 
   return (
     <Box>
-      <HStack>
-        <Heading>Items Auctioned</Heading>
+      <HStack my={5}>
+        <Heading fontWeight="bold">Items Auctioned</Heading>
         {Array.isArray(data) && (
-          <Text color="fg.muted">
-            (Listed {data.length} items, {data.filter((d) => d.buyerId).length}{" "}
-            sold)
-          </Text>
+          <Text color="fg.muted">({getItemAuctionedSummary(data)})</Text>
         )}
       </HStack>
-      <Box mt={3}>
+      <Box>
         {isLoading ? (
           <SkeletonText noOfLines={4} gap="4" />
         ) : (
@@ -120,16 +125,13 @@ const BidHistory = ({ userId }: Props) => {
 
   return (
     <Box>
-      <HStack>
-        <Heading>Bid History</Heading>
+      <HStack my={5}>
+        <Heading fontWeight="bold">Bid History</Heading>
         {Array.isArray(data) && (
-          <Text color="fg.muted">
-            (Bid on {data.length},{" "}
-            {data.filter((d) => d.item.buyerId === userId).length} wins)
-          </Text>
+          <Text color="fg.muted">({getBidHistorySummary(data, userId)})</Text>
         )}
       </HStack>
-      <Box mt={3}>
+      <Box>
         {isLoading ? (
           <SkeletonText noOfLines={4} gap="4" />
         ) : (
@@ -137,36 +139,54 @@ const BidHistory = ({ userId }: Props) => {
           (data.length > 0 ? (
             <SimpleGrid columns={4} gap="40px">
               {data.map((bid) => (
-                <Box display="inline-block" pos="relative" key={bid.item.id}>
-                  <Link to={`/auctions/${bid.item.id}`}>
-                    <ItemCard auction={bid.item} key={bid.id} />
-                    {bid.item.buyerId === userId ? (
-                      <Float placement="top-end">
-                        <Badge size="sm" variant="solid" colorPalette="green">
-                          Won for{" "}
-                          <FormatNumber
-                            value={bid.item.buyerPayAmount!}
-                            style="currency"
-                            currency="USD"
-                            maximumFractionDigits={0}
-                          />
-                        </Badge>
-                      </Float>
-                    ) : (
-                      <Float placement="top-end">
-                        <Badge size="sm" variant="surface" colorPalette="teal">
-                          Bidded{" "}
-                          <FormatNumber
-                            value={bid.amount}
-                            style="currency"
-                            currency="USD"
-                            maximumFractionDigits={0}
-                          />
-                        </Badge>
-                      </Float>
-                    )}
-                  </Link>
-                </Box>
+                <Link to={`/auctions/${bid.item.id}`} key={bid.item.id}>
+                  <ItemCard
+                    auction={bid.item}
+                    key={bid.id}
+                    badge={
+                      bid.item.buyerId === userId ? (
+                        <Box position="absolute" bottom="10px" left="10px">
+                          <Badge size="md" variant="solid" colorPalette="green">
+                            Won for{" "}
+                            <FormatNumber
+                              value={bid.item.buyerPayAmount!}
+                              style="currency"
+                              currency="USD"
+                              maximumFractionDigits={0}
+                            />
+                          </Badge>
+                        </Box>
+                      ) : (
+                        <Box position="absolute" bottom="10px" left="10px">
+                          <HStack>
+                            {!isTheAuctionEnded(bid.item.endDate) && (
+                              <Badge
+                                size="md"
+                                variant="solid"
+                                colorPalette="gray"
+                              >
+                                <FaClock />
+                              </Badge>
+                            )}
+                            <Badge
+                              size="md"
+                              variant="solid"
+                              colorPalette="gray"
+                            >
+                              Bid{" "}
+                              <FormatNumber
+                                value={bid.amount}
+                                style="currency"
+                                currency="USD"
+                                maximumFractionDigits={0}
+                              />
+                            </Badge>
+                          </HStack>
+                        </Box>
+                      )
+                    }
+                  />
+                </Link>
               ))}
             </SimpleGrid>
           ) : (

@@ -50,13 +50,14 @@ const AuctionsPage = () => {
   const searchTerm = params.get("SearchTerm") || "";
   const isVickrey = params.get("Type") === "Vickrey";
   const isPast = params.get("Status") === "Ended";
+  const category = params.get("Categories") || "";
 
   useEffect(() => {
     refetch();
   }, [params]);
 
   return (
-    <Box maxW="7xl" mx="auto" mt={5}>
+    <Box maxW="7xl" mx="auto">
       {isFetching && !isLoading && <Fallback />}
       {isLoading ? (
         <ItemGrid mt="75px">
@@ -84,6 +85,7 @@ const AuctionsPage = () => {
                 {isVickrey && "Vickrey Auctions"}
                 {isPast && "Past Results"}{" "}
                 {!!searchTerm && `Auctions (${data.content.length})`}
+                {!!category && `Auctions (${category})`}
               </Text>
               <Flex>
                 <Button
@@ -163,7 +165,7 @@ const AuctionsPage = () => {
                 </Link>
               ))}
             </ItemGrid>
-            <Center my={10}>
+            <Center my={5}>
               <PaginationRoot
                 page={data.pageable.pageNumber}
                 pageSize={data.pageable.pageSize}

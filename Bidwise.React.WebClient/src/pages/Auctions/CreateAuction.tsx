@@ -21,17 +21,26 @@ import {
 } from "@chakra-ui/react";
 import { ErrorDisplay } from "../../components/ErrorDisplay";
 import { ApiError } from "../../types/ApiError";
-import { FaPlus } from "react-icons/fa";
+import { FaLock, FaLockOpen, FaPlus } from "react-icons/fa";
 import { Field } from "../../components/ui/field";
 import { Checkbox } from "../../components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
-import { Navigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import { FileUploadRoot, FileUploadTrigger } from "@/components/ui/file-upload";
 import {
   IoIosAddCircleOutline,
   IoIosRemoveCircleOutline,
 } from "react-icons/io";
 import { HiUpload } from "react-icons/hi";
+import {
+  IoArrowBack,
+  IoLockClosedOutline,
+  IoLockOpenOutline,
+} from "react-icons/io5";
+import { RiAuctionLine } from "react-icons/ri";
+import { CheckboxCard } from "@/components/ui/checkbox-card";
+import { RadioCardItem, RadioCardRoot } from "@/components/ui/radio-card";
+import { BackButton } from "@/components/BackButton";
 
 const AUCTION_INITIAL_STATE: Omit<ItemCreateDto, "images"> = {
   name: "",
@@ -58,6 +67,7 @@ const CreateAuctionPage = () => {
   const mutation = useCreateAuctionItem();
 
   const { loggedInUser } = useAuth();
+  const navigate = useNavigate();
 
   const handleFormChange =
     (name: keyof ItemCreateDto) =>
@@ -137,8 +147,12 @@ const CreateAuctionPage = () => {
   }
 
   return (
-    <Container maxW="5xl" mt={5}>
-      <Card.Root>
+    <Container maxW="5xl">
+      <BackButton />
+      <Card.Root mt={5}>
+        <Card.Header>
+          <Card.Title>Start an Auction</Card.Title>
+        </Card.Header>
         <Card.Body>
           <VStack spaceX="8px" spaceY="8px">
             <Fieldset.Root>
@@ -148,6 +162,7 @@ const CreateAuctionPage = () => {
                     required
                     type="text"
                     name="name"
+                    placeholder="Name"
                     value={values.name}
                     onChange={handleFormChange("name")}
                   />
@@ -155,7 +170,7 @@ const CreateAuctionPage = () => {
                 <Field label="Description">
                   <Textarea
                     required
-                    placeholder="Product description"
+                    placeholder="Description"
                     name="description"
                     value={values.description}
                     onChange={handleFormChange("description")}
@@ -166,6 +181,7 @@ const CreateAuctionPage = () => {
                     required
                     type="text"
                     name="categoryName"
+                    placeholder="Category"
                     value={values.categoryName}
                     onChange={handleFormChange("categoryName")}
                   />
@@ -175,6 +191,7 @@ const CreateAuctionPage = () => {
                     required
                     type="number"
                     name="startingBid"
+                    placeholder="Minimum bid amount"
                     min={1}
                     value={values.startingBid}
                     onChange={handleFormChange("startingBid")}
@@ -193,6 +210,7 @@ const CreateAuctionPage = () => {
                   <Textarea
                     autoresize
                     name="note"
+                    placeholder="Seller note"
                     // @ts-ignore
                     value={values.note}
                     onChange={handleFormChange("note")}
@@ -245,8 +263,25 @@ const CreateAuctionPage = () => {
                     </Button>
                   </VStack>
                 </Field>
-                <Field label="Vickrey">
-                  <Checkbox
+                <Field label="Auction Type">
+                  <RadioCardRoot defaultValue="normal">
+                    <HStack align="stretch">
+                      <RadioCardItem
+                        icon={<IoLockOpenOutline />}
+                        label="Open"
+                        value="open"
+                        description="In this auction, bids are visible to all participants. The highest bidder wins and pays their own bid amount. Bidders can see their position relative to others throughout the auction."
+                      />
+                      <RadioCardItem
+                        icon={<IoLockClosedOutline />}
+                        label="Vickrey"
+                        value="vickrey"
+                        description="In this auction, bids are sealed and hidden from others. The highest bidder wins, but pays the second-highest bid. Only the top two bid amounts will be revealed after the auction ends."
+                      />
+                    </HStack>
+                  </RadioCardRoot>
+
+                  {/* <Checkbox
                     required
                     name="vickrey"
                     checked={values.vickrey}
@@ -256,7 +291,7 @@ const CreateAuctionPage = () => {
                         vickrey: !!e.checked,
                       }));
                     }}
-                  />
+                  /> */}
                 </Field>
                 <Field label="Images">
                   {selectedImages.length > 0 && (
@@ -312,14 +347,14 @@ const CreateAuctionPage = () => {
           </VStack>
           <br />
           <br />
-          <Flex justify="space-between">
+          <Flex justify="end">
             <Button
               variant="solid"
               colorScheme="blue"
               onClick={handleCreateProduct}
               loading={mutation.isLoading}
             >
-              <FaPlus /> Create Auction
+              <RiAuctionLine /> Start Auction
             </Button>
           </Flex>
           {!!mutation.error && (

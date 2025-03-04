@@ -54,8 +54,8 @@ const MyListings = () => {
   }, [data, filterValue]);
 
   return (
-    <Box maxW="8xl" mx="auto">
-      <Flex justifyContent="space-between" alignItems="center" py={5}>
+    <Box maxW="7xl" mx="auto">
+      <Flex justifyContent="space-between" alignItems="center">
         <Heading>My Listings</Heading>
         <HStack>
           <SegmentedControl
@@ -94,8 +94,9 @@ const MyListings = () => {
         </HStack>
       </Flex>
 
-      <Separator />
-      <Box py={5}>
+      <Separator my={5} />
+
+      <Box>
         {isLoading ? (
           <SkeletonText noOfLines={4} gap="4" />
         ) : isError ? (

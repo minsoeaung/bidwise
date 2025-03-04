@@ -39,6 +39,7 @@ import { getFileFromSrc } from "@/utils/getFileFromSrc";
 import { Link } from "react-router-dom";
 import { RiArrowRightLine } from "react-icons/ri";
 import { CgEye } from "react-icons/cg";
+import { ItemCard } from "@/components/ItemCard";
 
 type Params = {
   id: string | undefined;
@@ -195,7 +196,8 @@ const AuctionUpdate = () => {
 
   if (data) {
     return (
-      <Container maxW="5xl" mt={5}>
+      <Container maxW="5xl" my={5}>
+        <ItemCard auction={data} />
         <Card.Root>
           <Card.Body>
             <VStack gap="20px">
@@ -207,6 +209,16 @@ const AuctionUpdate = () => {
                   placeholder="Name"
                   value={values.name}
                   onChange={handleFormChange("name")}
+                />
+              </Field>
+              <Field label="Category">
+                <Input
+                  required
+                  type="text"
+                  name="categoryName"
+                  placeholder="Category"
+                  value={values.categoryName || ""}
+                  onChange={handleFormChange("categoryName")}
                 />
               </Field>
               <Field label="Description">

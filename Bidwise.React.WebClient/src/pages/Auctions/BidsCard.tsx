@@ -46,7 +46,7 @@ export const BidsCard = ({
   return (
     <Card.Root size="sm" height="500px" variant="subtle">
       <Card.Header>
-        <Heading size="md">Bids</Heading>
+        <Heading fontWeight="bold">Bids</Heading>
       </Card.Header>
       <Card.Body overflowY="scroll" overflowX="hidden">
         {isLoading ? (
@@ -96,9 +96,11 @@ export const BidsCard = ({
                 </EmptyState.Indicator>
                 <VStack textAlign="center">
                   <EmptyState.Title>No bids yet</EmptyState.Title>
-                  <EmptyState.Description>
-                    Be the first one to bid
-                  </EmptyState.Description>
+                  {itemSellerId != userId && (
+                    <EmptyState.Description>
+                      Be the first one to bid
+                    </EmptyState.Description>
+                  )}
                 </VStack>
                 {itemSellerId != userId &&
                   (!!userId ? (
