@@ -58,7 +58,7 @@ export const useCreateAuctionItem = () => {
     {
       onSuccess: async () => {
         toaster.create({
-          title: "Auction Created",
+          title: "Auction Started",
           type: "success",
         });
       },

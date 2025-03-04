@@ -198,38 +198,36 @@ const Header = () => {
             <MenuRoot>
               <MenuTrigger asChild>
                 <Button variant="plain">
-                  <HStack>
-                    <Text>{userName}</Text>
-                    <Avatar.Root>
-                      <Avatar.Fallback />
-                      <Avatar.Image src="https://bit.ly/broken-link" />
-                    </Avatar.Root>
-                  </HStack>
+                  <Avatar.Root>
+                    <Avatar.Fallback name={userName} />
+                    <Avatar.Image src="https://bit.ly/broken-link" />
+                  </Avatar.Root>
                 </Button>
               </MenuTrigger>
-              <MenuContent position="absolute" left="0" width="150px">
+              <MenuContent position="absolute" left="-100px" width="150px">
                 <MenuItemGroup>
                   <MenuItem asChild value="profile">
                     <Link to={`/users/${userId}?UserName=${userName}`}>
                       Profile
                     </Link>
                   </MenuItem>
-                  <MenuItem asChild value="manage-account">
-                    <Link
-                      to="https://localhost:5001/Identity/Account/Manage"
-                      target="_blank"
-                    >
-                      Settings
-                    </Link>
-                  </MenuItem>
-                  <MenuItem asChild value="my-session">
-                    <Link to={`/account/session`}>Session</Link>
-                  </MenuItem>
                   <MenuItem asChild value="my-listings">
                     <Link to={`/account/listings`}>My Listings</Link>
                   </MenuItem>
                   <MenuItem asChild value="buyer-dashboard">
                     <Link to={`/account/bids`}>My Bids</Link>
+                  </MenuItem>
+                  <MenuSeparator />
+                  <MenuItem asChild value="my-session">
+                    <Link to={`/account/session`}>Session</Link>
+                  </MenuItem>
+                  <MenuItem asChild value="manage-account">
+                    <Link
+                      to="https://localhost:5001/Identity/Account/Manage"
+                      target="_blank"
+                    >
+                      Account Settings
+                    </Link>
                   </MenuItem>
                 </MenuItemGroup>
                 <MenuSeparator />

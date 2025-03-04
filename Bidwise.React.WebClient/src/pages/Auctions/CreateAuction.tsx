@@ -264,17 +264,29 @@ const CreateAuctionPage = () => {
                   </VStack>
                 </Field>
                 <Field label="Auction Type">
-                  <RadioCardRoot defaultValue="normal">
+                  <RadioCardRoot
+                    defaultValue="open"
+                    value={values.vickrey ? "vickrey" : "open"}
+                    onChange={(e) => {
+                      setValues((prev) => ({
+                        ...prev,
+                        // @ts-ignore
+                        vickrey: e.target?.value === "vickrey",
+                      }));
+                    }}
+                  >
                     <HStack align="stretch">
                       <RadioCardItem
+                        cursor="pointer"
                         icon={<IoLockOpenOutline />}
                         label="Open"
                         value="open"
                         description="In this auction, bids are visible to all participants. The highest bidder wins and pays their own bid amount. Bidders can see their position relative to others throughout the auction."
                       />
                       <RadioCardItem
+                        cursor="pointer"
                         icon={<IoLockClosedOutline />}
-                        label="Vickrey"
+                        label="Sealed (Vickrey)"
                         value="vickrey"
                         description="In this auction, bids are sealed and hidden from others. The highest bidder wins, but pays the second-highest bid. Only the top two bid amounts will be revealed after the auction ends."
                       />

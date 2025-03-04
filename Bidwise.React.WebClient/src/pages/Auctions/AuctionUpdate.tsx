@@ -40,6 +40,7 @@ import { Link } from "react-router-dom";
 import { RiArrowRightLine } from "react-icons/ri";
 import { CgEye } from "react-icons/cg";
 import { ItemCard } from "@/components/ItemCard";
+import { BackButton } from "@/components/BackButton";
 
 type Params = {
   id: string | undefined;
@@ -196,11 +197,14 @@ const AuctionUpdate = () => {
 
   if (data) {
     return (
-      <Container maxW="5xl" my={5}>
-        <ItemCard auction={data} />
-        <Card.Root>
+      <Container maxW="5xl">
+        <BackButton />
+        <Card.Root mt={5}>
+          <Card.Header>
+            <Card.Title>Edit an Auction</Card.Title>
+          </Card.Header>
           <Card.Body>
-            <VStack gap="20px">
+            <VStack spaceX="8px" spaceY="8px">
               <Field label="Name">
                 <Input
                   required
@@ -341,21 +345,25 @@ const AuctionUpdate = () => {
                 </Stack>
               </Field>
             </VStack>
-            <HStack mt={8}>
-              <Button
-                variant="solid"
-                colorScheme="blue"
-                onClick={handleCreateProduct}
-                loading={mutation.isLoading}
-              >
-                Update
-              </Button>
-              <Button variant="outline" asChild>
-                <Link to={`/auctions/${data.id}`}>
-                  View listing <CgEye />
-                </Link>
-              </Button>
-            </HStack>
+            <br />
+            <br />
+            <Flex justify="end">
+              <HStack>
+                <Button variant="outline" asChild>
+                  <Link to={`/auctions/${data.id}`}>
+                    View listing <CgEye />
+                  </Link>
+                </Button>
+                <Button
+                  variant="solid"
+                  colorScheme="blue"
+                  onClick={handleCreateProduct}
+                  loading={mutation.isLoading}
+                >
+                  Update
+                </Button>
+              </HStack>
+            </Flex>
             {!!mutation.error && (
               <>
                 <br />

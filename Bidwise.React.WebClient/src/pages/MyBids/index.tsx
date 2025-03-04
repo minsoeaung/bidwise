@@ -1,4 +1,6 @@
+import { BackButton } from "@/components/BackButton";
 import { NoDataYet } from "@/components/NoDataYet";
+import { SealedBadge } from "@/components/SealedBadge";
 import { SomethingWentWrongAlert } from "@/components/SomethingWentWrongAlert";
 import { TimeLeft } from "@/components/TimeLeft";
 import { SegmentedControl } from "@/components/ui/segmented-control";
@@ -6,6 +8,7 @@ import { SkeletonText } from "@/components/ui/skeleton";
 import { AUCTION_IMAGES } from "@/constants/fileUrls";
 import { useAuth } from "@/context/AuthContext";
 import { useBuyAuctions } from "@/hooks/queries/useBuyAuctions";
+import { isTheAuctionEnded } from "@/utils/isTheAuctionEnded";
 import {
   Avatar,
   AvatarGroup,
@@ -20,7 +23,9 @@ import {
   Status,
   Table,
   Text,
+  Container,
   VStack,
+  Card,
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
@@ -55,8 +60,8 @@ const MyBids = () => {
   }, [data, filterValue]);
 
   return (
-    <Box maxW="8xl" mx="auto">
-      <Flex justifyContent="space-between" alignItems="center" py={5}>
+    <Box maxW="7xl" mx="auto">
+      <Flex justifyContent="space-between" alignItems="center">
         <Heading>My Bids</Heading>
         <HStack>
           <SegmentedControl
@@ -94,8 +99,8 @@ const MyBids = () => {
           </Button>
         </HStack>
       </Flex>
-      <Separator />
-      <Box py={5}>
+      <Separator my={5} />
+      <Box>
         {isLoading ? (
           <SkeletonText noOfLines={4} gap="4" />
         ) : isError ? (
@@ -153,6 +158,7 @@ const MyBids = () => {
                               </AvatarGroup>
                             )}
                             <Text>{myBid.item.name}</Text>
+                            {myBid.item.vickrey && <SealedBadge />}
                           </HStack>
                         </Table.Cell>
                         <Table.Cell>
@@ -204,12 +210,17 @@ const MyBids = () => {
                           />
                         </Table.Cell>
                         <Table.Cell textAlign="end" pr={8}>
-                          <FormatNumber
-                            value={myBid.item.currentHighestBid || 0}
-                            style="currency"
-                            currency="USD"
-                            maximumFractionDigits={0}
-                          />
+                          {myBid.item.vickrey &&
+                          !isTheAuctionEnded(myBid.item.endDate) ? (
+                            "****"
+                          ) : (
+                            <FormatNumber
+                              value={myBid.item.currentHighestBid || 0}
+                              style="currency"
+                              currency="USD"
+                              maximumFractionDigits={0}
+                            />
+                          )}
                         </Table.Cell>
                         <Table.Cell textAlign="end">
                           <Button
@@ -230,14 +241,7 @@ const MyBids = () => {
               </Table.ScrollArea>
             </>
           ) : (
-            <NoDataYet
-              type="results"
-              suggestions={[
-                "Try removing filters",
-                "Try different keywords",
-                "Try different auction types",
-              ]}
-            />
+            <NoDataYet type="results" suggestions={["Try removing filters"]} />
           ))
         )}
       </Box>

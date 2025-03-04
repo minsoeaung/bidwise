@@ -28,6 +28,8 @@ import { RiArrowRightLine, RiAuctionLine } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import { TbEdit } from "react-icons/tb";
 import { CgEye } from "react-icons/cg";
+import { isTheAuctionEnded } from "@/utils/isTheAuctionEnded";
+import { SealedBadge } from "@/components/SealedBadge";
 
 const MyListings = () => {
   const [filterValue, setFilterValue] = useState("All");
@@ -154,6 +156,7 @@ const MyListings = () => {
                             </AvatarGroup>
                           )}
                           <Text>{auction.name}</Text>
+                          {auction.vickrey && <SealedBadge />}
                         </HStack>
                       </Table.Cell>
                       <Table.Cell>
@@ -191,7 +194,10 @@ const MyListings = () => {
                         />
                       </Table.Cell>
                       <Table.Cell textAlign="end" pr={8}>
-                        {auction.currentHighestBid ? (
+                        {auction.vickrey &&
+                        !isTheAuctionEnded(auction.endDate) ? (
+                          "****"
+                        ) : auction.currentHighestBid ? (
                           <FormatNumber
                             value={auction.currentHighestBid}
                             style="currency"
