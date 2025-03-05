@@ -9,6 +9,9 @@ using Duende.IdentityModel;
 using Duende.IdentityServer.EntityFramework.DbContexts;
 using Duende.IdentityServer.EntityFramework.Mappers;
 using Confluent.Kafka;
+using Bidwise.Identity.Options;
+using Bidwise.Identity.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace Bidwise.Identity;
 
@@ -94,6 +97,9 @@ internal static class HostingExtensions
         });
 
         //builder.Services.AddHostedService<KafkaConsumer>();
+
+        builder.Services.AddTransient<IEmailSender, EmailSender>();
+        builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration.GetSection("Mail"));
 
         return builder.Build();
     }
