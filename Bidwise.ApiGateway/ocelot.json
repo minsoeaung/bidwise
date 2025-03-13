@@ -26,7 +26,7 @@
     },
     {
       "DownstreamPathTemplate": "/api/comments/{everything}",
-      "DownstreamScheme": "http", // <-- No HTTPS for this service
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
@@ -38,7 +38,7 @@
     },
     {
       "DownstreamPathTemplate": "/api/bids/{everything}",
-      "DownstreamScheme": "http", // <-- No HTTPS for this service
+      "DownstreamScheme": "http", 
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",

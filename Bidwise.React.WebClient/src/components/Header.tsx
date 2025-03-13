@@ -31,8 +31,6 @@ import { useCategories } from "../hooks/queries/useCategories";
 import { ColorModeButton } from "./ui/color-mode";
 import { useAuth } from "@/context/AuthContext";
 
-const BidwiseLogo = "<Bidwise Logo>";
-
 export const headerHeight = 65;
 
 const Header = () => {
@@ -71,6 +69,7 @@ const Header = () => {
 
   const filterByName = () => {
     searchParams.set("SearchTerm", searchTerm);
+    searchParams.set("PageNumber", "1");
     setSearchParams(searchParams);
     navigate({
       pathname: "/auctions",
@@ -117,8 +116,8 @@ const Header = () => {
     >
       <HStack gap="10px">
         <Link to="/">
-          <Heading lineHeight="tall" fontWeight="bold">
-            {BidwiseLogo}
+          <Heading lineHeight="tall" fontWeight="bold" fontSize="3xl">
+            Bidwise
           </Heading>
         </Link>
         <HStack gap="4px">
@@ -178,6 +177,7 @@ const Header = () => {
           }
         >
           <Input
+            id="search-bar"
             width="md"
             variant="subtle"
             placeholder="Search for anything"

@@ -4,7 +4,11 @@ import { usePaginatedAuctions } from "@/hooks/queries/usePaginatedAuctions";
 import { SimpleGrid } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
-export const AuctionsEndingSoon = () => {
+type Props = {
+  id: number;
+};
+
+export const AuctionsEndingSoon = ({ id }: Props) => {
   const { data, isLoading } = usePaginatedAuctions(
     "OrderBy=EndingSoon&PageSize=10"
   );
@@ -23,9 +27,11 @@ export const AuctionsEndingSoon = () => {
 
   if (Array.isArray(data?.content)) {
     if (data.content.length > 0) {
+      const filteredList = data.content.filter((a) => a.id !== id);
+
       return (
         <SimpleGrid columns={2} gap="40px">
-          {data.content.map((auction) => (
+          {filteredList.map((auction) => (
             <Link to={`/auctions/${auction.id}`} key={auction.id}>
               <ItemCard auction={auction} badgeSize="sm" />
             </Link>

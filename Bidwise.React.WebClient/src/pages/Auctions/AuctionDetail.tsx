@@ -15,7 +15,7 @@ import {
   VStack,
   DataList,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePaginatedComments } from "../../hooks/queries/usePaginatedComments";
 import { useCreateComment } from "../../hooks/mutations/useCreateComment";
 import { AUCTION_IMAGES } from "../../constants/fileUrls";
@@ -73,6 +73,10 @@ const AuctionDetailPage = () => {
   const { id } = useParams<Params>();
 
   const { data, isLoading, isError, error } = useAuctionDetail(id);
+
+  useEffect(() => {
+    // here count down the endDate and re-fetch auction details
+  }, []);
 
   const { userId } = useAuth();
 
@@ -369,7 +373,7 @@ const AuctionDetailPage = () => {
                   Auctions ending soon
                 </Heading>
                 <Box mt="20px">
-                  <AuctionsEndingSoon />
+                  <AuctionsEndingSoon id={Number(id)} />
                 </Box>
               </GridItem>
             </Grid>

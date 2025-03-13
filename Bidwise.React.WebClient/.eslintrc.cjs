@@ -6,6 +6,7 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
     "plugin:react-hooks/recommended",
+    "plugin:cypress/recommended",
   ],
   ignorePatterns: ["dist", ".eslintrc.cjs"],
   parserOptions: { ecmaVersion: "latest", sourceType: "module" },
@@ -17,5 +18,8 @@ module.exports = {
       { allowConstantExport: true },
     ],
     "react/prop-types": 0,
+  },
+  globals: {
+    cy: true,
   },
 };

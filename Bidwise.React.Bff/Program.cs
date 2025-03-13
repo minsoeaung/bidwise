@@ -1,4 +1,3 @@
-using Duende.Bff;
 using Duende.Bff.Yarp;
 
 var builder = WebApplication.CreateBuilder(args);

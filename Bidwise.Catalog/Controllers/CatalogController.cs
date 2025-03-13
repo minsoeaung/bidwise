@@ -408,7 +408,7 @@ public class CatalogController : ControllerBase
         await _context.SaveChangesAsync();
 
         await _kafkaProducer.ProduceAsync(Topics.AuctionEnded, new Message<string, string>
-        {
+        {   
             Key = item.Id.ToString(),
             Value = JsonSerializer.Serialize(item)
         });
