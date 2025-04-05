@@ -5,7 +5,7 @@ using Bidwise.Catalog.Models;
 using Bidwise.Catalog.Services.Interfaces;
 using Bidwise.Common;
 using Bidwise.Common.Models;
-using Bidwise.Common.Models.Spring;
+using Bidwise.Common.Models.Kafka;
 using Confluent.Kafka;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
@@ -384,6 +384,18 @@ public class CatalogController : ControllerBase
 
         if (bids == null || bids.Count == 0)
         {
+            await _kafkaProducer.ProduceAsync(Topics.AuctionEnded, new Message<string, string>
+            {
+                Key = item.Id.ToString(),
+                Value = JsonSerializer.Serialize(new ItemModel
+                {
+                    Id = item.Id,
+                    SellerId = item.SellerId,
+                    BuyerId = null,
+                    BuyerPayAmount = null
+                })
+            });
+
             // No winner to determine
             return;
         }
@@ -410,7 +422,13 @@ public class CatalogController : ControllerBase
         await _kafkaProducer.ProduceAsync(Topics.AuctionEnded, new Message<string, string>
         {   
             Key = item.Id.ToString(),
-            Value = JsonSerializer.Serialize(item)
+            Value = JsonSerializer.Serialize(new ItemModel
+            {
+                Id = item.Id,
+                SellerId = item.SellerId,
+                BuyerId = item.BuyerId,
+                BuyerPayAmount = item.BuyerPayAmount
+            })
         });
     }
 }

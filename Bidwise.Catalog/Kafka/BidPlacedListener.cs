@@ -2,7 +2,7 @@
 using Confluent.Kafka;
 using System.Text.Json;
 using Bidwise.Catalog.Data;
-using Bidwise.Common.Models.Spring;
+using Bidwise.Common.Models.Kafka;
 
 namespace Bidwise.Catalog.Kafka;
 

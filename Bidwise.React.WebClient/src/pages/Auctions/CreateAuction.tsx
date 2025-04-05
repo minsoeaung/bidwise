@@ -219,7 +219,7 @@ const CreateAuctionPage = () => {
                 <Field label="Attributes">
                   <VStack alignItems="start" w="full" gap="10px">
                     {attributes.map((attr, index) => (
-                      <HStack w="full">
+                      <HStack w="full" key={index}>
                         <Input
                           placeholder="Label"
                           w="30%"
@@ -309,7 +309,7 @@ const CreateAuctionPage = () => {
                   {selectedImages.length > 0 && (
                     <Flex flexWrap="wrap" gap="10px" my={5}>
                       {selectedImages.map((img, index) => (
-                        <VStack>
+                        <VStack key={index}>
                           <Box
                             aspectRatio={3 / 2}
                             h="150px"

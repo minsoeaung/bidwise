@@ -1,10 +1,11 @@
 ﻿
 using Bidwise.Common;
-using Bidwise.Common.Models.Spring;
+using Bidwise.Common.Models.Kafka;
 using Bidwise.RealTime.Hubs;
 using Confluent.Kafka;
 using Microsoft.AspNetCore.SignalR;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Bidwise.RealTime.Kafka;
 
@@ -12,6 +13,7 @@ public class WorkerService(IConsumer<string, string> consumer, IHubContext<Bidwi
 {
     private readonly JsonSerializerOptions jsonSerializerOptions = new()
     {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true,
     };
 
@@ -25,7 +27,7 @@ public class WorkerService(IConsumer<string, string> consumer, IHubContext<Bidwi
 
     private async Task ConsumeAsync(CancellationToken cancellationToken)
     {
-        consumer.Subscribe([Topics.BidPlaced, Topics.CommentUpdated, Topics.CommentCreated]);
+        consumer.Subscribe([Topics.BidPlaced, Topics.CommentUpdated, Topics.CommentCreated, Topics.AuctionEnded]);
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -36,12 +38,8 @@ public class WorkerService(IConsumer<string, string> consumer, IHubContext<Bidwi
                 switch (consumeResult.Topic)
                 {
                     case Topics.BidPlaced:
-                        Console.WriteLine($"--> Received message from {Topics.BidPlaced}: {consumeResult.Message.Value}");
-
                         var bid = JsonSerializer.Deserialize<BidModel>(consumeResult.Message.Value, jsonSerializerOptions);
-
-                        if (bid == null)
-                            continue;
+                        if (bid == null) continue;
 
                         Console.WriteLine($"--> SignalR invoked {Topics.BidPlaced}.");
 
@@ -50,12 +48,8 @@ public class WorkerService(IConsumer<string, string> consumer, IHubContext<Bidwi
 
                         break;
                     case Topics.CommentCreated:
-                        Console.WriteLine($"--> Received message from {Topics.CommentCreated}: {consumeResult.Message.Value}");
-
                         var createdComment = JsonSerializer.Deserialize<CommentModel>(consumeResult.Message.Value, jsonSerializerOptions);
-
-                        if (createdComment == null)
-                            continue;
+                        if (createdComment == null) continue;
 
                         Console.WriteLine($"--> SignalR invoked {Topics.CommentCreated}.");
 
@@ -64,17 +58,23 @@ public class WorkerService(IConsumer<string, string> consumer, IHubContext<Bidwi
 
                         break;
                     case Topics.CommentUpdated:
-                        Console.WriteLine($"--> Received message from {Topics.CommentUpdated}: {consumeResult.Message.Value}");
-
                         var updatedComment = JsonSerializer.Deserialize<CommentModel>(consumeResult.Message.Value, jsonSerializerOptions);
-
-                        if (updatedComment == null)
-                            continue;
+                        if (updatedComment == null) continue;
 
                         Console.WriteLine($"--> SignalR invoked {Topics.CommentUpdated}.");
 
                         await bidwiseHub.Clients.Group(updatedComment.ItemId.ToString())
                             .SendAsync(Topics.CommentUpdated, consumeResult.Message.Value, cancellationToken: cancellationToken);
+
+                        break;
+                    case Topics.AuctionEnded:
+                        var auctionedItem = JsonSerializer.Deserialize<ItemModel>(consumeResult.Message.Value, jsonSerializerOptions);
+                        if (auctionedItem == null) continue;
+
+                        Console.WriteLine($"--> SignalR invoked {Topics.AuctionEnded}.");
+
+                        await bidwiseHub.Clients.Group(auctionedItem.Id.ToString())
+                            .SendAsync(Topics.AuctionEnded, JsonSerializer.Serialize(auctionedItem, jsonSerializerOptions), cancellationToken: cancellationToken);
 
                         break;
                     default:

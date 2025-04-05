@@ -1,4 +1,4 @@
-﻿namespace Bidwise.Common.Models.Spring;
+﻿namespace Bidwise.Common.Models.Kafka;
 
 public class BidModel
 {

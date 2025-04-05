@@ -62,13 +62,20 @@ type Params = {
   id: string;
 };
 
+export interface AuctionEndedModel {
+  id: number;
+  sellerId: number;
+  buyerId: number | null;
+  buyerPayAmount: number | null;
+}
+
 const AuctionDetailPage = () => {
   const [bidPlaceDialogOpen, setBidPlaceDialogOpen] = useState(false);
   const bidAmountInputRef = useRef<HTMLInputElement>(null);
 
   const { id } = useParams<Params>();
 
-  const { data, isLoading, isError, error } = useAuctionDetail(id);
+  const { data, isLoading, isError, error, refetch } = useAuctionDetail(id);
 
   const { userId } = useAuth();
   const { connection } = useRealTime();
@@ -76,11 +83,18 @@ const AuctionDetailPage = () => {
   useEffect(() => {
     if (connection !== null) {
       connection.invoke("JoinAuctionGroup", Number(id));
+
+      connection.on("AuctionEnded", (message: string) => {
+        const auctionEnded: AuctionEndedModel = JSON.parse(message);
+        console.log("--> AuctionEnded", auctionEnded);
+        refetch();
+      });
     }
 
     return () => {
       if (connection !== null) {
         connection.invoke("LeaveAuctionGroup", Number(id));
+        connection.off("AuctionEnded");
       }
     };
   }, [connection]);

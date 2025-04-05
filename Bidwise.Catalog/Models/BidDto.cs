@@ -1,4 +1,4 @@
-﻿using Bidwise.Common.Models.Spring;
+﻿using Bidwise.Common.Models.Kafka;
 
 namespace Bidwise.Catalog.Models;
 
