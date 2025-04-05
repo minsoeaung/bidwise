@@ -3,7 +3,6 @@ import { useAuctionDetail } from "../../hooks/queries/useAuctionDetail";
 import {
   Box,
   Button,
-  Input,
   Text,
   HStack,
   Flex,
@@ -17,7 +16,6 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { usePaginatedComments } from "../../hooks/queries/usePaginatedComments";
-import { useCreateComment } from "../../hooks/mutations/useCreateComment";
 import { AUCTION_IMAGES } from "../../constants/fileUrls";
 import AntdSpin from "@/components/AntdSpin";
 import { ErrorDisplay } from "@/components/ErrorDisplay";
@@ -28,7 +26,6 @@ import {
   NumberInputField,
   NumberInputRoot,
 } from "@/components/ui/number-input";
-import { LuArrowDown } from "react-icons/lu";
 import {
   DialogActionTrigger,
   DialogBody,
@@ -47,17 +44,17 @@ import { StatBar } from "./StatBar";
 import { BreadcrumbsInfo } from "./BreadcrumbsInfo";
 import { Announcement } from "./AuctionAnnouncement";
 import { BidsCard } from "./BidsCard";
-import { toaster } from "@/components/ui/toaster";
 import { isTheAuctionEnded } from "@/utils/isTheAuctionEnded";
 import { WinnerCard } from "./WinnerCard";
 import { SellerNote } from "./SellerNote";
 import { SealedBadge } from "@/components/SealedBadge";
 import { AuctionsEndingSoon } from "./AuctionsEndingSoon";
 import { Comments } from "./Comments";
-import { TbEdit } from "react-icons/tb";
 import { RiArrowRightLine } from "react-icons/ri";
 import { UserLink } from "@/components/UserLink";
 import { headerHeight } from "@/components/Header";
+import { useRealTime } from "@/context/RealTimeContext";
+import { CommentCreate } from "./CommentCreate";
 
 dayjs.extend(relativeTime);
 
@@ -66,7 +63,6 @@ type Params = {
 };
 
 const AuctionDetailPage = () => {
-  const [comment, setComment] = useState("");
   const [bidPlaceDialogOpen, setBidPlaceDialogOpen] = useState(false);
   const bidAmountInputRef = useRef<HTMLInputElement>(null);
 
@@ -74,18 +70,22 @@ const AuctionDetailPage = () => {
 
   const { data, isLoading, isError, error } = useAuctionDetail(id);
 
-  useEffect(() => {
-    // here count down the endDate and re-fetch auction details
-  }, []);
-
   const { userId } = useAuth();
+  const { connection } = useRealTime();
 
-  const {
-    data: comments,
-    isLoading: commentsIsLoading,
-    isError: commentsIsError,
-    refetch: commentsRefetch,
-  } = usePaginatedComments(id);
+  useEffect(() => {
+    if (connection !== null) {
+      connection.invoke("JoinAuctionGroup", Number(id));
+    }
+
+    return () => {
+      if (connection !== null) {
+        connection.invoke("LeaveAuctionGroup", Number(id));
+      }
+    };
+  }, [connection]);
+
+  const { data: comments, isError: commentsIsError } = usePaginatedComments(id);
 
   const { data: bids, isLoading: bidsIsLoading } = useBids(id);
 
@@ -93,31 +93,7 @@ const AuctionDetailPage = () => {
     ? bids.find((b) => b.bidderId === userId)
     : null;
 
-  const commentCreateMutation = useCreateComment();
-
   const bidCreateOrUpdateMutation = useCreateOrUpdateBid();
-
-  const handleAddComment = () => {
-    if (!userId) {
-      toaster.create({
-        type: "info",
-        title: "Please login first",
-      });
-
-      return;
-    }
-
-    if (Boolean(comment.trim())) {
-      commentCreateMutation
-        .mutateAsync({
-          itemId: Number(id),
-          commentText: comment.trim(),
-        })
-        .then(() => {
-          setComment("");
-        });
-    }
-  };
 
   const handleUpdateOrCreateBid = () => {
     if (data) {
@@ -211,7 +187,9 @@ const AuctionDetailPage = () => {
                     vickrey={data.vickrey}
                     currentHighestBid={data.currentHighestBid || 0}
                     totalBids={bids?.length || 0}
-                    totalComments={comments?.size || 0}
+                    totalComments={
+                      comments?.pages.flatMap((p) => p.content).length || 0
+                    }
                   />
                   {data.sellerId !== userId &&
                     (!!userId ? (
@@ -332,40 +310,7 @@ const AuctionDetailPage = () => {
                 <Heading mt={5} fontWeight="bold">
                   Comments
                 </Heading>
-                <HStack
-                  mt={5}
-                  justifyContent="space-between"
-                  alignItems="center"
-                  gap="15px"
-                >
-                  <Input
-                    name="commentText"
-                    placeholder="Add a comment"
-                    value={comment}
-                    disabled={commentsIsError}
-                    onChange={(e) => setComment(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleAddComment();
-                      }
-                    }}
-                  />
-                  {!!userId ? (
-                    <Button
-                      variant="outline"
-                      width="140px"
-                      onClick={handleAddComment}
-                      disabled={commentsIsError}
-                      loading={commentCreateMutation.isLoading}
-                    >
-                      Comment <LuArrowDown />
-                    </Button>
-                  ) : (
-                    <Button variant="outline" width="140px" asChild>
-                      <a href={"/bff/login"}>Login to comment</a>
-                    </Button>
-                  )}
-                </HStack>
+                <CommentCreate itemId={id} disabled={commentsIsError} />
                 <Comments itemId={id} />
               </GridItem>
               <GridItem colSpan={2}>

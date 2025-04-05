@@ -22,7 +22,7 @@
     <ProjectReference Include="..\Bidwise.Catalog\Bidwise.Catalog.csproj" />
     <ProjectReference Include="..\Bidwise.Identity\Bidwise.Identity.csproj" />
     <ProjectReference Include="..\Bidwise.React.Bff\Bidwise.React.Bff.csproj" />
-    <ProjectReference Include="..\Bidwise.WebClient\Bidwise.WebClient.csproj" />
+    <ProjectReference Include="..\Bidwise.RealTime\Bidwise.RealTime.csproj" />
   </ItemGroup>
 
 </Project>

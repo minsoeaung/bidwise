@@ -2,13 +2,14 @@ import { ItemCard } from "@/components/ItemCard";
 import { ItemCardLoading } from "@/components/ItemCard/ItemCardLoading";
 import { usePaginatedAuctions } from "@/hooks/queries/usePaginatedAuctions";
 import { SimpleGrid } from "@chakra-ui/react";
+import { memo } from "react";
 import { Link } from "react-router-dom";
 
 type Props = {
   id: number;
 };
 
-export const AuctionsEndingSoon = ({ id }: Props) => {
+export const AuctionsEndingSoon = memo(({ id }: Props) => {
   const { data, isLoading } = usePaginatedAuctions(
     "OrderBy=EndingSoon&PageSize=10"
   );
@@ -44,4 +45,4 @@ export const AuctionsEndingSoon = ({ id }: Props) => {
   }
 
   return null;
-};
+});

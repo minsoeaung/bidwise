@@ -51,6 +51,8 @@ class CommentsController {
         if (userProfile == null)
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
 
+        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
+
         if (commentDto.getCommentId() == 0) {
             Comment comment = new Comment();
             comment.setCommentText(commentDto.getCommentText());
@@ -59,7 +61,6 @@ class CommentsController {
             comment.setUserName(userProfile.getUserName());
             comment = repository.save(comment);
 
-            ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
             kafkaTemplate.send("CommentCreated", String.valueOf(comment.getItemId()), objectMapper.writeValueAsString(comment));
 
             return comment;
@@ -70,6 +71,13 @@ class CommentsController {
                             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only update your own comment");
 
                         comment.setCommentText(commentDto.getCommentText());
+
+                        try {
+                            kafkaTemplate.send("CommentUpdated", String.valueOf(comment.getItemId()), objectMapper.writeValueAsString(comment));
+                        } catch (JsonProcessingException e) {
+                            throw new RuntimeException(e);
+                        }
+
                         return repository.save(comment);
                     })
                     .orElseThrow(() -> new CommentNotFoundException(commentDto.getCommentId()));

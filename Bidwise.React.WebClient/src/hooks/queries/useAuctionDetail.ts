@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ApiClient } from "../../api/apiClient";
 
-export const AUCTION_DETAIL = "Auction Detail";
+export const AUCTION_DETAIL = "AUCTION_DETAIL";
 
 export type AuctionDto = {
   id: number;

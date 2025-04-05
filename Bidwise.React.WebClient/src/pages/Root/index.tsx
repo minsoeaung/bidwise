@@ -7,6 +7,7 @@ import { Fallback } from "../../components/Fallback";
 import Header from "../../components/Header";
 import { ErrorBoundary } from "react-error-boundary";
 import { Toaster } from "@/components/ui/toaster";
+import { RealTimeContextProvider } from "@/context/RealTimeContext";
 
 // @ts-ignore
 function fallbackRender({ error, resetErrorBoundary }) {
@@ -27,22 +28,24 @@ function fallbackRender({ error, resetErrorBoundary }) {
 const Root = () => {
   return (
     <AuthContextProvider>
-      <Theme colorPalette="teal">
-        <Flex minH="100vh" direction="column" flex="1">
-          <Header />
-          <Toaster />
-          <Flex as="main" role="main" direction="column" flex="1">
-            <Box role="presentation" m={5} minH="lg">
-              <Suspense fallback={<Fallback />}>
-                <ErrorBoundary fallbackRender={fallbackRender}>
-                  <Outlet />
-                </ErrorBoundary>
-              </Suspense>
-            </Box>
+      <RealTimeContextProvider>
+        <Theme colorPalette="teal">
+          <Flex minH="100vh" direction="column" flex="1">
+            <Header />
+            <Toaster />
+            <Flex as="main" role="main" direction="column" flex="1">
+              <Box role="presentation" m={5} minH="lg">
+                <Suspense fallback={<Fallback />}>
+                  <ErrorBoundary fallbackRender={fallbackRender}>
+                    <Outlet />
+                  </ErrorBoundary>
+                </Suspense>
+              </Box>
+            </Flex>
+            <Footer />
           </Flex>
-          <Footer />
-        </Flex>
-      </Theme>
+        </Theme>
+      </RealTimeContextProvider>
     </AuthContextProvider>
   );
 };

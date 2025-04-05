@@ -24,7 +24,12 @@ public class KafkaTopicConfig {
     }
 
     @Bean
-    public NewTopic bidPlacedTopic() {
+    public NewTopic commentCreatedTopic() {
         return new NewTopic("CommentCreated", 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic commentUpdatedTopic() {
+        return new NewTopic("CommentUpdated", 1, (short) 1);
     }
 }

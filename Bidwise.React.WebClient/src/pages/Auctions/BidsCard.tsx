@@ -1,6 +1,8 @@
 import { BidLoading, Bid } from "@/components/Bid";
 import { useAuth } from "@/context/AuthContext";
-import { useBids } from "@/hooks/queries/useBids";
+import { useRealTime } from "@/context/RealTimeContext";
+import { AUCTION_DETAIL } from "@/hooks/queries/useAuctionDetail";
+import { BidDto, BIDS, useBids } from "@/hooks/queries/useBids";
 import { isTheAuctionEnded } from "@/utils/isTheAuctionEnded";
 import {
   Card,
@@ -11,6 +13,8 @@ import {
   EmptyState,
   Text,
 } from "@chakra-ui/react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { HiColorSwatch } from "react-icons/hi";
 
 type Props = {
@@ -31,10 +35,51 @@ export const BidsCard = ({
   winningBidderId,
 }: Props) => {
   const { userId } = useAuth();
+  const { connection } = useRealTime();
+
+  const queryClient = useQueryClient();
 
   const { data, isLoading, isError, refetch } = useBids(itemId);
 
   const ended = isTheAuctionEnded(itemEndDate);
+
+  useEffect(() => {
+    if (connection !== null) {
+      connection.on("BidPlaced", (message: string) => {
+        const bid: BidDto = JSON.parse(message);
+        console.log("--> BidPlaced", bid);
+
+        if (Array.isArray(data)) {
+          const index = data.findIndex((b) => b.id === bid.id);
+
+          if (index >= 0) {
+            const updatedBids = [...data];
+            updatedBids[index] = bid;
+            updatedBids.map((b) => (b.id === bid.id ? bid : b));
+            // console.log("--> UpdatedBids", updatedBids);
+
+            queryClient.setQueryData<BidDto[]>(
+              [BIDS, String(itemId)],
+              updatedBids
+            );
+          } else {
+            const mergedBids = [...data, bid];
+            // console.log("--> MergedBids", mergedBids);
+            queryClient.setQueryData<BidDto[]>(
+              [BIDS, String(itemId)],
+              mergedBids
+            );
+          }
+
+          queryClient.invalidateQueries([AUCTION_DETAIL, String(itemId)]);
+        }
+      });
+    }
+
+    return () => {
+      if (connection !== null) connection.off("BidPlaced");
+    };
+  }, [connection, data]);
 
   // loading state
   // bids-service unavailable state

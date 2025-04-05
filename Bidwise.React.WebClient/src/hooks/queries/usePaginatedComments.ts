@@ -1,4 +1,4 @@
-import { QueryFunctionContext, useQuery } from "@tanstack/react-query";
+import { QueryFunctionContext, useInfiniteQuery } from "@tanstack/react-query";
 import { ApiClient } from "../../api/apiClient";
 import { PagedResult } from "./usePaginatedAuctions";
 
@@ -16,24 +16,29 @@ export const COMMENTS = "Comments";
 
 const fetchComments = async ({
   queryKey,
+  pageParam = 0,
 }: QueryFunctionContext<[string, string]>): Promise<
   PagedResult<CommentDto>
 > => {
   const [_, itemId] = queryKey;
 
-  return await ApiClient.get(`api/comments?itemId=${itemId}`);
+  return await ApiClient.get(
+    `api/comments?itemId=${itemId}&page=${pageParam}&size=10`
+  );
 };
 
 export const usePaginatedComments = (itemId: string | undefined) => {
   return {
-    ...useQuery([COMMENTS, String(itemId)], fetchComments, {
+    ...useInfiniteQuery([COMMENTS, String(itemId)], fetchComments, {
       keepPreviousData: true,
       enabled: typeof Number(itemId) === "number" && Number(itemId) > 0,
-      select: (res) => {
+      getNextPageParam: (lastPage) => {
         // @ts-ignore
-        res.size = res.totalElements;
-
-        return res;
+        if (!lastPage.last) {
+          return lastPage.pageable.pageNumber + 1;
+        } else {
+          return undefined;
+        }
       },
     }),
   };

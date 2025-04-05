@@ -41,7 +41,10 @@ builder.AddSpringApp(
     })
     .WaitFor(kafka);
 
-builder.AddProject<Projects.Bidwise_WebClient>("web-mvc");
 builder.AddProject<Projects.Bidwise_React_Bff>("web-spa");
+
+builder.AddProject<Projects.Bidwise_RealTime>("realtime-service")
+    .WithReference(kafka)
+    .WaitFor(kafka);
 
 builder.Build().Run();

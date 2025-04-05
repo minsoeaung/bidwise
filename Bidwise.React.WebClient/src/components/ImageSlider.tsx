@@ -1,5 +1,5 @@
 import Slider from "react-slick";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Box, Button, IconButton, Image } from "@chakra-ui/react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
@@ -20,7 +20,7 @@ type Props = {
   images: string[];
 };
 
-export const ImageSlider = ({ imgHeight, images = [] }: Props) => {
+export const ImageSlider = memo(({ imgHeight, images = [] }: Props) => {
   const [slider, setSlider] = useState<Slider | null>(null);
 
   return (
@@ -101,4 +101,4 @@ export const ImageSlider = ({ imgHeight, images = [] }: Props) => {
       </Slider>
     </Box>
   );
-};
+});
