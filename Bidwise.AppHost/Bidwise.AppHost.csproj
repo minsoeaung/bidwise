@@ -9,12 +9,14 @@
     <Nullable>enable</Nullable>
     <IsAspireHost>true</IsAspireHost>
     <UserSecretsId>e086ae9b-c7d9-49ab-845d-ef55da0a56da</UserSecretsId>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="9.1.0" />
     <PackageReference Include="Aspire.Hosting.Kafka" Version="9.1.0" />
-    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Java" Version="9.2.0" />
+    <PackageReference Include="Aspire.Hosting.SqlServer" Version="9.1.0" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Java" Version="9.3.0" />
   </ItemGroup>
 
   <ItemGroup>

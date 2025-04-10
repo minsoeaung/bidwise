@@ -1,5 +1,6 @@
 using Amazon.S3;
 using Bidwise.Catalog.Data;
+using Bidwise.Catalog.Extensions;
 using Bidwise.Catalog.Kafka;
 using Bidwise.Catalog.Services;
 using Bidwise.Catalog.Services.Interfaces;
@@ -12,7 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-builder.Services.AddDbContext<CatalogDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<CatalogDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CatalogDb")));
 
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
@@ -47,18 +49,18 @@ builder.AddKafkaConsumer<string, string>("kafka", options =>
 
 builder.Services.AddHostedService<BidPlacedListener>();
 
+builder.Services.CreateHangfireDbIfNotExist(builder.Configuration.GetConnectionString("HangfireDb") ??
+                                            throw new InvalidOperationException("HangfireDb connectionString missing"));
 builder.Services.AddHangfire(configuration => configuration
-      .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-      .UseSimpleAssemblyNameTypeSerializer()
-      .UseRecommendedSerializerSettings()
-      .UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection")));
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireDb")));
 
 builder.Services.AddHangfireServer();
 
-builder.Services.AddHttpClient("BidsService", httpClient =>
-{
-    httpClient.BaseAddress = new Uri("http://localhost:5004");
-});
+builder.Services.AddHttpClient("BidsService",
+    httpClient => { httpClient.BaseAddress = new Uri("http://localhost:5004"); });
 
 var app = builder.Build();
 

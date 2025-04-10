@@ -1,28 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <SpaRoot>..\Bidwise.React.WebClient</SpaRoot>
+    <SpaRoot>$(MSBuildProjectDirectory)/../Bidwise.React.WebClient</SpaRoot>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>https://localhost:5173</SpaProxyServerUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Bidwise.React.WebClient\Bidwise.React.WebClient.esproj">
+    <ProjectReference Include="$(MSBuildProjectDirectory)/../Bidwise.React.WebClient/Bidwise.React.WebClient.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
-      <Version>8.*-*</Version>
+      <Version>9.0.4</Version>
     </PackageReference>
-    <PackageReference Include="Duende.BFF" Version="2.2.0" />
-    <PackageReference Include="Duende.BFF.Yarp" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.1" />
+    <PackageReference Include="Duende.BFF" Version="3.0.0" />
+    <PackageReference Include="Duende.BFF.Yarp" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.4" />
   </ItemGroup>
 
 </Project>

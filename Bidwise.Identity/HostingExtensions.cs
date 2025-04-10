@@ -21,7 +21,7 @@ internal static class HostingExtensions
     {
         builder.Services.AddRazorPages();
 
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        var connectionString = builder.Configuration.GetConnectionString("IdentityDb")
             ?? throw new InvalidOperationException("ConnectionString for Identity Service not found.");
         var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 
