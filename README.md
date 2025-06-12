@@ -39,7 +39,7 @@ Bidwise is an online bidding platform that demonstrates how .NET Aspire can be u
 	a.	The system must choose a winner and set the winning amount based on auction type
 	b.	If winner selection fails, the system must retry using an exponential backoff mechanism
 6.	<b>User Profiles</b>: System allows everyone to view user profiles
-	a.	User profile includes �Products (Items) Auctioned� and �Bid History�
+	a.	User profile includes Products (Items) Auctioned and Bid History
 7.	<b>Managing Account</b>: System allows users to manage their account
 	a.	Change email
 	b.	Forgot password, Reset password
@@ -61,7 +61,7 @@ Bidwise is an online bidding platform that demonstrates how .NET Aspire can be u
     2. Fill `Authentication` and `Mail` sections in `Bidwise.Identity` project's `appsettings.json`
 	3. Fill `Parameters` sections in `Bidwise.AppHost` project's `appsettings.json`
 3. Start the project:
-	1. Launch the `Bidwise.AppHost` project � this project is managed by .NET Aspire, which will automatically pull required container images and launch all dependent services and microservices for you
+	1. Launch the `Bidwise.AppHost` project this project is managed by .NET Aspire, which will automatically pull required container images and launch all dependent services and microservices for you
 
 
 ## # High Level Architecture
@@ -84,7 +84,7 @@ The homepage displays active auctions, with each card showing the product name, 
 
 This page displays key information about the auction: the product name, a short description, photos, time left, highest bid, number of bids, and number of comments. 
 
-There is a 'Place Bid' button for users to place their bids. The right side of photos shows the users� bids, allowing participants to track bidding activity.
+There is a 'Place Bid' button for users to place their bids. The right side of photos shows the users bids, allowing participants to track bidding activity.
 
 <img src="Screenshots/AuctionDetail2.png"  width="100%" height="auto" alt=".NET Aspire Dashboard">
 
@@ -100,7 +100,7 @@ The profile page is accessed by clicking on a username and displays two main sec
 
 <img src="Screenshots/Profile.png"  width="100%" height="auto" alt=".NET Aspire Dashboard">
 
-The �Bid History� part of the profile page displays a list of auctions. Each card shows the badges: a clock icon indicates ongoing auction, `Won for $200` signifies a winning bid, and `Bid $30` without a clock indicates a lost auction.
+The <b>Bid History</b> part of the profile page displays a list of auctions. Each card shows the badges: a clock icon indicates ongoing auction, `Won for $200` signifies a winning bid, and `Bid $30` without a clock indicates a lost auction.
 
 <hr/>
 
